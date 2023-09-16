@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.ereach.inc.services.EReachAddressService.getTestId;
 
 @SpringBootTest
 class AddressServiceTest {
@@ -30,16 +31,18 @@ class AddressServiceTest {
 		assertThat(addressCreationResponse.getCountry()).isEqualTo("Nigeria");
 	}
 	
-	@Test
-	void updateAddressTest() {
+	@Test void updateAddressTest() {
 		AddressUpdateRequest addressUpdateRequest = buildUpdateRequest();
 		AddressUpdateResponse updateResponse = addressService.updateAddress(addressUpdateRequest);
 		assertThat(updateResponse.getCountry()).isEqualTo(addressUpdateRequest.getCountry());
 		assertThat(updateResponse.getState()).isEqualTo(updateResponse.getState());
 	}
 	
-	@Test
-	void getAllAddressesTest() {
+	@Test void getAllAddressesTest() {
+		 
+	}
+	
+	@Test void getAddressByIdTest(){
 	
 	}
 	
@@ -55,7 +58,7 @@ class AddressServiceTest {
 	private AddressUpdateRequest buildUpdateRequest() {
 		return AddressUpdateRequest.builder()
 				       .country("Ghana")
-				       .id("")
+				       .id(getTestId())
 				       .houseNumber("43G")
 				       .build();
 	}
