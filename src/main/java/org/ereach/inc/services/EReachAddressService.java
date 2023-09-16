@@ -1,4 +1,5 @@
 package org.ereach.inc.services;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -9,13 +10,13 @@ import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.ereach.inc.data.dtos.request.*;
-import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.data.dtos.request.AddressCreationRequest;
+import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
+import org.ereach.inc.data.dtos.response.AddressCreationResponse;
+import org.ereach.inc.data.dtos.response.AddressUpdateResponse;
+import org.ereach.inc.data.dtos.response.GetAddressResponse;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.repositories.EReachAddressRepository;
-import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;

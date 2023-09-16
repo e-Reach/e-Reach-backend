@@ -31,16 +31,18 @@ class AddressServiceTest {
 		assertThat(addressCreationResponse.getCountry()).isEqualTo("Nigeria");
 	}
 	
-	@Test
-	void updateAddressTest() {
+	@Test void updateAddressTest() {
 		AddressUpdateRequest addressUpdateRequest = buildUpdateRequest();
 		AddressUpdateResponse updateResponse = addressService.updateAddress(addressUpdateRequest);
 		assertThat(updateResponse.getCountry()).isEqualTo(addressUpdateRequest.getCountry());
 		assertThat(updateResponse.getState()).isEqualTo(updateResponse.getState());
 	}
 	
-	@Test
-	void getAllAddressesTest() {
+	@Test void getAllAddressesTest() {
+		 
+	}
+	
+	@Test void getAddressByIdTest(){
 	
 	}
 	
