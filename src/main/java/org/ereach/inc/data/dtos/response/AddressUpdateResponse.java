@@ -9,7 +9,8 @@ import lombok.*;
 @ToString
 @Builder
 public class AddressUpdateResponse{
-	private String street;
+	private String streetName;
+	private String streetNumber;
 	private String houseNumber;
 	private String state;
 	private String country;

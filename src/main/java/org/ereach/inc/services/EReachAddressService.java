@@ -8,6 +8,9 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.ereach.inc.data.dtos.request.*;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.data.models.Address;
@@ -31,13 +34,15 @@ public class EReachAddressService implements AddressService{
 	private EReachAddressRepository addressRepository;
 	private ModelMapper mapper;
 	private ObjectMapper objectMapper;
+	@Getter
+	private static String testId;
 	@Override
 	public AddressCreationResponse saveAddress(AddressCreationRequest addressCreationRequest) {
 		Address mappedAddress = mapper.map(addressCreationRequest, Address.class);
 		Address savedAddress = addressRepository.save(mappedAddress);
+		testId = savedAddress.getId();
 		return mapper.map(savedAddress, AddressCreationResponse.class);
 	}
-	
 	@Override
 	public AddressUpdateResponse updateAddress(AddressUpdateRequest addressUpdateRequest) {
 		Optional<Address> foundAddress = addressRepository.findById(addressUpdateRequest.getId());
@@ -102,7 +107,7 @@ public class EReachAddressService implements AddressService{
 	}
 	
 	@Override
-	public GetAddressResponse getAddressById(Long id) {
+	public GetAddressResponse getAddressById(String id) {
 		return null;
 	}
 	

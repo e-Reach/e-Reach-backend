@@ -9,6 +9,6 @@ public interface AddressService {
 	AddressCreationResponse saveAddress(AddressCreationRequest addressCreationRequest);
 	AddressUpdateResponse updateAddress(AddressUpdateRequest addressUpdateRequest);
 	List<GetAddressResponse> getAllAddresses();
-	GetAddressResponse getAddressById(Long id);
+	GetAddressResponse getAddressById(String id);
 	void deleteAll();
 }
