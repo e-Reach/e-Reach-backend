@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${Username}"> {{Username}} account activation</title>
+    <style th:href="@{static/account_activation_mail_style.css}"></style>
+    <style>
+        body{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: antiquewhite;
+        }
+        .activation_mail_header{
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            font-size: 30px;
+            font-family: "Footlight MT Light",serif;
+        }
+        .activation_mail_header img{
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+        <div class="activation_mail_header">
+            <img
+                    src="https://res.cloudinary.com/dxqpdqzue/image/upload/v1693123545/cloudinary%20images/library_management_system/library_mage_hr58am.jpg"
+                    alt="library management image"
+            />
+            <div>
+                <p>Welcome To C15 Group 3 Library</p>
+            </div>
+        </div>
+        <div class="activation_mail_body">
+             <p th:text="${Username}">
+                    Hello {{Username}} you are very much welcome to our library, and we are happy to have you in our app,Congratulations
+                 on your successful registration, but please it remains one ste to get you fully registered on our app,
+                 Please click the activate button below to activate your account
+             </p>
+            <a th:href="@{activationLink}">
+                <button>Activate Account</button>
+            </a>
+        </div>
+        <div class="activation_mail_footer">
+            <p>Our Social Media Platforms Are Below</p>
+            <img src="https://res.cloudinary.com/dxqpdqzue/image/upload/v1691485113/cloudinary%20images/assets/IMG-20230808-WA0012_ypxwv9.jpg" alt="facebook_image">
+            <img src="https://res.cloudinary.com/dxqpdqzue/image/upload/v1691485113/cloudinary%20images/assets/IMG-20230808-WA0014_bbqfku.jpg" alt="instagram_image">
+            <img src="https://res.cloudinary.com/dxqpdqzue/image/upload/v1691485113/cloudinary%20images/assets/IMG-20230808-WA0013_caer1p.jpg" alt="linkedIn_image">
+            <img src="https://res.cloudinary.com/dxqpdqzue/image/upload/v1691485113/cloudinary%20images/assets/IMG-20230808-WA0011_b0jlmn.jpg" alt="twitter_image">
+        </div>
+</body>
+</html>
