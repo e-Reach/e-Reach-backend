@@ -1,4 +1,4 @@
-package org.ereach.inc.repositories.entries;
+package org.ereach.inc.data.repositories.entries;
 
 import org.ereach.inc.data.models.entries.DoctorsReport;
 import org.ereach.inc.data.models.entries.MedicalLog;
