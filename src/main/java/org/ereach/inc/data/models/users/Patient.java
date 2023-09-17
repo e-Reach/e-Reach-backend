@@ -24,6 +24,7 @@ public class Patient {
     private String lastName;
     private String patientIdentificationNumber;
     private String nin;
+    private String phoneNumber;
     @OneToOne
     private Record record;
     @Enumerated(STRING)

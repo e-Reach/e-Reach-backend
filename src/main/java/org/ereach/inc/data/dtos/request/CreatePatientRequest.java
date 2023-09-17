@@ -1,12 +1,11 @@
 package org.ereach.inc.data.dtos.request;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.ereach.inc.data.models.PersonalInfo;
-import org.ereach.inc.data.models.Role;
-import org.ereach.inc.data.models.hospital.Record;
-
 
 @Setter
 @Getter
@@ -14,15 +13,19 @@ import org.ereach.inc.data.models.hospital.Record;
 
 public class CreatePatientRequest {
 
-    private String id;
+    @NotBlank
+    @Valid
     private String firstName;
+    @NotBlank
+    @Valid
     private String lastName;
-    private String patientIdentificationNumber;
+    @NotBlank
+    @Valid
     private String nin;
-    private Record record;
-    private Role role;
-    private PersonalInfo personalInfo;
+    @NotBlank
+    private String phoneNumber;
+    @NotBlank
+    @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    @Valid
     private String email;
-    private String eReachUsername;
-
 }
