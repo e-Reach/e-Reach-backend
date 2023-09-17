@@ -20,8 +20,7 @@ public class EmailValidator {
 	public void initialize() {
 		domains = new String[]{
 				"gmail.com", "outlook.com", "yahoo.com", "hotmail.com",
-				"semicolon.africa.com", "hotmail.com", "hotmail.co.uk",
-				"freenet.de"
+				"semicolon.africa.com", "hotmail.co.uk", "freenet.de"
 		};
 		regExp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 		
