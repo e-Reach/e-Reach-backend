@@ -7,7 +7,7 @@ import java.util.Set;
 
 import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
-import static org.ereach.inc.utilities.Constants.E_REACH_USERNAME_PREFIX;
+import static org.ereach.inc.utilities.Constants.*;
 
 public class UsernameGenerator {
 	private final Set<String> usedUsernames = new HashSet<>();
@@ -37,11 +37,11 @@ public class UsernameGenerator {
 	
 	private String hashUserInfo(String userInfo, String randomComponent) {
 		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
 			byte[] hash = digest.digest((userInfo + randomComponent).getBytes());
 			return bytesToHex(hash).substring(ZERO.intValue(), TEN.intValue());
 		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException("SHA-256 algorithm not available.");
+			throw new RuntimeException(SHA_256_ALGORITHM_NOT_AVAILABLE);
 		}
 	}
 	
