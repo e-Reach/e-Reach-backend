@@ -15,7 +15,7 @@ class AddressServiceTest {
 	
 	@Autowired
 	private AddressService addressService;
-	private AddressCreationResponse addressCreationResponse;
+	private AddressResponse addressCreationResponse;
 	
 	@BeforeEach
 	void startEachTestWith() {
@@ -33,7 +33,7 @@ class AddressServiceTest {
 	
 	@Test void updateAddressTest() {
 		AddressUpdateRequest addressUpdateRequest = buildUpdateRequest();
-		AddressUpdateResponse updateResponse = addressService.updateAddress(addressUpdateRequest);
+		AddressResponse updateResponse = addressService.updateAddress(addressUpdateRequest);
 		assertThat(updateResponse.getCountry()).isEqualTo(addressUpdateRequest.getCountry());
 		assertThat(updateResponse.getState()).isEqualTo(updateResponse.getState());
 	}
@@ -51,7 +51,8 @@ class AddressServiceTest {
 				       .country("Nigeria")
 				       .houseNumber("34B")
 				       .state("Lagos")
-				       .street("Semicolon Street")
+				       .streetName("Semicolon Street")
+				       .streetNumber("314B")
 				       .build();
 	}
 	

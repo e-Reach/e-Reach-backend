@@ -2,8 +2,6 @@ package org.ereach.inc.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchOperation;
@@ -12,9 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.ereach.inc.data.dtos.request.AddressCreationRequest;
 import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
-import org.ereach.inc.data.dtos.response.AddressCreationResponse;
-import org.ereach.inc.data.dtos.response.AddressUpdateResponse;
-import org.ereach.inc.data.dtos.response.GetAddressResponse;
+import org.ereach.inc.data.dtos.response.AddressResponse;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.repositories.EReachAddressRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
@@ -29,6 +25,9 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static org.apache.catalina.util.Introspection.getDeclaredFields;
+import static org.ereach.inc.utilities.AppUtil.*;
+
 @Service
 @AllArgsConstructor
 public class EReachAddressService implements AddressService{
@@ -38,20 +37,20 @@ public class EReachAddressService implements AddressService{
 	@Getter
 	private static String testId;
 	@Override
-	public AddressCreationResponse saveAddress(AddressCreationRequest addressCreationRequest) {
+	public AddressResponse saveAddress(AddressCreationRequest addressCreationRequest) {
 		Address mappedAddress = mapper.map(addressCreationRequest, Address.class);
 		Address savedAddress = addressRepository.save(mappedAddress);
 		testId = savedAddress.getId();
-		return mapper.map(savedAddress, AddressCreationResponse.class);
+		return mapper.map(savedAddress, AddressResponse.class);
 	}
 	@Override
-	public AddressUpdateResponse updateAddress(AddressUpdateRequest addressUpdateRequest) {
+	public AddressResponse updateAddress(AddressUpdateRequest addressUpdateRequest) {
 		Optional<Address> foundAddress = addressRepository.findById(addressUpdateRequest.getId());
-		AtomicReference<AddressUpdateResponse> atomicReference = new AtomicReference<>();
+		AtomicReference<AddressResponse> atomicReference = new AtomicReference<>();
 		foundAddress.ifPresentOrElse(address -> {
 			JsonPatch updatePatch = buildAddressUpdatePatch(addressUpdateRequest);
 			try {
-				AddressUpdateResponse response = applyPatchTo(address, updatePatch);
+				AddressResponse response = applyPatchTo(address, updatePatch);
 				atomicReference.set(response);
 			} catch (JsonPatchException e) {
 				throw new EReachUncheckedBaseException(e);
@@ -61,54 +60,32 @@ public class EReachAddressService implements AddressService{
 	}
 	
 	private JsonPatch buildAddressUpdatePatch(AddressUpdateRequest addressUpdateRequest) {
-		Field[] fields = addressUpdateRequest.getClass().getDeclaredFields();
-		List<ReplaceOperation> operations = Arrays.stream(fields)
-				                          .filter(field -> filterEmptyFields(addressUpdateRequest, field))
-				                          .map(field -> performReplaceOperation(addressUpdateRequest, field)).toList();
+		List<ReplaceOperation> operations = Arrays.stream(getDeclaredFields(AddressUpdateRequest.class))
+				                          .filter(field -> filterEmptyField(addressUpdateRequest, field))
+				                          .map(field -> doReplace(addressUpdateRequest, field)).toList();
 		List<JsonPatchOperation> patchOperations = new ArrayList<>(operations);
 		return new JsonPatch(patchOperations);
 	}
 	
-	private AddressUpdateResponse applyPatchTo(Address address, JsonPatch updatePatch) throws JsonPatchException {
+	
+	private AddressResponse applyPatchTo(Address address, JsonPatch updatePatch) throws JsonPatchException {
 		JsonNode convertedAddress = objectMapper.convertValue(address, JsonNode.class);
 		JsonNode updatedNode = updatePatch.apply(convertedAddress);
 		address = objectMapper.convertValue(updatedNode, Address.class);
 		addressRepository.save(address);
-		return mapper.map(address, AddressUpdateResponse.class) ;
-	}
-	
-	private ReplaceOperation performReplaceOperation(AddressUpdateRequest addressUpdateRequest, Field field){
-		field.setAccessible(true);
-		String jsonPointerPath = "/"+field.getName();
-		try {
-			JsonPointer jsonPointer = new JsonPointer(jsonPointerPath);
-			Object accessedField = field.get(addressUpdateRequest);
-			TextNode textNode = new TextNode(accessedField.toString());
-			return new ReplaceOperation(jsonPointer, textNode);
-		} catch (Throwable exception) {
-			throw new EReachUncheckedBaseException(exception);
-		}
-	}
-	
-	private boolean filterEmptyFields(AddressUpdateRequest addressUpdateRequest, Field field){
-		field.setAccessible(true);
-		try {
-			return field.get(addressUpdateRequest) != null;
-		} catch (IllegalAccessException exception) {
-			throw new EReachUncheckedBaseException(exception);
-		}
+		return mapper.map(address, AddressResponse.class) ;
 	}
 	
 	@Override
-	public List<GetAddressResponse> getAllAddresses() {
+	public List<AddressResponse> getAllAddresses() {
 		return addressRepository.findAll()
 							    .stream()
-							    .map(address -> mapper.map(address, GetAddressResponse.class))
+							    .map(address -> mapper.map(address, AddressResponse.class))
 							    .collect(Collectors.toList());
 	}
 	
 	@Override
-	public GetAddressResponse getAddressById(String id) {
+	public AddressResponse getAddressById(String id) {
 		return null;
 	}
 	
