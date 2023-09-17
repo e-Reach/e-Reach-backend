@@ -36,7 +36,7 @@ public class TemplateLoader {
 	}
 	
 	public static String getTemplate(Model model, EReachNotificationRequest notificationRequest) {
-		model.addAttribute("Username", notificationRequest.getFirstName()+notificationRequest.getLastName());
+		model.addAttribute("Username", notificationRequest.getFullName());
 		model.addAttribute("activationLink",
 				generateAccountActivationUrl(notificationRequest.getEmail(), notificationRequest.getPassword(), notificationRequest.getPhoneNumber()));
 		return "account_activation_mail_template";

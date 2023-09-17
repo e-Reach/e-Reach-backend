@@ -1,4 +1,9 @@
 package org.ereach.inc.services.users;
 
-public interface PatientService {
+import org.ereach.inc.data.dtos.request.CreatePatientRequest;
+import org.ereach.inc.data.dtos.response.CreatePatientResponse;
+import org.ereach.inc.exceptions.EReachBaseException;
+
+public interface PatientService  {
+    CreatePatientResponse createPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException;
 }

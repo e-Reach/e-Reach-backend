@@ -1,31 +1,42 @@
 package org.ereach.inc.data.dtos.request;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 
 @Setter
 @Getter
 @Builder
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreatePatientRequest {
 
-    @NotBlank
-    @Valid
+    @NotEmpty
+    @NonNull
     private String firstName;
-    @NotBlank
-    @Valid
+    @NonNull
+    @NotEmpty
     private String lastName;
-    @NotBlank
-    @Valid
+    @NonNull
+    @NotEmpty
     private String nin;
-    @NotBlank
+    @NotEmpty
+    @NonNull
     private String phoneNumber;
-    @NotBlank
+    @NotEmpty
+    @NonNull
     @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
-    @Valid
     private String email;
+    @NonNull
+    @NotEmpty
+    private String houseNumber;
+    @NonNull
+    @NotEmpty
+    private String streetName;
+    @NotEmpty
+    @NonNull
+    private String state;
+    @NonNull
+    @NotEmpty
+    private String country;
 }
