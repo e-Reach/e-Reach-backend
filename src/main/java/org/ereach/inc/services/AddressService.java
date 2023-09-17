@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface AddressService {
 	
-	AddressCreationResponse saveAddress(AddressCreationRequest addressCreationRequest);
-	AddressUpdateResponse updateAddress(AddressUpdateRequest addressUpdateRequest);
-	List<GetAddressResponse> getAllAddresses();
-	GetAddressResponse getAddressById(String id);
+	AddressResponse saveAddress(AddressCreationRequest addressCreationRequest);
+	AddressResponse updateAddress(AddressUpdateRequest addressUpdateRequest);
+	List<AddressResponse> getAllAddresses();
+	AddressResponse getAddressById(String id);
 	void deleteAll();
 }

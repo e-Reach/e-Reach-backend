@@ -8,7 +8,8 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class AddressUpdateResponse{
+public class AddressResponse {
+	private String id;
 	private String streetName;
 	private String streetNumber;
 	private String houseNumber;
