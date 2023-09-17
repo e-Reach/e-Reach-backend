@@ -30,7 +30,13 @@ public class Record {
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
 
-    public void dateRecordCreated(){
+    public void recordCreationDate(){
+        LocalDateTime currentDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        dateCreated = LocalDate.parse(currentDate.format(formatter));
+    }
+
+    public void lastTimeRecordUpdated(){
         LocalDateTime currentDate = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         dateCreated = LocalDate.parse(currentDate.format(formatter));
