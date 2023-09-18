@@ -7,4 +7,6 @@ public interface MedicalLogService {
 
     MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest);
     void deActivateAllActiveLogs();
+
+    void deActivateMedicalLogWhosePatientsAreNotDeactivate();
 }

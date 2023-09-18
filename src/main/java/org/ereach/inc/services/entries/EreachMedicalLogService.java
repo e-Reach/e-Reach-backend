@@ -2,29 +2,52 @@ package org.ereach.inc.services.entries;
 
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.dtos.request.CreateMedicalLogRequest;
+import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.repositories.entries.EReachMedicalLogRepository;
 import org.ereach.inc.data.repositories.users.EReachPatientsRepository;
+import org.ereach.inc.services.hospital.RecordService;
+import org.ereach.inc.services.users.PatientService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Service
 @AllArgsConstructor
 public class EreachMedicalLogService implements MedicalLogService {
-    private EReachMedicalLogRepository medicalLogService;
-    private EReachPatientsRepository patientsRepository;
+    private EReachMedicalLogRepository medicalLogRepository;
+    private PatientService patientService;
     private ModelMapper modelMapper;
-
-
+    private RecordService recordService;
     @Override
     public MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest) {
-        MedicalLog medicalLog = new MedicalLog();
-        return null;
+//      TODO: Build a new medical log object
+        MedicalLog medicalLog = buildMedicalLog(createLogRequest);
+//      TODO: Identify the patient you want to create a log for
+        GetPatientResponse foundPatient = patientService.findByPatientIdentificationNumber(createLogRequest.getPatientIdentificationNumber());
+//      TODO: Add the log to the patient record
+        return recordService.addLogToRecord(foundPatient.getPatientIdentificationNumber(), medicalLog);
+    }
+
+    private static MedicalLog buildMedicalLog(CreateMedicalLogRequest createLogRequest) {
+        return MedicalLog.builder()
+                         .dateCreated(LocalDate.now())
+                         .patientIdentificationNumber(createLogRequest.getPatientIdentificationNumber())
+                         .isActive(true)
+                         .timeCreated(LocalTime.now())
+                         .build();
     }
 
     @Override
     public void deActivateAllActiveLogs() {
+
+    }
+
+    @Override
+    public void deActivateMedicalLogWhosePatientsAreNotDeactivate() {
 
     }
 }

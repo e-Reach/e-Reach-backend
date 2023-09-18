@@ -1,11 +1,11 @@
-package org.ereach.inc.data.dtos.request;
+package org.ereach.inc.data.dtos.response;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateMedicalLogRequest {
+public class GetPatientResponse {
 
     private String patientIdentificationNumber;
 }

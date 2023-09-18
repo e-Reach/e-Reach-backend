@@ -4,6 +4,7 @@ public class Constants {
 	
 	public static final String E_REACH_USERNAME_PREFIX = "e-Reach-";
 	public static final String SHA_256_ALGORITHM = "SHA-256";
+	public static final String USER_NOT_FOUND = "patient with pin %s does not exist";
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
 	public static final String TEXT_MESSAGE = "text message";
 	public static final String MAIL = "mail";
