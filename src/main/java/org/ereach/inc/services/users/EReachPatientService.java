@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.CreatePersonalInfoRequest;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
+import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.PersonalInfoResponse;
 import org.ereach.inc.data.models.PersonalInfo;
 import org.ereach.inc.data.models.hospital.Record;
@@ -14,6 +15,7 @@ import org.ereach.inc.data.repositories.EReachPersonalInfoRepository;
 import org.ereach.inc.data.repositories.hospital.EReachRecordRepository;
 import org.ereach.inc.data.repositories.users.EReachPatientsRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.PersonalInfoService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
@@ -26,8 +28,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.ereach.inc.utilities.Constants.PATIENT_ACCOUNT_CREATED_SUCCESSFULLY;
+import static org.ereach.inc.utilities.Constants.USER_NOT_FOUND;
 import static org.ereach.inc.utilities.PatientIdentificationNumberGenerator.generateUniquePIN;
 import static org.ereach.inc.utilities.UsernameGenerator.generateUniqueUsername;
 
@@ -60,10 +65,11 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
             patient.setRecord(patientRecord());
             patient.setPersonalInfo(savedPersonalInfo);
             patient.setEReachUsername(generateUniqueUsername(fullName(request), patient.getPatientIdentificationNumber()));
+            Patient savedPatient = patientsRepository.save(patient);
+            response = modelMapper.map(savedPatient, CreatePatientResponse.class);
+            response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             testPIN = patient.getPatientIdentificationNumber();
             testUsername = patient.getPatientIdentificationNumber();
-            response = modelMapper.map(patient, CreatePatientResponse.class);
-            response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
                     patient.getEmail(), fullName(request), "hospitalName");
             patientsRepository.save(patient);
@@ -73,6 +79,18 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
             throw new EReachBaseException(baseException);
         }
         return response;
+    }
+
+    @Override
+    public GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber) {
+        Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
+        AtomicReference<GetPatientResponse> response = new AtomicReference<>();
+        foundPatient.ifPresentOrElse(patient-> response.set(modelMapper.map(patient, GetPatientResponse.class)),
+                                               ()-> {
+                                                    String format = String.format(USER_NOT_FOUND, patientIdentificationNumber);
+                                                    throw new EReachUncheckedBaseException(format);
+                                               });
+        return response.get();
     }
 
     public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
@@ -85,7 +103,7 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
         mailService.sendPatientInfo(request, hospitalName);
     }
 
-    private Record patientRecord() {
+    private @NotNull Record patientRecord() {
         Record patientRecord = Record.builder()
                 .dateCreated(LocalDate.now())
                 .lastTimeUpdated(LocalTime.now())
