@@ -38,7 +38,7 @@ public class EreachAppointmentService implements AppointmentService{
               .orElseThrow( () -> new FieldInvalidException(INVALID_PATIENT_IDENTIFICATION_NUMBER));
      String patientEmail = foundPatient.getEmail();
 
-      Hospital foundHospital = hospitalRepository.findByEmail(appointmentRequest.getHospitalEmail())
+      Hospital foundHospital = hospitalRepository.findByHospitalEmail(appointmentRequest.getHospitalEmail())
               .orElseThrow(()-> new FieldInvalidException(INVALID_HOSPITAL_EMAIL) );
 
       modelMapper.map(foundHospital, mappedAppointment);

@@ -29,9 +29,15 @@ public class PatientServiceTest {
                 .lastName("Doe")
                 .phoneNumber("08033456789")
                 .email("rich@gmail.com")
+                .nin("12345")
+                .streetName("Yaba")
+                .houseNumber("23")
+                .state("Lagos")
+                .country("Nigeria")
                 .build();
         CreatePatientResponse createPatientResponse = patientService.createPatient(createPatientRequest);
-        assertThat(createPatientResponse.getMessage()).isEqualTo("Patient created successfully");
+        assertThat(createPatientResponse.getMessage()).isEqualTo("Patient " + createPatientRequest.getFirstName()
+                + " " + createPatientRequest.getLastName() + " " + "Account Created Successfully");
 
     }
 

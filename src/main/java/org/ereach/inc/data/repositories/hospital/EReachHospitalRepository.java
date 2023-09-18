@@ -5,9 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
+
 public interface EReachHospitalRepository extends JpaRepository<Hospital, String> {
 
-    Optional<Hospital> findByEmail(String email);
+    Optional<Hospital> findByHospitalEmail(String email);
 
 
 }

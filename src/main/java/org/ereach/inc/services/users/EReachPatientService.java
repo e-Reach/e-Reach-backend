@@ -12,6 +12,7 @@ import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.Patient;
 import org.ereach.inc.data.repositories.EReachPersonalInfoRepository;
 import org.ereach.inc.data.repositories.hospital.EReachRecordRepository;
+import org.ereach.inc.data.repositories.users.EReachPatientsRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.PersonalInfoService;
@@ -42,6 +43,7 @@ public class EReachPatientService implements PatientService{
     private EmailValidator validator;
     private PersonalInfoService personalInfoService;
     private MailService mailService;
+    private EReachPatientsRepository patientsRepository;
     @Getter
     private static String testPIN;
     @Getter
@@ -51,9 +53,7 @@ public class EReachPatientService implements PatientService{
 public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
-            System.out.println("hello world 1");
             validator.validateEmail(request.getEmail());
-            System.out.println("hello world 2");
             PersonalInfo savedPersonalInfo = createPersonalInfo(request);
             Patient patient = modelMapper.map(request, Patient.class);
             patient.setPatientIdentificationNumber(generateUniquePIN(fullName(request), request.getPhoneNumber()));
@@ -66,6 +66,8 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
             response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
                     patient.getEmail(), fullName(request), "hospitalName");
+            patientsRepository.save(patient);
+
         } catch (Throwable baseException) {
            log.error(baseException.getMessage(), baseException);
             throw new EReachBaseException(baseException);
@@ -102,6 +104,6 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
 
 
     private String fullName(CreatePatientRequest request) {
-        return request.getFirstName() + request.getLastName();
+        return request.getFirstName()  + " " + request.getLastName();
     }
 }
