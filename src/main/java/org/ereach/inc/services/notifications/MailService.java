@@ -6,5 +6,6 @@ import org.springframework.http.ResponseEntity;
 public interface MailService {
 	
 	ResponseEntity<EReachNotificationResponse> sendAccountActivationMail(EReachNotificationRequest notificationRequest) throws RequestInvalidException, RequestInvalidException;
-	
+
+    ResponseEntity<EReachNotificationResponse> sendPatientInfo(EReachNotificationRequest request, String hospitalName) throws RequestInvalidException;
 }

@@ -10,9 +10,9 @@ import static java.math.BigInteger.ZERO;
 import static org.ereach.inc.utilities.Constants.*;
 
 public class UsernameGenerator {
-	private final Set<String> usedUsernames = new HashSet<>();
+	private static final Set<String> usedUsernames = new HashSet<>();
 	
-	public String generateUniqueUsername(String patientFullName, String patientIdentificationNumber) {
+	public static String generateUniqueUsername(String patientFullName, String patientIdentificationNumber) {
 		while (true) {
 			String randomComponent = generateRandomComponent(patientFullName, patientIdentificationNumber);
 			String uniquePart = hashUserInfo(patientFullName, randomComponent);
@@ -24,7 +24,7 @@ public class UsernameGenerator {
 		}
 	}
 	
-	private String generateRandomComponent(String patientFullName, String patientIdentificationNumber) {
+	private static String generateRandomComponent(String patientFullName, String patientIdentificationNumber) {
 		SecureRandom random = new SecureRandom();
 		String component = patientFullName + patientIdentificationNumber;
 		int componentLength = component.length();
@@ -35,7 +35,7 @@ public class UsernameGenerator {
 		return randomComponent.toString();
 	}
 	
-	private String hashUserInfo(String userInfo, String randomComponent) {
+	private static String hashUserInfo(String userInfo, String randomComponent) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
 			byte[] hash = digest.digest((userInfo + randomComponent).getBytes());
@@ -45,7 +45,7 @@ public class UsernameGenerator {
 		}
 	}
 	
-	private String bytesToHex(byte[] bytes) {
+	private static String bytesToHex(byte[] bytes) {
 		StringBuilder hexString = new StringBuilder();
 		for (byte eachByte : bytes) {
 			String hex = Integer.toHexString(0xFF & eachByte);

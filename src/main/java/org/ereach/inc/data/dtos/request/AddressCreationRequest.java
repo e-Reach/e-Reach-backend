@@ -9,7 +9,8 @@ import lombok.*;
 @ToString
 public class AddressCreationRequest {
 	private String houseNumber;
-	private String street;
+	private String streetName;
+	private String streetNumber;
 	private String state;
 	private String country;
 }

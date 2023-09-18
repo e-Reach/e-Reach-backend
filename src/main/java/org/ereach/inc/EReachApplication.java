@@ -1,5 +1,6 @@
 package org.ereach.inc;
 
+import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

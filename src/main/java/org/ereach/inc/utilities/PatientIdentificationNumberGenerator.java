@@ -10,9 +10,9 @@ import static java.math.BigInteger.ZERO;
 import static org.ereach.inc.utilities.Constants.*;
 
 public class PatientIdentificationNumberGenerator {
-	private final Set<String> usedPINs = new HashSet<>();
+	private static final Set<String> usedPINs = new HashSet<>();
 	
-	public String generateUniquePIN(String patientFullName, String patientPhoneNumber) {
+	public static String generateUniquePIN(String patientFullName, String patientPhoneNumber) {
 		while (true) {
 			String randomPIN = generateRandomPIN(patientFullName, patientPhoneNumber);
 			String uniquePart = hashPatientInfo(patientFullName, randomPIN);
@@ -25,7 +25,7 @@ public class PatientIdentificationNumberGenerator {
 		}
 	}
 	
-	private String mapToLetter(String uniquePart) {
+	private static String mapToLetter(String uniquePart) {
 		StringBuilder mappedPart = new StringBuilder();
 		for (int index = 0; index < uniquePart.length(); index++) {
 			int numericValue = Character.getNumericValue(uniquePart.charAt(index));
@@ -35,7 +35,7 @@ public class PatientIdentificationNumberGenerator {
 		return mappedPart.toString().toUpperCase();
 	}
 	
-	private String generateRandomPIN(String patientFullName, String phoneNumber) {
+	private static String generateRandomPIN(String patientFullName, String phoneNumber) {
 		SecureRandom random = new SecureRandom();
 		String phoneNumberSubString = phoneNumber.substring(3, 9);
 		String component = patientFullName + phoneNumber;
@@ -46,7 +46,7 @@ public class PatientIdentificationNumberGenerator {
 		return randomPIN + phoneNumberSubString;
 	}
 	
-	private String hashPatientInfo(String patientInfo, String randomPIN) {
+	private static String hashPatientInfo(String patientInfo, String randomPIN) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
 			byte[] hash = digest.digest((patientInfo + randomPIN).getBytes());
@@ -56,7 +56,7 @@ public class PatientIdentificationNumberGenerator {
 		}
 	}
 	
-	private String bytesToHex(byte[] bytes) {
+	private static String bytesToHex(byte[] bytes) {
 		StringBuilder hexString = new StringBuilder();
 		for (byte b : bytes) {
 			String hex = Integer.toHexString(0xFF & b);
@@ -66,13 +66,5 @@ public class PatientIdentificationNumberGenerator {
 			hexString.append(hex);
 		}
 		return hexString.toString();
-	}
-	
-	public static void main(String[] args) {
-		PatientIdentificationNumberGenerator generator = new PatientIdentificationNumberGenerator();
-		String patientInfo = "Patient12345";
-		
-		String uniquePIN = generator.generateUniquePIN(patientInfo, "07036174617");
-		System.out.println("Unique PIN: " + uniquePIN);
 	}
 }

@@ -6,7 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 
-
-public class CreatePatientResponse {
+public class CreateRecordResponse {
     private String message;
 }

@@ -1,14 +1,13 @@
 package org.ereach.inc.data.models.hospital;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import org.ereach.inc.data.models.entries.MedicalLog;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -26,6 +25,21 @@ public class Record {
     private String id;
     @OneToMany
     private List<MedicalLog> medicalLogs;
+    @ManyToOne
+    private Hospital centreCreated;
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
+
+    public void recordCreationDate(){
+        LocalDateTime currentDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        dateCreated = LocalDate.parse(currentDate.format(formatter));
+    }
+
+    public void lastTimeRecordUpdated(){
+        LocalDateTime currentDate = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        dateCreated = LocalDate.parse(currentDate.format(formatter));
+    }
+
 }
