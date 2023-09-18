@@ -10,7 +10,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreatePatientRequest {
-
     @NotEmpty
     @NonNull
     private String firstName;
