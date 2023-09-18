@@ -51,9 +51,7 @@ public class EReachPatientService implements PatientService{
     public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
-            System.out.println("hello world 1");
             validator.validateEmail(request.getEmail());
-            System.out.println("hello world 2");
             PersonalInfo savedPersonalInfo = createPersonalInfo(request);
             Patient patient = modelMapper.map(request, Patient.class);
             patient.setPatientIdentificationNumber(generateUniquePIN(fullName(request), request.getPhoneNumber()));
@@ -83,7 +81,7 @@ public class EReachPatientService implements PatientService{
         mailService.sendPatientInfo(request, hospitalName);
     }
 
-    private Record patientRecord() {
+    private @NotNull Record patientRecord() {
         Record patientRecord = Record.builder()
                 .dateCreated(LocalDate.now())
                 .lastTimeUpdated(LocalTime.now())

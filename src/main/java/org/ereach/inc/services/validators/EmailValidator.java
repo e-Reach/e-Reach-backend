@@ -1,6 +1,7 @@
 package org.ereach.inc.services.validators;
+
 import lombok.Getter;
-import org.ereach.inc.exceptions.RequestInvalidException;
+import org.ereach.inc.exceptions.FieldInvalidException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +22,10 @@ public class EmailValidator {
 	private final String regExp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	
 
-	public void validateEmail(String email) throws RequestInvalidException {
+	public void validateEmail(String email) throws FieldInvalidException {
 		if (!isValidDomain(email) || !emailMatchesPattern(email)) {
 			String format = String.format(CONSTRAINT_VIOLATION_MESSAGE, Arrays.toString(domains));
-			throw new RequestInvalidException(format);
+			throw new FieldInvalidException(format);
 		}
 	}
 

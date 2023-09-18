@@ -38,6 +38,7 @@ public class Patient {
     @NotEmpty
     @NonNull
     @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    @Column(unique = true)
     private String email;
     @NotBlank
     @NonNull
@@ -48,6 +49,7 @@ public class Patient {
     private Role role;
     @OneToOne
     private PersonalInfo personalInfo;
+    @Column(unique = true)
     private String eReachUsername;
 
 }
