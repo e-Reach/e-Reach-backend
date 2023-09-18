@@ -3,6 +3,7 @@ package org.ereach.inc.services.notifications;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.config.EReachConfig;
+import org.ereach.inc.data.models.hospital.Appointments;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
@@ -95,5 +96,30 @@ public class EReachMailer implements MailService{
 		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
 		return response;
 	}
+	@Override
+	public ResponseEntity<EReachNotificationResponse> requestPatientAppointment(Appointments appointment) throws RequestInvalidException {
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(API_KEY, eReachConfig.getMailApiKey());
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-}
+		Resource foundTemplateResource = resourceLoader.getResource(PATIENT_APPOINTMENT_MAIL_PATH);
+		String templateContent = loadTemplateContent(foundTemplateResource);
+
+		String hospitalName = appointment.getHospitalName();
+		String patientIdentificationNumber = appointment.getPatientIdentificationNumber();
+
+		String formattedContent = String.format(templateContent, hospitalName, LocalDate.now(), patientIdentificationNumber);
+		HospitalEmailRecipient recipient = modelMapper.map(appointment, HospitalEmailRecipient.class);
+
+		HttpEntity<Appointments> requestEntity = new HttpEntity<>(appointment, headers);
+		ResponseEntity<EReachNotificationResponse> response = restTemplate.postForEntity(
+				BREVO_SEND_EMAIL_API_URL,
+				requestEntity, EReachNotificationResponse.class
+		);
+		if (response.getStatusCode().is2xxSuccessful())
+			log.info("{} response body:: {}", MESSAGE_SUCCESSFULLY_SENT, Objects.requireNonNull(response.getBody()));
+		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
+		return response;
+	}
+
+	}

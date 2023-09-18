@@ -27,7 +27,7 @@ public class Hospital {
     private String hospitalName;
     @OneToOne
     private Address address;
-    private String email;
+    private String hospitalEmail;
     private String phoneNumber;
     private Role role;
     @OneToMany

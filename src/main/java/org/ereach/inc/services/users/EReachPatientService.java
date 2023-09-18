@@ -48,7 +48,7 @@ public class EReachPatientService implements PatientService{
     private static String testUsername;
 
     @Override
-    public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
+public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
             System.out.println("hello world 1");
