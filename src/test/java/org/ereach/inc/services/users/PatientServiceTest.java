@@ -1,4 +1,4 @@
-package org.ereach.inc.services;
+package org.ereach.inc.services.users;
 
 import lombok.SneakyThrows;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
