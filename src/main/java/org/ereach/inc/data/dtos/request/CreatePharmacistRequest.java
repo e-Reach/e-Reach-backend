@@ -9,6 +9,10 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreatePractitionerRequest {
-    
+public class CreatePharmacistRequest {
+
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
 }
