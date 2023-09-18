@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
+import org.ereach.inc.config.EReachConfig;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -15,17 +16,19 @@ import static org.ereach.inc.utilities.Constants.*;
 
 public class JWTUtil {
 	
-	public static String generateAccountActivationToken(String email, String password, String phoneNumber){
+	private static final EReachConfig config = new EReachConfig();
+	
+	public static String generateToken(String email, String role, String phoneNumber){
 		JWTCreator.Builder tokenCreator;
 		if (email != null)
-		    tokenCreator = buildTokenForEmails(email, password);
-		else tokenCreator = buildTokenForTextMessages(phoneNumber, password);
-		return tokenCreator.sign(Algorithm.HMAC512(password));
+		    tokenCreator = buildTokenForEmails(email, role);
+		else tokenCreator = buildTokenForTextMessages(phoneNumber, role);
+		return tokenCreator.sign(Algorithm.HMAC512(role));
 	}
 	
-	private static JWTCreator.Builder buildTokenForTextMessages(String phoneNumber, String password) {
+	private static JWTCreator.Builder buildTokenForTextMessages(String phoneNumber, String role) {
 		Map<String, String> claims = new HashMap<>();
-		claims.put(USER_PASSWORD, password);
+		claims.put(USER_ROLE, role);
 		claims.put(USER_PHONE_NUMBER, phoneNumber);
 		return JWT.create()
 				  .withClaim(CLAIMS, claims)
@@ -34,9 +37,9 @@ public class JWTUtil {
 				  .withIssuedAt(Instant.now());
 	}
 	
-	private static JWTCreator.Builder buildTokenForEmails(String email, String password) {
+	private static JWTCreator.Builder buildTokenForEmails(String email, String role) {
 		Map<String, String> claims = new HashMap<>();
-		claims.put(USER_PASSWORD, password);
+		claims.put(USER_ROLE, role);
 		claims.put(USER_MAIL, email);
 		return JWT.create()
 				  .withClaim(CLAIMS,claims)
@@ -45,16 +48,16 @@ public class JWTUtil {
 				  .withIssuedAt(Instant.now());
 	}
 	
-	public static boolean isValidToken(String token, String notificationMedium, String secret) {
+	public static boolean isValidToken(String token, String notificationMedium) {
 		if (Objects.equals(notificationMedium, MAIL)) {
-			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(secret))
+			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
 					                  .withIssuer(LIBRARY_ISSUER_NAME)
 					                  .withClaimPresence(CLAIMS)
 					                  .build();
 			return verifier.verify(token)!=null;
 		}
 		if (Objects.equals(notificationMedium, TEXT_MESSAGE)) {
-			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(secret))
+			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
 					                       .withIssuer(LIBRARY_ISSUER_NAME)
 					                       .withClaimPresence(CLAIMS)
 					                       .build();
@@ -64,7 +67,7 @@ public class JWTUtil {
 	}
 	
 	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
-		String GENERATED_TOKEN =  generateAccountActivationToken(email, password, phoneNumber);
+		String GENERATED_TOKEN =  generateToken(email, password, phoneNumber);
 		return new StringBuilder().append(BASE_URL).append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
 	}
 	
@@ -80,6 +83,6 @@ public class JWTUtil {
 	
 	public static String extractPasswordFromToken(String token){
 		Claim claim = JWT.decode(token).getClaim(CLAIMS);
-		return claim.asMap().get(USER_PASSWORD).toString();
+		return claim.asMap().get(USER_ROLE).toString();
 	}
 }

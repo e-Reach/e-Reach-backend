@@ -10,7 +10,7 @@ public class Constants {
 	public static final String BASE_URL = "https://localhost/3000/library_management/activate-account";
 	public static final String QUERY_STRING_PREFIX = "?";
 	public static final String QUERY_STRING_TOKEN = "token=";
-	public static final String USER_PASSWORD = "user password";
+	public static final String USER_ROLE = "user password";
 	public static final String USER_PHONE_NUMBER = "user phone number";
 	public static final String CLAIMS = "claims";
 	public static final String LIBRARY_ISSUER_NAME = "e-Reach Incorporation";
