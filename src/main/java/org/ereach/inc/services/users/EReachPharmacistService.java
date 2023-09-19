@@ -8,6 +8,7 @@ import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
+import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,8 @@ import org.springframework.stereotype.Service;
 public class EReachPharmacistService implements PharmacistService{
 	private EReachPractitionerRepository practitionerRepository;
 	@Override
-	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest) {
+	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest){
+
 		return null;
 	}
 	

@@ -32,4 +32,8 @@ public class RecordServiceTest {
         CreateRecordResponse createRecordResponse = recordService.createRecord(createRecordRequest);
         assertThat(createRecordResponse.getMessage()).isEqualTo("Record created successfully");
     }
+
+    @Test void testThatNewLogCanBeAddedToRecord(){
+
+    }
 }
