@@ -31,4 +31,6 @@ public class Constants {
 	public static final String MESSAGE_SUBJECT = "Support At e-Reach inc";
 	public static final String TEMPLATE_LOAD_FAILED = "Error loading template content Template failed to load:: ";
 	public static final String PATIENT_ACCOUNT_CREATED_SUCCESSFULLY = "Patient %s Account Created Successfully";
+	public static final String DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY = "Doctor %s Account Created Successfully";
+	public static final String DOCTOR_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
 }
