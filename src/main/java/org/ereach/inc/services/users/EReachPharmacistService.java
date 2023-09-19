@@ -12,6 +12,7 @@ import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
 import org.ereach.inc.data.models.hospital.Medication;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
+import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.stereotype.Service;
@@ -28,11 +29,22 @@ public class EReachPharmacistService implements PharmacistService{
 	@Override
 	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest){
 		if(practitionerRepository.existsByEmail(practitionerRequest.getEmail())) throw new RegistrationFailedException("Email already exists");
+		validatePhoneNumber(practitionerRequest.getPhoneNumber());
+		validateName(practitionerRequest.getFirstName());
+		validateName(practitionerRequest.getLastName());
 		Practitioner builtPractitioner = mapFromRequestToPharmacist(practitionerRequest);
 		practitionerRepository.save(builtPractitioner);
 		return new PractitionerResponse("\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created");
 	}
-	
+	private void validatePhoneNumber(String phoneNumber){
+	if (phoneNumber.length() != 11) throw new FieldInvalidException("Incomplete details provided");
+	for (int i = 0; i < phoneNumber.length(); i++) {
+		if (Character.isAlphabetic(phoneNumber.charAt(i))) throw new FieldInvalidException("Phonenumber must not contain alphabet");
+		}
+	}
+	private void validateName(String name){
+		if (name.contains(" ")) throw new FieldInvalidException("Incomplete details provided");
+	}
 	@Override
 	public AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest) {
 		medicationService.createMedication(addMedicationRequest);

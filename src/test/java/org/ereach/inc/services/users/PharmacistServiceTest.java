@@ -82,12 +82,13 @@ class PharmacistServiceTest {
 	}
 	
 	@Test void createPharmacistsWithIncompleteDetails_ExceptionIsThrown(){
-		FieldInvalidException exception = assertThrows(FieldInvalidException.class, () -> {
+		Exception exception = assertThrows(FieldInvalidException.class, () -> {
 			CreatePractitionerRequest incompleteDetails = new CreatePractitionerRequest();
-			incompleteDetails.setPhoneNumber("909346877");
-			incompleteDetails.setEmail("desyfaaav54@");
+			incompleteDetails.setPhoneNumber("90934687");
+			incompleteDetails.setEmail("good@");
 			incompleteDetails.setFirstName("fav d ooo");
 			incompleteDetails.setLastName("chi  emela");
+			pharmacistService.createPharmacist(incompleteDetails);
 		});
 		assertEquals("Incomplete details provided", exception.getMessage());
 	}
