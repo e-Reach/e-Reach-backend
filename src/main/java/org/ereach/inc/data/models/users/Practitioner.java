@@ -22,14 +22,13 @@ public class Practitioner {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
+    @Column(nullable = false)
     private String firstName;
+    @Column(nullable = false)
     private String lastName;
     @Column(unique = true)
     @NaturalId(mutable = true)
     private String email;
     @Column(unique = true)
     private String phoneNumber;
-    @Enumerated(STRING)
-    private Role role;
-
 }

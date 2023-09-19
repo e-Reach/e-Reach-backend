@@ -29,7 +29,6 @@ public class Hospital {
     private Address address;
     private String email;
     private String phoneNumber;
-    private Role role;
     @OneToMany
     private List<Practitioner> practitioners;
     @OneToMany
