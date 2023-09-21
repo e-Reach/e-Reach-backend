@@ -1,6 +1,6 @@
 package org.ereach.inc.data.dtos.response;
 
-public class CreateHospitalResponse {
+public class HospitalResponse {
 	
 	private String message;
 }

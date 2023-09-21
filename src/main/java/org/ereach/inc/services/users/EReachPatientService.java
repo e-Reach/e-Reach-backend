@@ -31,8 +31,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.ereach.inc.utilities.Constants.PATIENT_ACCOUNT_CREATED_SUCCESSFULLY;
-import static org.ereach.inc.utilities.Constants.USER_NOT_FOUND;
+import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.PatientIdentificationNumberGenerator.generateUniquePIN;
 import static org.ereach.inc.utilities.UsernameGenerator.generateUniqueUsername;
 
@@ -86,13 +85,25 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
         Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
         AtomicReference<GetPatientResponse> response = new AtomicReference<>();
         foundPatient.ifPresentOrElse(patient-> response.set(modelMapper.map(patient, GetPatientResponse.class)),
-                                               ()-> {
-                                                    String format = String.format(USER_NOT_FOUND, patientIdentificationNumber);
-                                                    throw new EReachUncheckedBaseException(format);
-                                               });
+                                                       ()-> {
+                                                            String format = String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber);
+                                                            throw new EReachUncheckedBaseException(format);
+                                                       });
         return response.get();
     }
-
+    
+    @Override
+    public GetPatientResponse findById(String id) {
+        Optional<Patient> foundPatient = patientsRepository.findById(id);
+        AtomicReference<GetPatientResponse> response = new AtomicReference<>();
+        foundPatient.ifPresentOrElse(patient -> response.set(modelMapper.map(patient, GetPatientResponse.class)),
+                                                        ()-> {
+                                                            String format = String.format(PATIENT_WITH_ID_DOES_NOT_EXIST, id);
+                                                            throw new EReachUncheckedBaseException(format);
+                                                        });
+        return response.get();
+    }
+    
     public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
                 .fullName(fullName)

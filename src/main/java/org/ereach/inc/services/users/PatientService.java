@@ -11,4 +11,5 @@ public interface PatientService  {
     CreatePatientResponse createPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException;
 
     GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber);
+    GetPatientResponse findById(String id);
 }

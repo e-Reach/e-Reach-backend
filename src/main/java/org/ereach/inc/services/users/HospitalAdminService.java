@@ -3,7 +3,7 @@ package org.ereach.inc.services.users;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
-import org.ereach.inc.data.dtos.response.CreateHospitalResponse;
+import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.PractitionerResponse;
@@ -14,12 +14,13 @@ import java.util.List;
 
 public interface HospitalAdminService {
 	
-	CreateHospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
+	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
 	PractitionerResponse invitePractitioner(CreatePractitionerRequest practitionerRequest);
-	CreateHospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
+	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
 	PractitionerResponse removePractitioner(/**/);
 	CreatePatientResponse removePatient(String patientId, String hospitalHefamaaId);
 	List<PractitionerResponse> viewAllPractitioners(String hospitalHefamaaId);
 	List<GetRecordResponse> viewAllRecordsCreatedByHospital(String hefamaaId);
 	void importPatientDetails();
+	HospitalResponse getHospitalRegisteredWith(String officerIdentificationNumber);
 }

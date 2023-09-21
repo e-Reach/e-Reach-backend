@@ -2,7 +2,7 @@ package org.ereach.inc.services.users;
 
 import lombok.SneakyThrows;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
-import org.ereach.inc.data.dtos.response.CreateHospitalResponse;
+import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +17,7 @@ class HospitalAdminServiceTest {
 	
 	@Autowired
 	private HospitalAdminService hospitalAdminService;
-	private CreateHospitalResponse response;
+	private HospitalResponse response;
 	@BeforeEach
 	@SneakyThrows
 	void startEachTest() {
