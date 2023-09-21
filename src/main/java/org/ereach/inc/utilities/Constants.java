@@ -7,7 +7,7 @@ public class Constants {
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
 	public static final String TEXT_MESSAGE = "text message";
 	public static final String MAIL = "mail";
-	public static final String BASE_URL = "https://localhost/3000/library_management/activate-account";
+	public static final String FRONTEND_BASE_URL = "https://localhost/3000/";
 	public static final String QUERY_STRING_PREFIX = "?";
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
@@ -16,6 +16,7 @@ public class Constants {
 	public static final String LIBRARY_ISSUER_NAME = "e-Reach Incorporation";
 	public static final String USER_MAIL = "user mail";
 	public static final String ACTIVATION_MAIL_PATH = "classpath:/templates/account_activation_mail_template.html";
+	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
 	public static final String PATIENT_ID_MAIL_PATH = "classpath:/templates/patient_id_template.html";
 	public static final String CONSTRAINT_VIOLATION_MESSAGE = "Invalid Domain:: valid domain includes %s";
 	public static final String SENDER_FULL_NAME = "e-Reach inc";

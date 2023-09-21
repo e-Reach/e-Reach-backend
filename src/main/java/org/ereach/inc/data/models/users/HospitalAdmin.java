@@ -22,5 +22,10 @@ public class HospitalAdmin {
     private Role role;
     private String email;
     private String phoneNumber;
+    private String streetName;
+    private String streetNumber;
+    private String houseNumber;
+    private String state;
+    private String country;
 
 }

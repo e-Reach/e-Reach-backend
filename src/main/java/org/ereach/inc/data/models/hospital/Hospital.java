@@ -6,6 +6,7 @@ import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
+import org.hibernate.annotations.NaturalId;
 
 import java.util.List;
 import java.util.Set;
@@ -23,12 +24,17 @@ public class Hospital {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    private String HEFAMAA_ID;
-    private String hospitalName;
     @OneToOne
     private Address address;
-    private String email;
-    private String phoneNumber;
+    @Column(unique = true)
+    @NaturalId
+    private String HEFAMAA_ID;
+    private String hospitalName;
+    @Column(unique = true)
+    @NaturalId
+    private String hospitalEmail;
+    @Column(unique = true)
+    private String hospitalPhoneNumber;
     private Role role;
     @OneToMany
     private List<Practitioner> practitioners;

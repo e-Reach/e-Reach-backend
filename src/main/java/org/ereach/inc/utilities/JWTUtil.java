@@ -68,7 +68,7 @@ public class JWTUtil {
 	
 	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
 		String GENERATED_TOKEN =  generateToken(email, password, phoneNumber);
-		return new StringBuilder().append(BASE_URL).append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
+		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
 	}
 	
 	public static String extractEmailFrom(String token) {
