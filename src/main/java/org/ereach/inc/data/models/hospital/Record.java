@@ -29,6 +29,7 @@ public class Record {
     private Hospital centreCreated;
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
+    private String patientIdentificationNumber;
 
     public void recordCreationDate(){
         LocalDateTime currentDate = LocalDateTime.now();
@@ -40,6 +41,12 @@ public class Record {
         LocalDateTime currentDate = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
         dateCreated = LocalDate.parse(currentDate.format(formatter));
+    }
+
+    public void addNewLogToRecord(){
+        LocalDateTime currentDate = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        dateCreated = LocalDate.parse(currentDate.format(dateTimeFormatter));
     }
 
 }
