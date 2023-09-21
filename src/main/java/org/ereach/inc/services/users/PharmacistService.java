@@ -9,9 +9,8 @@ import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
 
 public interface PharmacistService {
-	
 	PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest);
 	AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest);
 	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);
 	UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest);
-}
+   }

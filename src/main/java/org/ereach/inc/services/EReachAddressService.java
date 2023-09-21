@@ -7,7 +7,6 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.ereach.inc.data.dtos.request.AddressCreationRequest;
 import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
 import org.ereach.inc.data.dtos.response.AddressResponse;
@@ -30,11 +29,11 @@ import static org.ereach.inc.utilities.AppUtil.*;
 
 @Service
 @AllArgsConstructor
+
 public class EReachAddressService implements AddressService{
 	private EReachAddressRepository addressRepository;
 	private ModelMapper mapper;
 	private ObjectMapper objectMapper;
-	@Getter
 	private static String testId;
 	@Override
 	public AddressResponse saveAddress(AddressCreationRequest addressCreationRequest) {
@@ -92,5 +91,9 @@ public class EReachAddressService implements AddressService{
 	@Override
 	public void deleteAll() {
 	
+	}
+
+	public static String getTestId(){
+		return testId;
 	}
 }

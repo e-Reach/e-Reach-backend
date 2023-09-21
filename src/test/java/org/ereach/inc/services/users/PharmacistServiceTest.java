@@ -14,7 +14,13 @@ class PharmacistServiceTest {
 	
 	@Autowired
 	private PharmacistService pharmacistService;
-	@BeforeEach void startEachTestWith() {
+	@BeforeEach
+	void startEachTestWith() {
+
+	}
+	@Test
+	void testThatPharmacistCanBeCreated(){
+
 	}
 	
 	@Test void createNewPharmacistTest(){

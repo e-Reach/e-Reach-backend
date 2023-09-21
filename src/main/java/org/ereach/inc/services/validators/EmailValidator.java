@@ -1,7 +1,7 @@
 package org.ereach.inc.services.validators;
+
 import lombok.Getter;
 import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RequestInvalidException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +20,7 @@ public class EmailValidator {
 			"semicolon.africa.com", "hotmail.co.uk", "freenet.de"
 	};
 	private final String regExp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+	
 
 	public void validateEmail(String email) throws FieldInvalidException {
 		if (!isValidDomain(email) || !emailMatchesPattern(email)) {

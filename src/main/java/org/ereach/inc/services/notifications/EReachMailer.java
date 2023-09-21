@@ -105,7 +105,7 @@ public class EReachMailer implements MailService{
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent,name, url(email, username));
+		String formattedContent = String.format(templateContent, name, url(email, username));
 		
 		Recipient recipient = new Recipient();
 		recipient.setEmail(email);
@@ -130,10 +130,9 @@ public class EReachMailer implements MailService{
 		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
 		return response;
 	}
-	
-	private String url(String email, String name) {
+	private String url(String email, String name){
 		String frontendComponentUrl = "";
 		return FRONTEND_BASE_URL + frontendComponentUrl + JWTUtil.generateToken(email, name, null);
 	}
 	
-}
+	}

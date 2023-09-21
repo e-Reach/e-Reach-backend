@@ -31,10 +31,11 @@ public class Hospital {
     private String HEFAMAA_ID;
     private String hospitalName;
     @Column(unique = true)
+    private String hospitalPhoneNumber;
+    @Column(unique = true)
     @NaturalId
     private String hospitalEmail;
-    @Column(unique = true)
-    private String hospitalPhoneNumber;
+    private String phoneNumber;
     private Role role;
     @OneToMany
     private List<Practitioner> practitioners;
