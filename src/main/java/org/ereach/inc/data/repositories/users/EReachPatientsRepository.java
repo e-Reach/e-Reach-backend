@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface EReachPatientsRepository extends JpaRepository<Patient, String> {
 
-    Optional<Patient> findByPatientIdentificationNumber(String s);
+    Optional<Patient> findByPatientIdentificationNumber(String patientIdentificationNumber);
+
+
 }

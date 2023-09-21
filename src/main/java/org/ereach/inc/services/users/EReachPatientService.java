@@ -55,7 +55,7 @@ public class EReachPatientService implements PatientService{
     private static String testUsername;
 
     @Override
-    public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
+public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
             validator.validateEmail(request.getEmail());
@@ -72,6 +72,8 @@ public class EReachPatientService implements PatientService{
             testUsername = patient.getPatientIdentificationNumber();
             sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
                     patient.getEmail(), fullName(request), "hospitalName");
+            patientsRepository.save(patient);
+
         } catch (Throwable baseException) {
            log.error(baseException.getMessage(), baseException);
             throw new EReachBaseException(baseException);
@@ -120,6 +122,6 @@ public class EReachPatientService implements PatientService{
 
 
     private String fullName(CreatePatientRequest request) {
-        return request.getFirstName() + request.getLastName();
+        return request.getFirstName()  + " " + request.getLastName();
     }
 }
