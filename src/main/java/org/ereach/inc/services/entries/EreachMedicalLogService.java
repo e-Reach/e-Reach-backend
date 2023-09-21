@@ -7,6 +7,7 @@ import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.repositories.entries.EReachMedicalLogRepository;
 import org.ereach.inc.data.repositories.users.EReachPatientsRepository;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.hospital.RecordService;
 import org.ereach.inc.services.users.PatientService;
 import org.modelmapper.ModelMapper;
@@ -23,13 +24,14 @@ public class EreachMedicalLogService implements MedicalLogService {
     private ModelMapper modelMapper;
     private RecordService recordService;
     @Override
-    public MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest) {
+    public MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest){
 //      TODO: Build a new medical log object
         MedicalLog medicalLog = buildMedicalLog(createLogRequest);
 //      TODO: Identify the patient you want to create a log for
         GetPatientResponse foundPatient = patientService.findByPatientIdentificationNumber(createLogRequest.getPatientIdentificationNumber());
 //      TODO: Add the log to the patient record
-        return recordService.addLogToRecord(foundPatient.getPatientIdentificationNumber(), medicalLog);
+        recordService.addLogToRecord(foundPatient.getPatientIdentificationNumber(), medicalLog);
+        return modelMapper.map(medicalLog, MedicalLogResponse.class);
     }
 
     private static MedicalLog buildMedicalLog(CreateMedicalLogRequest createLogRequest) {

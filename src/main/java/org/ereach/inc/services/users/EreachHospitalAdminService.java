@@ -36,7 +36,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	private InMemoryDatabase inMemoryDatabase;
 	
 	@Override
-	public CreateHospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
+	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
 		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
 		verifyHefamaaId(hospitalRequest.getHEFAMAA_ID());
 		AddressCreationRequest mappedAddress = modelMapper.map(hospitalRequest, AddressCreationRequest.class);
@@ -48,7 +48,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		Hospital temporarilySavedHospital = inMemoryDatabase.saveHospitalTemporarily(mappedHospital);
 		mailService.sendMail(temporarilySavedHospital.getHospitalEmail(), temporarilySavedHospital.getId(),
 				temporarilySavedHospital.getHospitalName(),HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH);
-		return modelMapper.map(temporarilySavedHospital, CreateHospitalResponse.class);
+		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
 	}
 	
 	private void verifyHefamaaId(String hefamaaId) {
@@ -61,7 +61,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public CreateHospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest) {
+	public HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest) {
 		return null;
 	}
 	
