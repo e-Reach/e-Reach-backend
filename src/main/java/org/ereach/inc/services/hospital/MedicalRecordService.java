@@ -26,28 +26,11 @@ public class MedicalRecordService implements RecordService {
 
     @Override
     public MedicalLog addNewLogToRecord(String patientIdentificationNumber, MedicalLog medicalLog) {
-    Record record = eReachRecordRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
-    List<MedicalLog> medicalLogList = record.getMedicalLogs();
-    medicalLogList.add(medicalLog);
-    eReachRecordRepository.save(record);
-    return medicalLog;
-//       EReachMedicalLogRepository eReachMedicalLogRepository = GetRecordResponse.
-
-//        Record record = new Record();
-//            record.addNewLogToRecord();
-
-//Record newRecord = Record.builder()
-//        .dateCreated(LocalDate.now())
-//        .centreCreated(Hospital.builder()
-//                .build())
-//        .build();
-//        return null;
+        Record record = eReachRecordRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
+        List<MedicalLog> medicalLogList = record.getMedicalLogs();
+        medicalLogList.add(medicalLog);
+        eReachRecordRepository.save(record);
+        return medicalLog;
     }
-
-//    @Override
-//    public CreateRecordResponse addNewlogToRecord(CreateRecordRequest createRecordRequest) {
-//
-//        return medicalLogRepository.save(addNewLogToRecord());
-//    }
 }
 
