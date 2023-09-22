@@ -3,6 +3,7 @@ package org.ereach.inc.services;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -15,6 +16,9 @@ public class InMemoryDatabase {
 	
 	public Hospital saveHospitalTemporarily(Hospital hospital){
 		hospital.setId(generateTemporaryId());
+		if(hospitals.stream().anyMatch(hospital1 -> Objects.equals(hospital1.getHospitalEmail(), hospital.getHospitalEmail()))){
+			throw new EReachUncheckedBaseException("Invalid Email: user already exists");
+		}
 		hospitals.add(hospital);
 		System.out.println(hospital);
 		return hospital;
@@ -27,9 +31,9 @@ public class InMemoryDatabase {
 			else return generateTemporaryId();
 	}
 	
-	public Hospital getTemporarilySavedHospital(String hospitalId){
+	public Hospital getTemporarilySavedHospital(String email){
 		return hospitals.stream()
-				        .filter(hospital -> Objects.equals(hospital.getId(), hospitalId))
+				        .filter(hospital -> Objects.equals(hospital.getHospitalEmail(), email))
 				        .findFirst()
 				        .orElse(null);
 	}

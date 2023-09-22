@@ -12,8 +12,7 @@ import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
-import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RequestInvalidException;
+import org.ereach.inc.exceptions.*;
 import org.ereach.inc.services.AddressService;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.notifications.MailService;
@@ -24,11 +23,10 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.ereach.inc.utilities.Constants.*;
+import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
 @Service
 @AllArgsConstructor
@@ -73,19 +71,22 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	public HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException {
-		System.out.println("secret is: "+config.getAppJWTSecret());
 		if (Objects.equals(token, config.getTestToken()))
 			return activateTestAccount();
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
 			return activateAccount(token);
-			
 		}
-		throw new RequestInvalidException("Request failed");
+		throw new RequestInvalidException("Request failed: i no even know wetin to write");
 	}
 	
-	private HospitalResponse activateAccount(String token) {
-		
-		return null;
+	private HospitalResponse activateAccount(String token){
+		String email = extractEmailFrom(token);
+		Hospital hospital = inMemoryDatabase.getTemporarilySavedHospital(email);
+		Set<HospitalAdmin> admins = hospital.getAdmins();
+		List<HospitalAdmin> savedAdmins = hospitalAdminRepository.saveAll(admins);
+		hospital.getAdmins().addAll(savedAdmins);
+		Hospital savedHospital = hospitalRepository.save(hospital);
+		return modelMapper.map(hospital, HospitalResponse.class);
 	}
 	
 	private HospitalResponse activateTestAccount() {
@@ -106,7 +107,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public PractitionerResponse removePractitioner() {
+	public PractitionerResponse removePractitioner(String email) {
 		return null;
 	}
 	
