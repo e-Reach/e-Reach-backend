@@ -4,9 +4,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
 
@@ -19,12 +17,10 @@ import static jakarta.persistence.GenerationType.UUID;
 @Setter
 @Getter
 @Builder
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateRecordRequest {
-
-    private String id;
-    private List<MedicalLog> medicalLogs;
-    private Hospital centreCreated;
-    private LocalDate dateCreated;
-    private LocalTime lastTimeUpdated;
+    
+    private String officerIdentificationNumber;
+    private String patientIdentificationNumber;
 }

@@ -3,17 +3,26 @@ package org.ereach.inc.services.entries;
 import org.ereach.inc.data.dtos.request.CreateMedicalLogRequest;
 import org.ereach.inc.data.dtos.response.GetMedicalLogResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+<<<<<<< HEAD
 import org.ereach.inc.data.models.entries.MedicalLog;
 
 import java.util.List;
+=======
+import org.ereach.inc.exceptions.EReachBaseException;
+>>>>>>> 9dfab38415ecb2a9bd8323675d81a4035c86bffd
 
 public interface MedicalLogService {
 
-    MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest);
+    MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest) throws EReachBaseException;
     void deActivateAllActiveLogs();
+<<<<<<< HEAD
     List<GetMedicalLogResponse> getAllLogs();
     List<GetMedicalLogResponse> getPatientMedicalLogs(String patientIdentificationNumber);
 
 
 
+=======
+
+    void deActivateMedicalLogWhosePatientsAreNotDeactivate();
+>>>>>>> 9dfab38415ecb2a9bd8323675d81a4035c86bffd
 }

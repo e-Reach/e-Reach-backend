@@ -6,13 +6,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.CreatePersonalInfoRequest;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
+import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.PersonalInfoResponse;
 import org.ereach.inc.data.models.PersonalInfo;
 import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.Patient;
 import org.ereach.inc.data.repositories.EReachPersonalInfoRepository;
 import org.ereach.inc.data.repositories.hospital.EReachRecordRepository;
+import org.ereach.inc.data.repositories.users.EReachPatientsRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.PersonalInfoService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
@@ -25,8 +28,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
-import static org.ereach.inc.utilities.Constants.PATIENT_ACCOUNT_CREATED_SUCCESSFULLY;
+import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.PatientIdentificationNumberGenerator.generateUniquePIN;
 import static org.ereach.inc.utilities.UsernameGenerator.generateUniqueUsername;
 
@@ -42,13 +47,14 @@ public class EReachPatientService implements PatientService{
     private EmailValidator validator;
     private PersonalInfoService personalInfoService;
     private MailService mailService;
+    private EReachPatientsRepository patientsRepository;
     @Getter
     private static String testPIN;
     @Getter
     private static String testUsername;
 
     @Override
-    public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
+public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
             validator.validateEmail(request.getEmail());
@@ -58,12 +64,15 @@ public class EReachPatientService implements PatientService{
             patient.setRecord(patientRecord());
             patient.setPersonalInfo(savedPersonalInfo);
             patient.setEReachUsername(generateUniqueUsername(fullName(request), patient.getPatientIdentificationNumber()));
+            Patient savedPatient = patientsRepository.save(patient);
+            response = modelMapper.map(savedPatient, CreatePatientResponse.class);
+            response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             testPIN = patient.getPatientIdentificationNumber();
             testUsername = patient.getPatientIdentificationNumber();
-            response = modelMapper.map(patient, CreatePatientResponse.class);
-            response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
                     patient.getEmail(), fullName(request), "hospitalName");
+            patientsRepository.save(patient);
+
         } catch (Throwable baseException) {
            log.error(baseException.getMessage(), baseException);
             throw new EReachBaseException(baseException);
@@ -71,6 +80,30 @@ public class EReachPatientService implements PatientService{
         return response;
     }
 
+    @Override
+    public GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber) {
+        Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
+        AtomicReference<GetPatientResponse> response = new AtomicReference<>();
+        foundPatient.ifPresentOrElse(patient-> response.set(modelMapper.map(patient, GetPatientResponse.class)),
+                                                       ()-> {
+                                                            String format = String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber);
+                                                            throw new EReachUncheckedBaseException(format);
+                                                       });
+        return response.get();
+    }
+    
+    @Override
+    public GetPatientResponse findById(String id) {
+        Optional<Patient> foundPatient = patientsRepository.findById(id);
+        AtomicReference<GetPatientResponse> response = new AtomicReference<>();
+        foundPatient.ifPresentOrElse(patient -> response.set(modelMapper.map(patient, GetPatientResponse.class)),
+                                                        ()-> {
+                                                            String format = String.format(PATIENT_WITH_ID_DOES_NOT_EXIST, id);
+                                                            throw new EReachUncheckedBaseException(format);
+                                                        });
+        return response.get();
+    }
+    
     public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
                 .fullName(fullName)
@@ -100,6 +133,6 @@ public class EReachPatientService implements PatientService{
 
 
     private String fullName(CreatePatientRequest request) {
-        return request.getFirstName() + request.getLastName();
+        return request.getFirstName()  + " " + request.getLastName();
     }
 }
