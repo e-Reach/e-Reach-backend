@@ -114,4 +114,12 @@ class PharmacistServiceTest {
 		pharmacistService.addMedication(medicationRequest2);
 		pharmacistService.addMedication(medicationRequest3);
 	}
+	
+	@Test void removePharmacistsByEmailAndPractitionerIdentificationNumber(){
+	
+	}
+	
+	@Test void testThatPharmacistsAreRemovedAccordingToTheHospitalTheyBelong(){
+	
+	}
 }

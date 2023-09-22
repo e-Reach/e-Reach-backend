@@ -9,13 +9,10 @@ import org.ereach.inc.data.models.DoctorStatus;
 import org.ereach.inc.data.models.users.Doctor;
 import org.ereach.inc.data.repositories.users.EReachDoctorsRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
-import org.ereach.inc.exceptions.RequestInvalidException;
-import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import static org.ereach.inc.utilities.Constants.DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY;
 import static org.ereach.inc.utilities.Constants.DOCTOR_REGISTRATION_AWAITING_CONFIRMATION;
 import static org.ereach.inc.utilities.DoctorIdentificationNumberGenerator.generateUniqueDIN;
 
@@ -48,6 +45,12 @@ public class EreachDoctorService implements DoctorService {
         }
         return createDoctorResponse;
     }
+    
+    @Override
+    public void removeDoctorByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
+    
+    }
+    
     private String fullName(CreateDoctorRequest createDoctorRequest) {
         return createDoctorRequest.getFirstName()  + " " + createDoctorRequest.getLastName();
     }

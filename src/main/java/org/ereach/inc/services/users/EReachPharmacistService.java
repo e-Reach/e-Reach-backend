@@ -60,9 +60,13 @@ public class EReachPharmacistService implements PharmacistService{
 	public UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
 		return null;
 	}
-
-
-
+	
+	@Override
+	public void removePharmacistByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
+	
+	}
+	
+	
 	private Practitioner mapFromRequestToPharmacist(CreatePractitionerRequest practitionerRequest){
 		return Practitioner.builder()
 				.email(practitionerRequest.getEmail())

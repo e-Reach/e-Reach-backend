@@ -14,4 +14,5 @@ public interface PharmacistService {
 	AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest);
 	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);
 	UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest);
+	void removePharmacistByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber);
    }
