@@ -17,7 +17,7 @@ public interface HospitalAdminService {
 	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
 	PractitionerResponse invitePractitioner(CreatePractitionerRequest practitionerRequest);
 	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
-	PractitionerResponse removePractitioner(/**/);
+	PractitionerResponse removePractitioner(String email);
 	CreatePatientResponse removePatient(String patientId, String hospitalHefamaaId);
 	List<PractitionerResponse> viewAllPractitioners(String hospitalHefamaaId);
 	List<GetRecordResponse> viewAllRecordsCreatedByHospital(String hefamaaId);
