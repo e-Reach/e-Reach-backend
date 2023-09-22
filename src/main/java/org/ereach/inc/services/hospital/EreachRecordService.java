@@ -2,17 +2,15 @@ package org.ereach.inc.services.hospital;
 
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.dtos.request.CreateRecordRequest;
-import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.dtos.response.CreateRecordResponse;
-import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
+import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.repositories.hospital.EReachRecordRepository;
-import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.services.users.HospitalAdminService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.ereach.inc.data.models.hospital.Record;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

@@ -17,6 +17,8 @@ public class Constants {
 	public static final String CLAIMS = "claims";
 	public static final String LIBRARY_ISSUER_NAME = "e-Reach Incorporation";
 	public static final String USER_MAIL = "user mail";
+	public static final String TEST_HOSPITAL_NAME = "test hospital name";
+	public static final String TEST_HOSPITAL_MAIL = "test hospital mail";
 	public static final String PATIENT_APPOINTMENT_MAIL_PATH = "C:\\Users\\PC\\IdeaProjects\\e-Reach-backend\\src\\main\\resources\\templates\\patient_appointment_mail_template.html";
 	public static final String ACTIVATION_MAIL_PATH = "classpath:/templates/account_activation_mail_template.html";
 	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";

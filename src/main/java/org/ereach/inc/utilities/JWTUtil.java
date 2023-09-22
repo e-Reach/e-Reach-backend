@@ -5,25 +5,22 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
-import org.ereach.inc.config.EReachConfig;
+import lombok.AllArgsConstructor;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import static org.ereach.inc.utilities.Constants.*;
 
+@AllArgsConstructor
 public class JWTUtil {
 	
-	private static final EReachConfig config = new EReachConfig();
-	
-	public static String generateToken(String email, String role, String phoneNumber){
+	public static String generateActivationToken(String email, String role, String secret){
+		System.out.println("secret: "+secret);
 		JWTCreator.Builder tokenCreator;
-		if (email != null)
-		    tokenCreator = buildTokenForEmails(email, role);
-		else tokenCreator = buildTokenForTextMessages(phoneNumber, role);
-		return tokenCreator.sign(Algorithm.HMAC512(role));
+		tokenCreator = buildTokenForEmails(email, role);
+		return tokenCreator.sign(Algorithm.HMAC512(secret));
 	}
 	
 	private static JWTCreator.Builder buildTokenForTextMessages(String phoneNumber, String role) {
@@ -48,26 +45,23 @@ public class JWTUtil {
 				  .withIssuedAt(Instant.now());
 	}
 	
-	public static boolean isValidToken(String token, String notificationMedium) {
-		if (Objects.equals(notificationMedium, MAIL)) {
-			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
-					                  .withIssuer(LIBRARY_ISSUER_NAME)
-					                  .withClaimPresence(CLAIMS)
-					                  .build();
-			return verifier.verify(token)!=null;
-		}
-		if (Objects.equals(notificationMedium, TEXT_MESSAGE)) {
-			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
-					                       .withIssuer(LIBRARY_ISSUER_NAME)
-					                       .withClaimPresence(CLAIMS)
-					                       .build();
-			return verifier.verify(token)!=null;
-		}
-		else return false;
+	public static boolean isValidToken(String token, String secret) {
+		JWTVerifier verifier = JWT.require(Algorithm.HMAC512(secret))
+				                  .withIssuer(LIBRARY_ISSUER_NAME)
+				                  .withClaimPresence(CLAIMS)
+				                  .build();
+		return verifier.verify(token)!=null;
+//		if (Objects.equals(notificationMedium, TEXT_MESSAGE)) {
+//			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
+//					                       .withIssuer(LIBRARY_ISSUER_NAME)
+//					                       .withClaimPresence(CLAIMS)
+//					                       .build();
+//			return verifier.verify(token)!=null;
+//		}
 	}
 	
 	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
-		String GENERATED_TOKEN =  generateToken(email, password, phoneNumber);
+		String GENERATED_TOKEN =  generateActivationToken(email, password, phoneNumber);
 		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
 	}
 	

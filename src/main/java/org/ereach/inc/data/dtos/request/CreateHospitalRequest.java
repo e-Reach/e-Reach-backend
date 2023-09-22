@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.ereach.inc.data.models.annotations.ValidDomain;
 
 
 @AllArgsConstructor
@@ -22,6 +23,7 @@ public class CreateHospitalRequest {
 	@NonNull
 	@Email(message = "Please enter a valid email format",
 			regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+	@ValidDomain(domains = {"gmail.com", "yahoo.com", "outlook.com", "semicolon.africa.com", "hotmail.com", "hotmail.co.uk", "freenet.de"})
 	@Valid
 	private String hospitalEmail;
 	@NotEmpty

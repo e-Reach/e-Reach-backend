@@ -16,6 +16,7 @@ public class InMemoryDatabase {
 	public Hospital saveHospitalTemporarily(Hospital hospital){
 		hospital.setId(generateTemporaryId());
 		hospitals.add(hospital);
+		System.out.println(hospital);
 		return hospital;
 	}
 	

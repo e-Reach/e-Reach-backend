@@ -23,4 +23,6 @@ public interface HospitalAdminService {
 	List<GetRecordResponse> viewAllRecordsCreatedByHospital(String hefamaaId);
 	void importPatientDetails();
 	HospitalResponse getHospitalRegisteredWith(String officerIdentificationNumber);
+	
+	HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException;
 }

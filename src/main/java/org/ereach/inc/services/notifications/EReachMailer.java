@@ -132,7 +132,7 @@ public class EReachMailer implements MailService{
 	}
 	private String url(String email, String name){
 		String frontendComponentUrl = "";
-		return FRONTEND_BASE_URL + frontendComponentUrl + JWTUtil.generateToken(email, name, null);
+		return FRONTEND_BASE_URL + frontendComponentUrl + JWTUtil.generateActivationToken(email, name, eReachConfig.getAppJWTSecret());
 	}
 	
 	}
