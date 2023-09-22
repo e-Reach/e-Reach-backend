@@ -33,7 +33,6 @@ public class PatientServiceTest {
     @Test
     @SneakyThrows
     void testThatPatientCanBeRegistered(){
-<<<<<<< HEAD
         CreatePatientRequest createPatientRequest = CreatePatientRequest.builder()
                 .firstName("Rich")
                 .lastName("Doe")
@@ -48,11 +47,8 @@ public class PatientServiceTest {
         CreatePatientResponse createPatientResponse = patientService.createPatient(createPatientRequest);
         assertThat(createPatientResponse.getMessage()).isEqualTo("Patient " + createPatientRequest.getFirstName()
                 + " " + createPatientRequest.getLastName() + " " + "Account Created Successfully");
-
-=======
         assertThat(createPatientResponse.getPatientIdentificationNumber()).isNotNull();
         assertThat(createPatientResponse.getEReachUsername()).isInstanceOf(String.class);
->>>>>>> 6543a71c1d1f34cd34299ec0cc5258ad53402457
     }
 
     @Test
@@ -81,16 +77,6 @@ public class PatientServiceTest {
                 .isInstanceOf(EReachBaseException.class)
                 .hasMessageContaining("Invalid Domain:: valid domain includes");
     }
-<<<<<<< HEAD
-
-
-
-
-=======
-    
-    
-    
->>>>>>> 6543a71c1d1f34cd34299ec0cc5258ad53402457
     @Test void updatePatientDetailsTest(){
 
     }

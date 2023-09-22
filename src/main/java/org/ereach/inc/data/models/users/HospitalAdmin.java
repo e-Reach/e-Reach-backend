@@ -20,12 +20,6 @@ public class HospitalAdmin {
     @GeneratedValue(strategy = UUID)
     private String id;
     private Role role;
-    private String email;
-    private String phoneNumber;
-    private String streetName;
-    private String streetNumber;
-    private String houseNumber;
-    private String state;
-    private String country;
-
+    private String adminEmail;
+    private String adminPhoneNumber;
 }

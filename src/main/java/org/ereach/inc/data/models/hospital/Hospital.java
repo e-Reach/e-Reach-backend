@@ -8,7 +8,6 @@ import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.hibernate.annotations.NaturalId;
 
-import java.util.List;
 import java.util.Set;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -35,12 +34,11 @@ public class Hospital {
     @Column(unique = true)
     @NaturalId
     private String hospitalEmail;
-    private String phoneNumber;
     private Role role;
     @OneToMany
-    private List<Practitioner> practitioners;
+    private Set<Practitioner> practitioners;
     @OneToMany
-    private Set<HospitalAdmin> admin;
+    private Set<HospitalAdmin> admins;
     @OneToMany
     private Set<Record> records;
 }
