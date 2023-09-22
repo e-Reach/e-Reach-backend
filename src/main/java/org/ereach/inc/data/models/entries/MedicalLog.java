@@ -1,13 +1,12 @@
 package org.ereach.inc.data.models.entries;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
+import org.ereach.inc.data.models.hospital.Record;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -24,11 +23,11 @@ public class MedicalLog {
     @GeneratedValue(strategy = UUID)
     private String id;
     @OneToMany
-    private List<Entry> entries;
+    private List<Entry> entries ;
     private LocalDate dateCreated;
     private LocalTime timeCreated;
     private String patientIdentificationNumber;
     private boolean isActive;
-
-
+    @ManyToOne
+    private Record medicalRecord;
 }

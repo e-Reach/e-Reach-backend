@@ -26,4 +26,12 @@ class MedicalLogServiceTest {
     @Test void deactivateMedicalLog_LogsWhosePatientsAreAdmissionAreNotDeactivated(){
 
     }
+
+    @Test void testGetMedicalLogByPatientIdentificationNumber(){
+
+    }
+
+    @Test void testGetAllMedicalLogs(){
+
+    }
 }

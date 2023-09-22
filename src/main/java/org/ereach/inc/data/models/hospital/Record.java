@@ -23,8 +23,6 @@ public class Record {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    @OneToMany
-    private List<MedicalLog> medicalLogs;
     @ManyToOne
     private Hospital centreCreated;
     private LocalDate dateCreated;
