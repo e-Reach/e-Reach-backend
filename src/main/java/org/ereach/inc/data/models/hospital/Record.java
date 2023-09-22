@@ -3,7 +3,6 @@ package org.ereach.inc.data.models.hospital;
 import jakarta.persistence.*;
 import lombok.*;
 import org.ereach.inc.data.models.entries.MedicalLog;
-import org.ereach.inc.data.models.users.Patient;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,12 +23,9 @@ public class Record {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-<<<<<<< HEAD
-=======
     private String patientIdentificationNumber;
     @OneToMany
     private List<MedicalLog> medicalLogs;
->>>>>>> 9dfab38415ecb2a9bd8323675d81a4035c86bffd
     @ManyToOne
     private Hospital centreCreated;
     private LocalDate dateCreated;

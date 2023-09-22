@@ -3,6 +3,7 @@ package org.ereach.inc.services.hospital;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.dtos.request.CreateRecordRequest;
 import org.ereach.inc.data.dtos.response.CreateRecordResponse;
+import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Record;
@@ -38,6 +39,11 @@ public class EreachRecordService implements RecordService {
         newRecord.setPatientIdentificationNumber(createRecordRequest.getPatientIdentificationNumber());
         Record savedRecord = recordRepository.save(newRecord);
         return modelMapper.map(savedRecord, CreateRecordResponse.class);
+    }
+
+    @Override
+    public GetRecordResponse findRecordByPatientIdentificationNumber(String patientIdentificationNumber) {
+        return null;
     }
 
     @Override
