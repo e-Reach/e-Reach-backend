@@ -35,6 +35,8 @@ public class Hospital {
     @NaturalId
     private String hospitalEmail;
     private Role role;
+    private String email;
+    private String phoneNumber;
     @OneToMany
     private Set<Practitioner> practitioners;
     @OneToMany

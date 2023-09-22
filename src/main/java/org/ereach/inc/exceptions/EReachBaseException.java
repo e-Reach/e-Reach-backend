@@ -1,6 +1,6 @@
 package org.ereach.inc.exceptions;
 
-public class EReachBaseException extends Exception{
+public class EReachBaseException extends RuntimeException{
 	
 	private String exceptionCause;
 	private String[] reasons;

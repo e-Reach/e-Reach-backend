@@ -46,7 +46,7 @@ public class Patient {
     @OneToOne
     private Record record;
     @Enumerated(STRING)
-    private Role role;
+    private Role userRole;
     @OneToOne
     private PersonalInfo personalInfo;
     @Column(unique = true)

@@ -22,4 +22,7 @@ public class HospitalAdmin {
     private Role role;
     private String adminEmail;
     private String adminPhoneNumber;
+    private Role userRole;
+    private String email;
+    private String phoneNumber;
 }
