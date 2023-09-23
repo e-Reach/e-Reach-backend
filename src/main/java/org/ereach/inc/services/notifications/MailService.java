@@ -8,5 +8,5 @@ public interface MailService {
 
     ResponseEntity<EReachNotificationResponse> sendPatientInfo(EReachNotificationRequest request, String hospitalName) throws RequestInvalidException;
 
-	Object sendMail(String hospitalEmail, String id, String hospitalName, String path) throws RequestInvalidException;
+	ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String name, String path) throws RequestInvalidException;
 }

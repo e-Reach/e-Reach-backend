@@ -3,8 +3,11 @@ package org.ereach.inc.services.users;
 import lombok.SneakyThrows;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
+import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
@@ -16,6 +19,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -90,10 +96,10 @@ class HospitalAdminServiceTest {
 		assertThat(activationResponse.getHospitalName()).isEqualTo(TEST_HOSPITAL_NAME);
 	}
 	
-	@Test void testThatHospitalAdminAccountIsNotCreatedIf_HospitalAccountDoesNotExistsYet(){
+	@Test void testThatHospitalAdminAccountIsNotCreatedIf_HospitalAccountDoesNotExistsYet() {
 //		hospitalAdminService.f
 	}
-
+	
 	@Test void testThatHospitalAdminAccountIsCreated_AfterHospitalAccountIsCreated(){
 		HospitalResponse savedHospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
 		assertThat(savedHospitalResponse).isNotNull();
@@ -108,6 +114,23 @@ class HospitalAdminServiceTest {
 		GetHospitalAdminResponse foundAdmin1 = hospitalAdminService.findAdminById(savedAdminResponse.getId(), foundHospital.getHospitalEmail());
 		assertThat(foundAdmin).isNotNull();
 		assertThat(foundAdmin1).isNotNull();
+	}
+
+	@Test void invitePractitionerTest(){
+		ResponseEntity<?> invitationResponse = hospitalAdminService.invitePractitioner(buildPractitionerInvitationRequest());
+		assertThat(invitationResponse.toString()).isEqualTo(HttpStatusCode.valueOf(200));
+		assertThat(invitationResponse.toString()).isEqualTo(HttpStatus.OK.value());
+		assertThat(invitationResponse.getBody()).isNotNull();
+	}
+	
+	private InvitePractitionerRequest buildPractitionerInvitationRequest() {
+		return InvitePractitionerRequest.builder()
+				       .email("theeniolasamuel@gmail.com")
+				       .role("doctor")
+				       .firstName("Eniola")
+				       .lastName("Samuel")
+				       .phoneNumber("+2347080772782")
+				       .build();
 	}
 	
 	private CreateHospitalRequest buildRequestWithInvalidEmailAndPassword() {

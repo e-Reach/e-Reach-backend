@@ -54,7 +54,7 @@ public class JWTUtilTest {
 		String password = "ayanniyi@20";
 		String phoneNumber = "+2347036174617";
 		String token = JWTUtil.generateActivationToken(null, password, phoneNumber);
-		String extractedPassword = JWTUtil.extractPasswordFromToken(token);
+		String extractedPassword = JWTUtil.extractRoleFromToken(token);
 		assertThat(extractedPassword).isEqualTo(password);
 	}
 }

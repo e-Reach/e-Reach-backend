@@ -2,10 +2,12 @@ package org.ereach.inc.services.users;
 
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ public interface HospitalAdminService {
 	
 	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
 	HospitalResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException;
-	PractitionerResponse invitePractitioner(CreatePractitionerRequest practitionerRequest);
+	ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest);
 	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
 	GetHospitalAdminResponse findAdminById(String id, String hospitalEmail);
 	GetHospitalAdminResponse findAdminByEmail(String adminEmail, String hospitalEmail);

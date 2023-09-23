@@ -1,11 +1,14 @@
 package org.ereach.inc.services.users;
 
+import jakarta.persistence.EnumType;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
@@ -15,9 +18,13 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
+import org.ereach.inc.services.notifications.EReachNotificationResponse;
+import org.ereach.inc.services.notifications.MailService;
+import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,6 +43,8 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	private HospitalService hospitalService;
 	private final EReachConfig config;
 	private HospitalAdminRepository hospitalAdminRepository;
+	private MailService mailService;
+	private EmailValidator validator;
 	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
@@ -71,8 +80,19 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public PractitionerResponse invitePractitioner(CreatePractitionerRequest practitionerRequest) {
-		return null;
+	public ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) {
+		validator.validateEmail(practitionerRequest.getEmail());
+		verifyRole(practitionerRequest);
+		String fullName = practitionerRequest.getFirstName() + practitionerRequest.getLastName();
+		return mailService.sendMail(practitionerRequest.getEmail(), practitionerRequest.getRole(), fullName, PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH);
+	}
+	
+	private static void verifyRole(InvitePractitionerRequest practitionerRequest) {
+		boolean isValidRole = false;
+		if (EnumSet.allOf(Role.class)
+				   .stream()
+				   .noneMatch(role ->role ==Role.valueOf(practitionerRequest.getRole().toUpperCase())))
+			throw new FieldInvalidException("Invalid Role");
 	}
 	
 	@Override

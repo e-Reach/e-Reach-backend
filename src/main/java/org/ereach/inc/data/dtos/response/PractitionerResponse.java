@@ -1,12 +1,14 @@
 package org.ereach.inc.data.dtos.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.core.StreamReadConstraints;
+import lombok.*;
 
 
 @AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class PractitionerResponse {
 	private String message;
 }

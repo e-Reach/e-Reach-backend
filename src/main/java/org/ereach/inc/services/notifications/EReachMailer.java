@@ -100,28 +100,23 @@ public class EReachMailer implements MailService{
 	}
 	
 	@Override
-	public Object sendMail(String email, String username, String name, String path) throws RequestInvalidException {
+	public ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String name, String path) throws RequestInvalidException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(API_KEY, eReachConfig.getMailApiKey());
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, name, url(email, username));
+		String formattedContent = String.format(templateContent, name, url(email, role));
 		
-		Recipient recipient = new Recipient();
-		recipient.setEmail(email);
-		recipient.setFullName(name);
-		recipient.setUsername(username);
-		
-		System.out.println("formatted content: ===>>> \n"+formattedContent);
+		Recipient recipient = Recipient.builder().email(email).build();
 		
 		Notification notification = new Notification();
 		notification.setRecipients(Collections.singletonList(recipient));
 		notification.setSender(Sender.builder()
-				                       .name(SENDER_FULL_NAME)
-				                       .email(SENDER_EMAIL)
-				                       .build());
+				                     .name(SENDER_FULL_NAME)
+				                     .email(SENDER_EMAIL)
+				                     .build());
 		notification.setSubject(MESSAGE_SUBJECT);
 		notification.setHtmlContent(formattedContent);
 		HttpEntity<Notification> requestEntity = new HttpEntity<>(notification, headers);
@@ -134,8 +129,8 @@ public class EReachMailer implements MailService{
 		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
 		return response;
 	}
-	private @NotNull String url(String email, String name){
-		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, name, eReachConfig.getAppJWTSecret());
+	private @NotNull String url(String email, String role){
+		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, eReachConfig.getAppJWTSecret());
 		System.out.println(url);
 		return url;
 	}
