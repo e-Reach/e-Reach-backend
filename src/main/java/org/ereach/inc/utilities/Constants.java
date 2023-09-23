@@ -9,8 +9,17 @@ public class Constants {
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
 	public static final String TEXT_MESSAGE = "text message";
 	public static final String MAIL = "mail";
+	public static final String SPACE = " ";
+	
 	public static final String FRONTEND_BASE_URL = "https://localhost/3000/";
 	public static final String QUERY_STRING_PREFIX = "?";
+	public static final String HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST = "Hospital with email %s does not exist";
+	public static final String HOSPITAL_WITH_ID_DOES_NOT_EXIST = "Hospital with id %s does not exist";
+	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with id %s does not exist in the hospital with email %s";
+	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST = "Admin with id %s does not exist";
+	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with email %s does not exist in the hospital with email %s";
+	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST = "Admin with email %s does not exist";
+	
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
 	public static final String USER_PHONE_NUMBER = "user phone number";

@@ -2,28 +2,26 @@ package org.ereach.inc.services.users;
 
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
-import org.ereach.inc.data.dtos.request.AddressCreationRequest;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
-import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
-import org.ereach.inc.exceptions.*;
-import org.ereach.inc.services.AddressService;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
+import org.ereach.inc.exceptions.FieldInvalidException;
+import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
-import org.ereach.inc.services.notifications.MailService;
-import org.ereach.inc.services.validators.EmailValidator;
-import org.ereach.inc.services.validators.PasswordValidator;
+import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
@@ -33,67 +31,43 @@ import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	private EReachHospitalRepository hospitalRepository;
-	private HospitalAdminRepository hospitalAdminRepository;
 	private ModelMapper modelMapper;
-	private MailService mailService;
-	private EmailValidator emailValidator;
-	private PasswordValidator passwordValidator;
-	private AddressService addressService;
 	private InMemoryDatabase inMemoryDatabase;
+	private HospitalService hospitalService;
 	private final EReachConfig config;
+	private HospitalAdminRepository hospitalAdminRepository;
 	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
-		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
-		verifyHefamaaId(hospitalRequest.getHEFAMAA_ID());
-		
-		AddressCreationRequest mappedAddress = modelMapper.map(hospitalRequest, AddressCreationRequest.class);
-		AddressResponse saveAddressResponse = addressService.saveAddress(mappedAddress);
-		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
-		
-		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
-		mappedHospital.setAddress(savedAddress);
-		mappedHospital.setAdmins(new HashSet<>());
-		mappedHospital.setPractitioners(new HashSet<>());
-		mappedHospital.setRecords(new HashSet<>());
-		
-		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
-		mappedHospital.getAdmins().add(admin);
-		
-		Hospital temporarilySavedHospital = inMemoryDatabase.saveHospitalTemporarily(mappedHospital);
-		mailService.sendMail(temporarilySavedHospital.getHospitalEmail(), temporarilySavedHospital.getId(),
-				temporarilySavedHospital.getHospitalName(),HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH);
-		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
+		return hospitalService.registerHospital(hospitalRequest);
 	}
 	
-	private void verifyHefamaaId(String hefamaaId) {
-	
-	}
-	
-	public HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException {
-		if (Objects.equals(token, config.getTestToken()))
-			return activateTestAccount();
-		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
+	@Override
+	public HospitalResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException {
+		if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
 			return activateAccount(token);
 		}
-		throw new RequestInvalidException("Request failed: i no even know wetin to write");
+		throw new RequestInvalidException("Request failed");
 	}
 	
-	private HospitalResponse activateAccount(String token){
+	private HospitalResponse activateAccount(String token) {
+		if (Objects.equals(token, config.getTestToken()))
+			return activateTestAccount();
 		String email = extractEmailFrom(token);
-		Hospital hospital = inMemoryDatabase.getTemporarilySavedHospital(email);
-		Set<HospitalAdmin> admins = hospital.getAdmins();
-		List<HospitalAdmin> savedAdmins = hospitalAdminRepository.saveAll(admins);
-		hospital.getAdmins().addAll(savedAdmins);
-		Hospital savedHospital = hospitalRepository.save(hospital);
-		return modelMapper.map(hospital, HospitalResponse.class);
+		HospitalAdmin hospitalAdmin = inMemoryDatabase.getTemporarilySavedHospitalAdmin(email);
+		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
+		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
+		foundHospital.setAdmins(new HashSet<>());
+		foundHospital.getAdmins().add(savedHospitalAdmin);
+		hospitalRepository.save(foundHospital);
+		return modelMapper.map(foundHospital, HospitalResponse.class);
 	}
 	
 	private HospitalResponse activateTestAccount() {
 		return HospitalResponse.builder()
-						       .hospitalName(TEST_HOSPITAL_NAME)
-						       .hospitalEmail(TEST_HOSPITAL_MAIL)
-						       .build();
+				       .hospitalName(TEST_HOSPITAL_NAME)
+				       .hospitalEmail(TEST_HOSPITAL_MAIL)
+				       .build();
 	}
 	
 	@Override
@@ -103,6 +77,30 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest) {
+		return hospitalService.editHospitalProfile(hospitalRequest);
+	}
+	
+	@Override
+	public GetHospitalAdminResponse findAdminById(String id, String hospitalEmail) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		AtomicReference<GetHospitalAdminResponse> atomicReference = new AtomicReference<>();
+		AtomicReference<GetHospitalAdminResponse> response = new AtomicReference<>();
+		foundHospital.ifPresent(hospital -> {
+			Optional<HospitalAdmin> foundAdmin = hospitalAdminRepository.findById(id);
+			response.set(foundAdmin.map(hospitalAdmin -> {
+				if (hospital.getAdmins().stream().anyMatch(admin -> admin == hospitalAdmin)) {
+					GetHospitalAdminResponse mappedResponse = modelMapper.map(foundAdmin, GetHospitalAdminResponse.class);
+					atomicReference.set(mappedResponse);
+					return atomicReference.get();
+				} else
+					throw new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL, id, hospitalEmail));
+			}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST, id))));
+		});
+		return response.get();
+	}
+	
+	@Override
+	public GetHospitalAdminResponse findAdminByEmail(String email, String hospitalEmail) {
 		return null;
 	}
 	

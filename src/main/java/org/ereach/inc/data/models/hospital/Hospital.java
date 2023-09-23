@@ -19,6 +19,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @Getter
 @Setter
 @Table(name = "Health_Center")
+@ToString
 public class Hospital {
     @Id
     @GeneratedValue(strategy = UUID)
@@ -35,8 +36,6 @@ public class Hospital {
     @NaturalId
     private String hospitalEmail;
     private Role role;
-    private String email;
-    private String phoneNumber;
     @OneToMany
     private Set<Practitioner> practitioners;
     @OneToMany

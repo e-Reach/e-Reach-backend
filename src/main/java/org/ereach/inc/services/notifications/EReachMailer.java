@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.utilities.JWTUtil;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -28,6 +29,7 @@ import static org.ereach.inc.utilities.TemplateLoader.loadTemplateContent;
 @Slf4j
 public class EReachMailer implements MailService{
 	
+	public static final String FRONTEND_ACTIVATE_ACCOUNT = "activate-account";
 	private final ResourceLoader resourceLoader;
 	private final RestTemplate restTemplate;
 	private final TemplateEngine templateEngine;
@@ -67,7 +69,7 @@ public class EReachMailer implements MailService{
 	}
 
 	@Override
-	public ResponseEntity<EReachNotificationResponse> sendPatientInfo(EReachNotificationRequest request, String hospitalName) throws RequestInvalidException {
+	public ResponseEntity<EReachNotificationResponse> sendPatientInfo(@NotNull EReachNotificationRequest request, String hospitalName) throws RequestInvalidException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(API_KEY, eReachConfig.getMailApiKey());
 		headers.setContentType(MediaType.APPLICATION_JSON);
@@ -112,6 +114,8 @@ public class EReachMailer implements MailService{
 		recipient.setFullName(name);
 		recipient.setUsername(username);
 		
+		System.out.println("formatted content: ===>>> \n"+formattedContent);
+		
 		Notification notification = new Notification();
 		notification.setRecipients(Collections.singletonList(recipient));
 		notification.setSender(Sender.builder()
@@ -130,9 +134,10 @@ public class EReachMailer implements MailService{
 		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
 		return response;
 	}
-	private String url(String email, String name){
-		String frontendComponentUrl = "";
-		return FRONTEND_BASE_URL + frontendComponentUrl + JWTUtil.generateActivationToken(email, name, eReachConfig.getAppJWTSecret());
+	private @NotNull String url(String email, String name){
+		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, name, eReachConfig.getAppJWTSecret());
+		System.out.println(url);
+		return url;
 	}
 	
 	}

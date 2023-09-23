@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -16,8 +17,14 @@ import static org.ereach.inc.utilities.Constants.*;
 @AllArgsConstructor
 public class JWTUtil {
 	
+	@Getter
+	private static String testToken;
+	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
+		String GENERATED_TOKEN = generateActivationToken(email, password, phoneNumber);
+		testToken = GENERATED_TOKEN;
+		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
+	}
 	public static String generateActivationToken(String email, String role, String secret){
-		System.out.println("secret: "+secret);
 		JWTCreator.Builder tokenCreator;
 		tokenCreator = buildTokenForEmails(email, role);
 		return tokenCreator.sign(Algorithm.HMAC512(secret));
@@ -58,11 +65,6 @@ public class JWTUtil {
 //					                       .build();
 //			return verifier.verify(token)!=null;
 //		}
-	}
-	
-	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
-		String GENERATED_TOKEN =  generateActivationToken(email, password, phoneNumber);
-		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
 	}
 	
 	public static String extractEmailFrom(String token) {
