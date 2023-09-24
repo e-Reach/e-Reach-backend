@@ -27,7 +27,7 @@ public class EReachPharmacistService implements PharmacistService{
 		validateName(practitionerRequest.getLastName());
 		Practitioner builtPractitioner = mapFromRequestToPharmacist(practitionerRequest);
 		practitionerRepository.save(builtPractitioner);
-		return new PractitionerResponse("\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created");
+		return new PractitionerResponse();
 	}
 	private void validatePhoneNumber(String phoneNumber) throws FieldInvalidException {
 	if (phoneNumber.length() != 11) throw new FieldInvalidException("Incomplete details provided");

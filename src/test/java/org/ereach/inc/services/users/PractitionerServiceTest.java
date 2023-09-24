@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.ereach.inc.utilities.Constants.ACCOUNT_ACTIVATION_SUCCESSFUL;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -36,6 +37,7 @@ class PractitionerServiceTest {
 		
 		PractitionerResponse activatedPractitioner = practitionerService.activatePractitionerAccount(JWTUtil.getTestToken());
 		assertThat(activatedPractitioner.getMessage()).isNotNull();
+		assertThat(activatedPractitioner.getMessage()).isEqualTo(ACCOUNT_ACTIVATION_SUCCESSFUL);
 		assertTrue(practitionerService.getAllPractitioners().size() > ZERO.intValue());
 	}
 	

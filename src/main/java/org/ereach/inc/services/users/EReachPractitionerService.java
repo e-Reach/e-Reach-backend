@@ -69,7 +69,9 @@ public class EReachPractitionerService implements PractitionerService{
 			mappedLabTechnician.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedLabTechnician.getPhoneNumber()));
 			savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 		}
-		return mapper.map(savedPractitioner, PractitionerResponse.class);
+		PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
+		response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+		return response;
 	}
 	
 	@Override
