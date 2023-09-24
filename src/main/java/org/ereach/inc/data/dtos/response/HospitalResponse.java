@@ -12,7 +12,6 @@ import org.hibernate.annotations.NaturalId;
 @Data
 @Builder
 public class HospitalResponse {
-	private String id;
 	private String message;
 	private String HEFAMAA_ID;
 	private String hospitalName;

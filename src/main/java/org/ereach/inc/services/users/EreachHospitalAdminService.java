@@ -1,10 +1,8 @@
 package org.ereach.inc.services.users;
 
-import jakarta.persistence.EnumType;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
-import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
@@ -18,7 +16,7 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
-import org.ereach.inc.services.notifications.EReachNotificationResponse;
+import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
@@ -52,43 +50,52 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public HospitalResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException {
-		if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
-			return activateAccount(token);
-		}
-		throw new RequestInvalidException("Request failed");
-	}
-	
-	private HospitalResponse activateAccount(String token) {
+	public HospitalAdminResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException {
 		if (Objects.equals(token, config.getTestToken()))
 			return activateTestAccount();
+		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
+			return activateAccount(token);
+		else throw new RequestInvalidException("Request failed");
+	}
+	
+	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
-		HospitalAdmin hospitalAdmin = inMemoryDatabase.getTemporarilySavedHospitalAdmin(email);
+		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
 		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
 		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
 		foundHospital.setAdmins(new HashSet<>());
 		foundHospital.getAdmins().add(savedHospitalAdmin);
 		hospitalRepository.save(foundHospital);
-		return modelMapper.map(foundHospital, HospitalResponse.class);
+		return modelMapper.map(savedHospitalAdmin, HospitalAdminResponse.class);
 	}
 	
-	private HospitalResponse activateTestAccount() {
-		return HospitalResponse.builder()
-				       .hospitalName(TEST_HOSPITAL_NAME)
-				       .hospitalEmail(TEST_HOSPITAL_MAIL)
+	private HospitalAdminResponse activateTestAccount() {
+		return HospitalAdminResponse.builder()
+				       .adminLastName(TEST_HOSPITAL_NAME)
+				       .adminFirstName(TEST_HOSPITAL_NAME)
+				       .adminEmail(TEST_HOSPITAL_MAIL)
 				       .build();
 	}
 	
 	@Override
-	public ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) {
+	public ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException {
 		validator.validateEmail(practitionerRequest.getEmail());
 		verifyRole(practitionerRequest);
-		String fullName = practitionerRequest.getFirstName() + practitionerRequest.getLastName();
-		return mailService.sendMail(practitionerRequest.getEmail(), practitionerRequest.getRole(), fullName, PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH);
+		EReachNotificationRequest notificationRequest = buildNotificationRequest(practitionerRequest);
+		return mailService.sendMail(notificationRequest);
 	}
 	
-	private static void verifyRole(InvitePractitionerRequest practitionerRequest) {
-		boolean isValidRole = false;
+	private static EReachNotificationRequest buildNotificationRequest(InvitePractitionerRequest practitionerRequest) {
+		return EReachNotificationRequest.builder()
+				       .firstName(practitionerRequest.getFirstName())
+				       .lastName(practitionerRequest.getLastName())
+				       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+				       .email(practitionerRequest.getEmail())
+				       .role(practitionerRequest.getRole())
+				       .build();
+	}
+	
+	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {
 		if (EnumSet.allOf(Role.class)
 				   .stream()
 				   .noneMatch(role ->role ==Role.valueOf(practitionerRequest.getRole().toUpperCase())))
@@ -121,7 +128,21 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public GetHospitalAdminResponse findAdminByEmail(String email, String hospitalEmail) {
-		return null;
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		AtomicReference<GetHospitalAdminResponse> atomicReference = new AtomicReference<>();
+		AtomicReference<GetHospitalAdminResponse> response = new AtomicReference<>();
+		foundHospital.ifPresent(hospital -> {
+			Optional<HospitalAdmin> foundAdmin = hospitalAdminRepository.findById(email);
+			response.set(foundAdmin.map(hospitalAdmin -> {
+				if (hospital.getAdmins().stream().anyMatch(admin -> admin == hospitalAdmin)) {
+					GetHospitalAdminResponse mappedResponse = modelMapper.map(foundAdmin, GetHospitalAdminResponse.class);
+					atomicReference.set(mappedResponse);
+					return atomicReference.get();
+				} else
+					throw new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL, email, hospitalEmail));
+			}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST, email))));
+		});
+		return response.get();
 	}
 	
 	@Override

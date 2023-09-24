@@ -14,8 +14,8 @@ import java.util.List;
 public interface HospitalAdminService {
 	
 	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
-	HospitalResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException;
-	ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest);
+	HospitalAdminResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException;
+	ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException;
 	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
 	GetHospitalAdminResponse findAdminById(String id, String hospitalEmail);
 	GetHospitalAdminResponse findAdminByEmail(String adminEmail, String hospitalEmail);

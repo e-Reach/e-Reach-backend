@@ -18,5 +18,4 @@ public class InvitePractitionerRequest {
 	@NotEmpty
 	private String email;
 	private String role;
-	private String phoneNumber;
 }

@@ -8,13 +8,12 @@ import static java.math.BigInteger.TEN;
 import static java.math.BigInteger.ZERO;
 import static org.ereach.inc.utilities.Constants.*;
 
-public class DoctorIdentificationNumberGenerator {
+public class PractitionerIdentificationNumberGenerator {
     private static final Set<String> usedPINs = new HashSet<>();
-
-    public static String generateUniqueDIN(String doctorFullName, String doctorPhoneNumber) {
+    public static String generateUniquePIN(String practitionerFullName, String practitionerPhoneNumber) {
         while (true) {
-            String randomPIN = generateRandomPIN(doctorFullName, doctorPhoneNumber);
-            String uniquePart = hashDoctorInfo(doctorFullName, randomPIN);
+            String randomPIN = generateRandomPIN(practitionerFullName, practitionerPhoneNumber);
+            String uniquePart = hashDoctorInfo(practitionerFullName, randomPIN);
             String username = mapToLetter(uniquePart);
             System.out.println("username: "+username);
             if (!usedPINs.contains(uniquePart)) {
@@ -34,10 +33,10 @@ public class DoctorIdentificationNumberGenerator {
         return mappedPart.toString().toUpperCase();
     }
 
-    private static String generateRandomPIN(String doctorFullName, String phoneNumber) {
+    private static String generateRandomPIN(String practitionerFullName, String phoneNumber) {
         SecureRandom random = new SecureRandom();
         String phoneNumberSubString = phoneNumber.substring(3, 9);
-        String component = doctorFullName + phoneNumber;
+        String component = practitionerFullName + phoneNumber;
         StringBuilder randomPIN = new StringBuilder();
         for (int count = 0; count < component.length(); count++) {
             randomPIN.append(component.charAt(random.nextInt(component.length())));
@@ -45,10 +44,10 @@ public class DoctorIdentificationNumberGenerator {
         return randomPIN + phoneNumberSubString;
     }
 
-    private static String hashDoctorInfo(String doctorInfo, String randomPIN) {
+    private static String hashDoctorInfo(String practitionerInfo, String randomPIN) {
         try {
             MessageDigest digest = MessageDigest.getInstance(SHA_256_ALGORITHM);
-            byte[] hash = digest.digest((doctorInfo + randomPIN).getBytes());
+            byte[] hash = digest.digest((practitionerInfo + randomPIN).getBytes());
             return bytesToHex(hash).substring(ZERO.intValue(), TEN.intValue());
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(SHA_256_ALGORITHM_NOT_AVAILABLE);

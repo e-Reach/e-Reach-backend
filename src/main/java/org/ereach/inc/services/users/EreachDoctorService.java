@@ -3,9 +3,9 @@ package org.ereach.inc.services.users;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.ereach.inc.data.dtos.request.CreateDoctorRequest;
-import org.ereach.inc.data.dtos.response.CreateDoctorResponse;
-import org.ereach.inc.data.models.DoctorStatus;
+import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.dtos.response.PractitionerResponse;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.users.Doctor;
 import org.ereach.inc.data.repositories.users.EReachDoctorsRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
@@ -14,7 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import static org.ereach.inc.utilities.Constants.DOCTOR_REGISTRATION_AWAITING_CONFIRMATION;
-import static org.ereach.inc.utilities.DoctorIdentificationNumberGenerator.generateUniqueDIN;
+import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator.generateUniquePIN;
 
 @Service
 @AllArgsConstructor
@@ -25,19 +25,19 @@ public class EreachDoctorService implements DoctorService {
     private EmailValidator validator;
     @Getter
     private static String testDIN;
+    
     @Override
-    public CreateDoctorResponse registerNewDoctor(CreateDoctorRequest registerDoctorRequest) throws EReachBaseException {
-        CreateDoctorResponse createDoctorResponse;
+    public PractitionerResponse registerNewDoctor(CreatePractitionerRequest registerDoctorRequest) throws EReachBaseException {
+        PractitionerResponse createDoctorResponse;
         try {
             validator.validateEmail(registerDoctorRequest.getEmail());
             Doctor doctor = modelMapper.map(registerDoctorRequest, Doctor.class);
-            doctor.setDoctorIdentificationNumber(generateUniqueDIN(fullName(registerDoctorRequest), registerDoctorRequest.getPhoneNumber()));
-            doctor.setDoctorStatus(DoctorStatus.PENDING);
+            doctor.setPractitionerIdentificationNumber(generateUniquePIN(fullName(registerDoctorRequest), registerDoctorRequest.getEmail()));
+            doctor.setStatus(AccountStatus.PENDING);
             Doctor savedDoctor = doctorRepository.save(doctor);
-            createDoctorResponse = modelMapper.map(savedDoctor, CreateDoctorResponse.class);
+            createDoctorResponse = modelMapper.map(savedDoctor, PractitionerResponse.class);
             createDoctorResponse.setMessage(String.format(DOCTOR_REGISTRATION_AWAITING_CONFIRMATION, fullName(registerDoctorRequest)));
-            testDIN = doctor.getDoctorIdentificationNumber();
-
+            testDIN = doctor.getPractitionerIdentificationNumber();
         }
         catch (Throwable baseException) {
             log.error(baseException.getMessage(), baseException);
@@ -47,11 +47,16 @@ public class EreachDoctorService implements DoctorService {
     }
     
     @Override
-    public void removeDoctorByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
+    public PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) {
+        return null;
+    }
+    
+    @Override
+    public void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
     
     }
     
-    private String fullName(CreateDoctorRequest createDoctorRequest) {
+    private String fullName(CreatePractitionerRequest createDoctorRequest) {
         return createDoctorRequest.getFirstName()  + " " + createDoctorRequest.getLastName();
     }
 

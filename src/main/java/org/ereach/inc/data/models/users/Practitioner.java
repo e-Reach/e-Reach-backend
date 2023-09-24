@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Role;
 import org.hibernate.annotations.NaturalId;
 
@@ -26,9 +27,15 @@ public class Practitioner {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
+    @Enumerated(STRING)
+    private Role userRole;
     @Column(unique = true)
     @NaturalId(mutable = true)
     private String email;
     @Column(unique = true)
     private String phoneNumber;
+    private boolean isActive;
+    private AccountStatus status;
+    @Column(unique = true)
+    private String practitionerIdentificationNumber;
 }

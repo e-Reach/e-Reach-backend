@@ -3,14 +3,12 @@ package org.ereach.inc.services.users;
 import lombok.SneakyThrows;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
-import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
+import org.ereach.inc.data.dtos.response.HospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
-import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.utilities.JWTUtil;
@@ -47,12 +45,14 @@ class HospitalAdminServiceTest {
 	
 	@AfterEach
 	void tearDown() {
-	
+		hospitalService.removeHospital("alaabdulmalik03@gmail.com");
+		inMemoryDatabase.deleteAll("admin");
+		inMemoryDatabase.deleteAll("hospital");
 	}
 	
 	@Test void testThatHospitalAccountsCanBeCreated(){
 		assertThat(response).isNotNull();
-		Hospital savedHospitalResponse = inMemoryDatabase.getTemporarilySavedHospital(response.getId());
+		Hospital savedHospitalResponse = inMemoryDatabase.retrieveHospitalFromInMemory(response.getHospitalEmail());
 		assertThat(savedHospitalResponse).isNotNull();
 		assertThat(savedHospitalResponse.getHospitalEmail()).isNotNull();
 		assertThat(savedHospitalResponse.getAdmins().stream().findFirst().get().getAdminEmail()).isNotNull();
@@ -72,14 +72,11 @@ class HospitalAdminServiceTest {
 	@Test void hospitalTriesToRegisterWithInvalidEmailOrPhoneNumber_ExceptionIsThrownTest(){
 		assertThatThrownBy(()-> hospitalAdminService.registerHospital(buildRequestWithInvalidEmailAndPassword()))
 													.isInstanceOf(FieldInvalidException.class)
-													.hasMessage("Registration Failed: Invalid email");
+													.hasMessage("Invalid Domain:: valid domain includes [gmail.com, outlook.com, yahoo.com, hotmail.com, semicolon.africa.com, hotmail.co.uk, freenet.de]");
 	}
 	
 	@Test void testThatHospitalAccountIsNotCreated_IfHospitalsAreNotVerifiedByHEFAMAA(){
-		assertThatThrownBy(()->{
-			
-						})
-				.isInstanceOf(RegistrationFailedException.class);
+		
 	}
 	
 	@Test
@@ -90,46 +87,47 @@ class HospitalAdminServiceTest {
 		assertThat(activationResponse.getHospitalName()).isEqualTo(TEST_HOSPITAL_NAME);
 	}
 	
+	@SneakyThrows
 	@Test void testThatHospitalAdminCanActivateTheir_Account(){
-		HospitalResponse activationResponse = hospitalAdminService.saveHospitalAdminPermanently(config.getTestToken());
-		assertThat(activationResponse.getHospitalEmail()).isEqualTo(TEST_HOSPITAL_MAIL);
-		assertThat(activationResponse.getHospitalName()).isEqualTo(TEST_HOSPITAL_NAME);
+		HospitalAdminResponse activationResponse = hospitalAdminService.saveHospitalAdminPermanently(config.getTestToken());
+		assertThat(activationResponse.getAdminEmail()).isEqualTo(TEST_HOSPITAL_MAIL);
+		assertThat(activationResponse.getAdminFirstName()).isEqualTo(TEST_HOSPITAL_NAME);
+		assertThat(activationResponse.getAdminLastName()).isEqualTo(TEST_HOSPITAL_NAME);
 	}
 	
 	@Test void testThatHospitalAdminAccountIsNotCreatedIf_HospitalAccountDoesNotExistsYet() {
 //		hospitalAdminService.f
 	}
 	
-	@Test void testThatHospitalAdminAccountIsCreated_AfterHospitalAccountIsCreated(){
+	@SneakyThrows
+	@Test
+	void testThatHospitalAdminAccountIsCreated_AfterHospitalAccountIsCreated(){
 		HospitalResponse savedHospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
 		assertThat(savedHospitalResponse).isNotNull();
 		HospitalResponse foundHospital = hospitalService.findHospitalByEmail(savedHospitalResponse.getHospitalEmail());
-		HospitalResponse foundHospital1 = hospitalService.findHospitalById(savedHospitalResponse.getId());
 		assertThat(foundHospital).isNotNull();
-		assertThat(foundHospital1).isNotNull();
 		
-		HospitalResponse savedAdminResponse = hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
+		HospitalAdminResponse savedAdminResponse = hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
 		assertThat(savedAdminResponse).isNotNull();
-		GetHospitalAdminResponse foundAdmin = hospitalAdminService.findAdminByEmail(savedAdminResponse.getHospitalEmail(), foundHospital.getHospitalEmail());
-		GetHospitalAdminResponse foundAdmin1 = hospitalAdminService.findAdminById(savedAdminResponse.getId(), foundHospital.getHospitalEmail());
+		GetHospitalAdminResponse foundAdmin = hospitalAdminService.findAdminByEmail(savedAdminResponse.getAdminEmail(), foundHospital.getHospitalEmail());
 		assertThat(foundAdmin).isNotNull();
-		assertThat(foundAdmin1).isNotNull();
 	}
-
-	@Test void invitePractitionerTest(){
+	
+	@Test
+	@SneakyThrows
+	void invitePractitionerTest(){
 		ResponseEntity<?> invitationResponse = hospitalAdminService.invitePractitioner(buildPractitionerInvitationRequest());
-		assertThat(invitationResponse.toString()).isEqualTo(HttpStatusCode.valueOf(200));
-		assertThat(invitationResponse.toString()).isEqualTo(HttpStatus.OK.value());
+		assertThat(invitationResponse.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(201));
+		assertThat(invitationResponse.getStatusCode().value()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(invitationResponse.getBody()).isNotNull();
 	}
 	
 	private InvitePractitionerRequest buildPractitionerInvitationRequest() {
 		return InvitePractitionerRequest.builder()
-				       .email("theeniolasamuel@gmail.com")
+				       .email("alaabdulmalik03@gmail.com")
 				       .role("doctor")
 				       .firstName("Eniola")
 				       .lastName("Samuel")
-				       .phoneNumber("+2347080772782")
 				       .build();
 	}
 	

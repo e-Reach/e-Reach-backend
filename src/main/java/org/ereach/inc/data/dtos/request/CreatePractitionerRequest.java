@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 
 public class CreatePractitionerRequest {
-	private String workerIdentity;
+	private String role;
 	@NonNull
 	@NotEmpty
 	private String firstName;

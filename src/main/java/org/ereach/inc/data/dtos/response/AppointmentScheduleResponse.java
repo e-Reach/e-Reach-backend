@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CreateAppointmentResponse {
+public class AppointmentScheduleResponse {
     private String message;
 }

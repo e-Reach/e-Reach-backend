@@ -4,7 +4,6 @@ package org.ereach.inc.data.dtos.request;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.ereach.inc.data.models.hospital.AppointmentType;
 
 import java.time.LocalDate;
 
@@ -13,7 +12,7 @@ import java.time.LocalDate;
 @Builder
 
 
-public class CreateAppointmentRequest {
+public class AppointmentScheduleRequest {
     private LocalDate sendDate;
     private  String patientEmail;
     private String patientIdentificationNumber;

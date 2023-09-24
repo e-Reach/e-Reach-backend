@@ -3,8 +3,8 @@ package org.ereach.inc.services.hospital;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ereach.inc.data.dtos.request.CreateAppointmentRequest;
-import org.ereach.inc.data.dtos.response.CreateAppointmentResponse;
+import org.ereach.inc.data.dtos.request.AppointmentScheduleRequest;
+import org.ereach.inc.data.dtos.response.AppointmentScheduleResponse;
 import org.ereach.inc.data.models.hospital.AppointmentType;
 import org.ereach.inc.data.models.hospital.Appointments;
 import org.ereach.inc.data.models.hospital.Hospital;
@@ -30,7 +30,7 @@ public class EreachAppointmentService implements AppointmentService{
     private EReachHospitalRepository hospitalRepository;
     private EreachAppointmentRepository appointmentRepository;
     @Override
-    public CreateAppointmentResponse createAppointment(CreateAppointmentRequest appointmentRequest) throws FieldInvalidException {
+    public AppointmentScheduleResponse createAppointment(AppointmentScheduleRequest appointmentRequest) throws FieldInvalidException {
       Appointments mappedAppointment = modelMapper.map(appointmentRequest, Appointments.class);
       String patientIdentificationNumber = appointmentRequest.getPatientIdentificationNumber();
 

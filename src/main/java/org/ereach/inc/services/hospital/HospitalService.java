@@ -20,4 +20,6 @@ public interface HospitalService {
 	HospitalResponse findHospitalById(String id);
 	HospitalResponse findHospitalByEmail(String email);
 	HospitalResponse findHospitalByHefamaaId(String hefamaa_Id);
+	
+	void removeHospital(String mail);
 }

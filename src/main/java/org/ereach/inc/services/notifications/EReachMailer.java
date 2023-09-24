@@ -29,7 +29,6 @@ import static org.ereach.inc.utilities.TemplateLoader.loadTemplateContent;
 @Slf4j
 public class EReachMailer implements MailService{
 	
-	public static final String FRONTEND_ACTIVATE_ACCOUNT = "activate-account";
 	private final ResourceLoader resourceLoader;
 	private final RestTemplate restTemplate;
 	private final TemplateEngine templateEngine;
@@ -76,8 +75,9 @@ public class EReachMailer implements MailService{
 
 		Resource foundTemplateResource = resourceLoader.getResource(PATIENT_ID_MAIL_PATH);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-
-		String formattedContent = String.format(templateContent, request.getFullName(), hospitalName, LocalDate.now(), request.getUsername(), request.getPassword());
+		
+		String fullName = request.getFirstName() + SPACE + request.getLastName();
+		String formattedContent = String.format(templateContent, fullName, hospitalName, LocalDate.now(), request.getUsername(), request.getPassword());
 		Recipient recipient = modelMapper.map(request, Recipient.class);
 
 		Notification notification = new Notification();
@@ -100,14 +100,14 @@ public class EReachMailer implements MailService{
 	}
 	
 	@Override
-	public ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String name, String path) throws RequestInvalidException {
+	public ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String firstName, String path, String lastName) throws RequestInvalidException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(API_KEY, eReachConfig.getMailApiKey());
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, name, url(email, role));
+		String formattedContent = String.format(templateContent, firstName+SPACE+lastName, url(email, role, firstName, lastName));
 		
 		Recipient recipient = Recipient.builder().email(email).build();
 		
@@ -129,8 +129,18 @@ public class EReachMailer implements MailService{
 		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
 		return response;
 	}
-	private @NotNull String url(String email, String role){
-		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, eReachConfig.getAppJWTSecret());
+	
+	@Override
+	public ResponseEntity<EReachNotificationResponse> sendMail(EReachNotificationRequest notificationRequest) throws RequestInvalidException {
+		return sendMail(notificationRequest.getEmail(),
+						notificationRequest.getRole(),
+						notificationRequest.getFirstName(),
+						notificationRequest.getTemplatePath(),
+						notificationRequest.getLastName());
+	}
+	
+	private @NotNull String url(String email, String role, String firstName, String lastName){
+		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,eReachConfig.getAppJWTSecret());
 		System.out.println(url);
 		return url;
 	}

@@ -24,22 +24,20 @@ public class Hospital {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Address address;
     @Column(unique = true)
-    @NaturalId
     private String HEFAMAA_ID;
     private String hospitalName;
     @Column(unique = true)
     private String hospitalPhoneNumber;
     @Column(unique = true)
-    @NaturalId
     private String hospitalEmail;
     private Role role;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Practitioner> practitioners;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<HospitalAdmin> admins;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     private Set<Record> records;
 }

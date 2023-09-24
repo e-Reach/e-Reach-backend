@@ -3,9 +3,7 @@ package org.ereach.inc.services.users;
 import org.ereach.inc.data.dtos.request.AddMedicationRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateEntryRequest;
-import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -39,22 +35,22 @@ class PharmacistServiceTest {
 		practitionerRequest1.setEmail("desyFavour54@gmail.com");
 		practitionerRequest1.setFirstName("Favour");
 		practitionerRequest1.setLastName("Chiemela");
-		practitionerRequest1.setPhoneNumber("09034687770");
-		practitionerRequest1.setWorkerIdentity("pharmacist");
+//		practitionerRequest1.setPhoneNumber("09034687770");
+		practitionerRequest1.setRole("pharmacist");
 
 		practitionerRequest2 = new CreatePractitionerRequest();
 		practitionerRequest2.setEmail("deegFav63@gmail.com");
 		practitionerRequest2.setFirstName("Goodness");
 		practitionerRequest2.setLastName("Obinali");
-		practitionerRequest2.setPhoneNumber("07034687770");
-		practitionerRequest2.setWorkerIdentity("pharmacist");
+//		practitionerRequest2.setPhoneNumber("07034687770");
+		practitionerRequest2.setRole("pharmacist");
 
 		practitionerRequest3 = new CreatePractitionerRequest();
 		practitionerRequest3.setEmail("dessyFav644@gmail.com");
 		practitionerRequest3.setFirstName("Favwhite");
 		practitionerRequest3.setLastName("nwadike");
-		practitionerRequest3.setPhoneNumber("07037887770");
-		practitionerRequest3.setWorkerIdentity("pharmacist");
+//		practitionerRequest3.setPhoneNumber("07037887770");
+		practitionerRequest3.setRole("pharmacist");
 
 		medicationRequest1 = new AddMedicationRequest();
 		medicationRequest1.setPrice(BigDecimal.valueOf(1500));
@@ -84,7 +80,7 @@ class PharmacistServiceTest {
 	@Test void createPharmacistsWithIncompleteDetails_ExceptionIsThrown(){
 		Exception exception = assertThrows(FieldInvalidException.class, () -> {
 			CreatePractitionerRequest incompleteDetails = new CreatePractitionerRequest();
-			incompleteDetails.setPhoneNumber("90934687");
+//			incompleteDetails.setPhoneNumber("90934687");
 			incompleteDetails.setEmail("good@");
 			incompleteDetails.setFirstName("fav d ooo");
 			incompleteDetails.setLastName("chi  emela");

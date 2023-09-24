@@ -9,6 +9,7 @@ import org.ereach.inc.data.dtos.response.AddressResponse;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.models.Address;
+import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
@@ -17,6 +18,7 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.AddressService;
 import org.ereach.inc.services.InMemoryDatabase;
+import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.services.validators.PasswordValidator;
@@ -25,15 +27,20 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static org.ereach.inc.data.models.Role.HOSPITAL_ADMIN;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
 @Service
 @AllArgsConstructor
 public class EReachHospitalService implements HospitalService {
+	
 	
 	private EReachHospitalRepository hospitalRepository;
 	private ModelMapper modelMapper;
@@ -53,20 +60,29 @@ public class EReachHospitalService implements HospitalService {
 		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
 		
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
+		mappedHospital.setRole(Role.HOSPITAL);
 		mappedHospital.setAddress(savedAddress);
 		mappedHospital.setAdmins(new HashSet<>());
 		mappedHospital.setPractitioners(new HashSet<>());
 		mappedHospital.setRecords(new HashSet<>());
 		
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
+		admin.setId(null);
 		mappedHospital.getAdmins().add(admin);
 		
-		Hospital temporarilySavedHospital = inMemoryDatabase.saveHospitalTemporarily(mappedHospital);
-		mailService.sendMail(temporarilySavedHospital.getHospitalEmail(), temporarilySavedHospital.getId(),
-				temporarilySavedHospital.getHospitalName(),HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH);
+		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
+		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
 	}
 	
+	private static EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
+		return EReachNotificationRequest.builder()
+				       .firstName(hospital.getHospitalName())
+				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
+				       .email(hospital.getHospitalEmail())
+				       .role(hospital.getRole().toString())
+				       .build();
+	}
 	private void verifyHefamaaId(String hefamaaId) {
 	
 	}
@@ -77,7 +93,7 @@ public class EReachHospitalService implements HospitalService {
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
 			return activateAccount(token);
 		}
-		throw new RequestInvalidException("Request failed: i no even know wetin to write");
+		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, HOSPITAL));
 	}
 	
 	@Override
@@ -92,15 +108,33 @@ public class EReachHospitalService implements HospitalService {
 	
 	private HospitalResponse activateAccount(String token){
 		String email = extractEmailFrom(token);
-		Hospital hospital = inMemoryDatabase.getTemporarilySavedHospital(email);
-		Hospital savedHospital = hospitalRepository.save(hospital);
-		Optional<HospitalAdmin> foundAdmin = savedHospital.getAdmins().stream().findFirst();
+		Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
+		Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
+		AtomicReference<Hospital> savedHospital = new AtomicReference<>();
 		foundAdmin.ifPresent(admin -> {
-			String adminFullName = admin.getAdminFirstName() + SPACE + admin.getAdminLastName();
-			mailService.sendMail(admin.getAdminEmail(), admin.getId(), adminFullName, HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH);
-			inMemoryDatabase.saveHospitalAdminTemporarily(admin);
+			try {
+				mailService.sendMail(buildNotificationRequest(admin));
+				admin.setAdminRole(HOSPITAL_ADMIN);
+				inMemoryDatabase.temporarySave(admin);
+				hospital.setAdmins(new HashSet<>());
+				Hospital saved = hospitalRepository.save(hospital);
+				savedHospital.set(saved);
+				inMemoryDatabase.addHospitalToSavedHospitals(admin.getAdminEmail(), hospital);
+			} catch (RequestInvalidException e) {
+				throw new EReachUncheckedBaseException(e);
+			}
 		});
-		return modelMapper.map(savedHospital, HospitalResponse.class);
+		return modelMapper.map(savedHospital.get(), HospitalResponse.class);
+	}
+	
+	private static EReachNotificationRequest buildNotificationRequest(HospitalAdmin admin) {
+		return EReachNotificationRequest.builder()
+				       .firstName(admin.getAdminFirstName())
+				       .lastName(admin.getAdminLastName())
+				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
+				       .email(admin.getAdminEmail())
+				       .role(admin.getAdminRole().toString())
+				       .build();
 	}
 	
 	private HospitalResponse activateTestAccount() {
@@ -150,5 +184,11 @@ public class EReachHospitalService implements HospitalService {
 	@Override
 	public HospitalResponse findHospitalByHefamaaId(String hefamaa_Id) {
 		return null;
+	}
+	
+	@Override
+	public void removeHospital(String mail) {
+		hospitalRepository.deleteAll();
+		hospitalRepository.deleteByHospitalEmail(mail);
 	}
 }

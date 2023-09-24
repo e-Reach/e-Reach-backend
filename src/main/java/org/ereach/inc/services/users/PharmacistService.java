@@ -7,9 +7,11 @@ import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
+import org.ereach.inc.exceptions.FieldInvalidException;
+import org.ereach.inc.exceptions.RegistrationFailedException;
 
 public interface PharmacistService {
-	PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest);
+	PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest) throws RegistrationFailedException, FieldInvalidException;
 
 	AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest);
 	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);

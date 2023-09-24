@@ -4,13 +4,13 @@ public class Constants {
 	
 	public static final String E_REACH_USERNAME_PREFIX = "e-Reach-";
 	public static final String SHA_256_ALGORITHM = "SHA-256";
+	public static final String HOSPITAL = "hospital";
+	public static final String PRACTITIONER = "practitioner";
 	public static final String PATIENT_WITH_PIN_DOES_NOT_EXIST = "patient with pin %s does not exist";
 	public static final String PATIENT_WITH_ID_DOES_NOT_EXIST = "patient with id %s does not exist";
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
-	public static final String TEXT_MESSAGE = "text message";
-	public static final String MAIL = "mail";
+	public static final String TOKEN_WAS_INVALID = "Request failed: %s failed to save permanently, token was invalid";
 	public static final String SPACE = " ";
-	
 	public static final String FRONTEND_BASE_URL = "https://localhost/3000/";
 	public static final String QUERY_STRING_PREFIX = "?";
 	public static final String HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST = "Hospital with email %s does not exist";
@@ -19,13 +19,15 @@ public class Constants {
 	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST = "Admin with id %s does not exist";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with email %s does not exist in the hospital with email %s";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST = "Admin with email %s does not exist";
-	
+	public static final String FRONTEND_ACTIVATE_ACCOUNT = "activate-account";
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
 	public static final String USER_PHONE_NUMBER = "user phone number";
 	public static final String CLAIMS = "claims";
 	public static final String LIBRARY_ISSUER_NAME = "e-Reach Incorporation";
 	public static final String USER_MAIL = "user mail";
+	public static final String FIRST_NAME = "first name";
+	public static final String LAST_NAME = "last name";
 	public static final String TEST_HOSPITAL_NAME = "test hospital name";
 	public static final String TEST_HOSPITAL_MAIL = "test hospital mail";
 	public static final String PATIENT_APPOINTMENT_MAIL_PATH = "C:\\Users\\PC\\IdeaProjects\\e-Reach-backend\\src\\main\\resources\\templates\\patient_appointment_mail_template.html";

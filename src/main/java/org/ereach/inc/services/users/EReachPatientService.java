@@ -106,7 +106,7 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
     
     public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
-                .fullName(fullName)
+                .firstName(fullName)
                 .password(patientIdentificationNumber)
                 .email(email)
                 .username(eReachUsername)
