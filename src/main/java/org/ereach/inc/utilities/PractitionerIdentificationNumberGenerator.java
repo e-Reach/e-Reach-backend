@@ -10,9 +10,9 @@ import static org.ereach.inc.utilities.Constants.*;
 
 public class PractitionerIdentificationNumberGenerator {
     private static final Set<String> usedPINs = new HashSet<>();
-    public static String generateUniquePIN(String practitionerFullName, String practitionerPhoneNumber) {
+    public static String generateUniquePIN(String practitionerFullName, String practitionerEmail) {
         while (true) {
-            String randomPIN = generateRandomPIN(practitionerFullName, practitionerPhoneNumber);
+            String randomPIN = generateRandomPIN(practitionerFullName, practitionerEmail);
             String uniquePart = hashDoctorInfo(practitionerFullName, randomPIN);
             String username = mapToLetter(uniquePart);
             System.out.println("username: "+username);
@@ -33,10 +33,10 @@ public class PractitionerIdentificationNumberGenerator {
         return mappedPart.toString().toUpperCase();
     }
 
-    private static String generateRandomPIN(String practitionerFullName, String phoneNumber) {
+    private static String generateRandomPIN(String practitionerFullName, String email) {
         SecureRandom random = new SecureRandom();
-        String phoneNumberSubString = phoneNumber.substring(3, 9);
-        String component = practitionerFullName + phoneNumber;
+        String phoneNumberSubString = email.substring(3, 9);
+        String component = practitionerFullName + email;
         StringBuilder randomPIN = new StringBuilder();
         for (int count = 0; count < component.length(); count++) {
             randomPIN.append(component.charAt(random.nextInt(component.length())));

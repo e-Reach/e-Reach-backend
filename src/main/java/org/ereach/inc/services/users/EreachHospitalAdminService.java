@@ -17,6 +17,7 @@ import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
+import org.ereach.inc.services.notifications.EReachNotificationResponse;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
@@ -82,7 +83,9 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		validator.validateEmail(practitionerRequest.getEmail());
 		verifyRole(practitionerRequest);
 		EReachNotificationRequest notificationRequest = buildNotificationRequest(practitionerRequest);
-		return mailService.sendMail(notificationRequest);
+		ResponseEntity<EReachNotificationResponse> response = mailService.sendMail(notificationRequest);
+		Objects.requireNonNull(response.getBody()).setMessage(PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION);
+		return response;
 	}
 	
 	private static EReachNotificationRequest buildNotificationRequest(InvitePractitionerRequest practitionerRequest) {

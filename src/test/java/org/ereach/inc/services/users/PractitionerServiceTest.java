@@ -1,10 +1,13 @@
 package org.ereach.inc.services.users;
 
 import lombok.SneakyThrows;
+import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.response.PractitionerResponse;
+import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.utilities.JWTUtil;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,9 +28,11 @@ class PractitionerServiceTest {
 	private PractitionerService practitionerService;
 	
 	@BeforeEach
+	@SneakyThrows
 	void startEachTestWith() {
-	
+		practitionerService.removeAll();
 	}
+	
 	
 	@Test
 	@SneakyThrows
@@ -39,6 +44,34 @@ class PractitionerServiceTest {
 		assertThat(activatedPractitioner.getMessage()).isNotNull();
 		assertThat(activatedPractitioner.getMessage()).isEqualTo(ACCOUNT_ACTIVATION_SUCCESSFUL);
 		assertTrue(practitionerService.getAllPractitioners().size() > ZERO.intValue());
+	}
+	
+	@Test void createPractitionerWithIncompleteDetails_ExceptionIsThrown(){
+		Exception exception = assertThrows(FieldInvalidException.class, () -> {
+			CreatePractitionerRequest incompleteDetails = new CreatePractitionerRequest();
+			incompleteDetails.setPhoneNumber("90934687");
+			incompleteDetails.setEmail("good@");
+			incompleteDetails.setFirstName("fav d ooo");
+			incompleteDetails.setLastName("chiemela");
+			practitionerService.activatePractitionerAccount(incompleteDetails);
+		});
+		assertEquals("Incomplete details provided", exception.getMessage());
+	}
+	@Test void createPractitionerWithInvalidDetails_RegistrationFailedExceptionIsThrown(){
+	
+	}
+	
+	@DisplayName("test that pharmacist with already existing email will not be able to register")
+	@Test void testThatEveryPractitionerCreateHasAUniqueEmail(){
+	
+	}
+	
+	@Test void removePractitionerByEmailAndPractitionerIdentificationNumber(){
+	
+	}
+	
+	@Test void testThatPractitionersAreRemovedAccordingToTheHospitalTheyBelong(){
+	
 	}
 	
 	private InvitePractitionerRequest buildPractitionerInviteRequest() {

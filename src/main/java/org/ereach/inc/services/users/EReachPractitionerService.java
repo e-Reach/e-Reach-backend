@@ -50,7 +50,7 @@ public class EReachPractitionerService implements PractitionerService{
 			String fullName = mappedDoctor.getFirstName() + SPACE + mappedDoctor.getLastName();
 			mappedDoctor.setActive(true);
 			mappedDoctor.setStatus(AccountStatus.ACTIVE);
-			mappedDoctor.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedDoctor.getPhoneNumber()));
+			mappedDoctor.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedDoctor.getEmail()));
 			savedPractitioner = practitionerRepository.save(mappedDoctor);
 		}
 		else if (practitioner instanceof Pharmacist){
@@ -58,7 +58,7 @@ public class EReachPractitionerService implements PractitionerService{
 			String fullName = mappedPharmacist.getFirstName() + SPACE + mappedPharmacist.getLastName();
 			mappedPharmacist.setActive(true);
 			mappedPharmacist.setStatus(AccountStatus.ACTIVE);
-			mappedPharmacist.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPharmacist.getPhoneNumber()));
+			mappedPharmacist.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPharmacist.getEmail()));
 			savedPractitioner = practitionerRepository.save(mappedPharmacist);
 		}
 		else{
@@ -66,7 +66,7 @@ public class EReachPractitionerService implements PractitionerService{
 			String fullName = mappedLabTechnician.getFirstName() + SPACE + mappedLabTechnician.getLastName();
 			mappedLabTechnician.setActive(true);
 			mappedLabTechnician.setStatus(AccountStatus.ACTIVE);
-			mappedLabTechnician.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedLabTechnician.getPhoneNumber()));
+			mappedLabTechnician.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedLabTechnician.getEmail()));
 			savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 		}
 		PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
@@ -128,8 +128,20 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	@Override
-	public List<GetPractitionerResponse> getAllPractitioners() {
-		return null;
+	public List<GetPractitionerResponse> getAllPractitioners() throws RequestInvalidException {
+		List<Practitioner> foundPractitioners = practitionerRepository.findAll();
+		if (foundPractitioners.isEmpty())
+			throw new RequestInvalidException(NO_PRACTITIONER_FOUND);
+		else return foundPractitioners.stream()
+						              .map(practitioner -> mapper.map(practitioner, GetPractitionerResponse.class))
+									  .toList();
+	}
+	
+	@Override
+	public void removeAll() throws RequestInvalidException {
+		if (practitionerRepository.findAll().isEmpty())
+			throw new RequestInvalidException(NO_PRACTITIONER_FOUND);
+		else practitionerRepository.deleteAll();
 	}
 	
 }

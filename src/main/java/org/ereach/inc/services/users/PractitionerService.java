@@ -18,5 +18,7 @@ public interface PractitionerService {
 	AppointmentScheduleResponse scheduleAppointment(AppointmentScheduleRequest appointmentScheduleRequest);
 	CloudUploadResponse uploadTestResult(CloudUploadRequest cloudUploadRequest);
 	List<GetPractitionerResponse> getAllPractitionersInHospital(String hospitalEmail);
-	List<GetPractitionerResponse> getAllPractitioners();
+	List<GetPractitionerResponse> getAllPractitioners() throws RequestInvalidException;
+	
+	void removeAll() throws RequestInvalidException;
 }

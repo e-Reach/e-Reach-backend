@@ -11,8 +11,6 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 
 public interface PharmacistService {
-	PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest) throws RegistrationFailedException, FieldInvalidException;
-
 	AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest);
 	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);
 	UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest);

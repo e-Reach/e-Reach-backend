@@ -5,6 +5,8 @@ public class Constants {
 	public static final String E_REACH_USERNAME_PREFIX = "e-Reach-";
 	public static final String SHA_256_ALGORITHM = "SHA-256";
 	public static final String HOSPITAL = "hospital";
+	public static final String NO_PRACTITIONER_FOUND = "No Practitioner(s) found";
+	
 	public static final String ACCOUNT_ACTIVATION_SUCCESSFUL = "Account Activation Successful";
 	public static final String PRACTITIONER = "practitioner";
 	public static final String PATIENT_WITH_PIN_DOES_NOT_EXIST = "patient with pin %s does not exist";
@@ -49,5 +51,5 @@ public class Constants {
 	public static final String TEMPLATE_LOAD_FAILED = "Error loading template content Template failed to load:: ";
 	public static final String PATIENT_ACCOUNT_CREATED_SUCCESSFULLY = "Patient %s Account Created Successfully";
 	public static final String DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY = "Doctor %s Account Created Successfully";
-	public static final String DOCTOR_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
+	public static final String PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
 }

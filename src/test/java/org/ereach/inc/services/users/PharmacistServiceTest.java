@@ -70,52 +70,20 @@ class PharmacistServiceTest {
 	}
 	@Disabled
 	@Test void createNewPharmacistTest(){
-		assertDoesNotThrow(()->{
-			pharmacistService.createPharmacist(practitionerRequest1);
-			pharmacistService.createPharmacist(practitionerRequest2);
-			pharmacistService.createPharmacist(practitionerRequest3);
-		});
-	}
 	
-	@Test void createPharmacistsWithIncompleteDetails_ExceptionIsThrown(){
-		Exception exception = assertThrows(FieldInvalidException.class, () -> {
-			CreatePractitionerRequest incompleteDetails = new CreatePractitionerRequest();
-//			incompleteDetails.setPhoneNumber("90934687");
-			incompleteDetails.setEmail("good@");
-			incompleteDetails.setFirstName("fav d ooo");
-			incompleteDetails.setLastName("chi  emela");
-			pharmacistService.createPharmacist(incompleteDetails);
-		});
-		assertEquals("Incomplete details provided", exception.getMessage());
-	}
-	@Test void createPharmacistWithInvalidDetails_RegistrationFailedExceptionIsThrown(){
-
-	}
-	
-	@DisplayName("test that pharmacist with already existing email will not be able to register")
-	@Test void testThatEveryPharmacistCreateHasAUniqueEmail(){
-
 	}
 	
 	@Test void testThatPharmacistCanEditEntry(){
 
 	}
-	
 	@Test void testThatWhenPharmacistTriesToViewMedicalLog_PrescriptionEntryIsTheLogShown(){
 	
 	}
+	
 	@Test
 	void testThatPharmacistCanAddMedicine(){
 		pharmacistService.addMedication(medicationRequest1);
 		pharmacistService.addMedication(medicationRequest2);
 		pharmacistService.addMedication(medicationRequest3);
-	}
-	
-	@Test void removePharmacistsByEmailAndPractitionerIdentificationNumber(){
-	
-	}
-	
-	@Test void testThatPharmacistsAreRemovedAccordingToTheHospitalTheyBelong(){
-	
 	}
 }

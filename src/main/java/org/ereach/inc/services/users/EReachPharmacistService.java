@@ -20,24 +20,7 @@ import org.springframework.stereotype.Service;
 public class EReachPharmacistService implements PharmacistService{
 	private final EReachPractitionerRepository practitionerRepository;
 	private final EreachMedicationService medicationService;
-	@Override
-	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest) throws RegistrationFailedException, FieldInvalidException {
-		if(practitionerRepository.existsByEmail(practitionerRequest.getEmail())) throw new RegistrationFailedException("Email already exists");
-		validateName(practitionerRequest.getFirstName());
-		validateName(practitionerRequest.getLastName());
-		Practitioner builtPractitioner = mapFromRequestToPharmacist(practitionerRequest);
-		practitionerRepository.save(builtPractitioner);
-		return new PractitionerResponse();
-	}
-	private void validatePhoneNumber(String phoneNumber) throws FieldInvalidException {
-	if (phoneNumber.length() != 11) throw new FieldInvalidException("Incomplete details provided");
-	for (int i = 0; i < phoneNumber.length(); i++) {
-		if (Character.isAlphabetic(phoneNumber.charAt(i))) throw new FieldInvalidException("Phonenumber must not contain alphabet");
-		}
-	}
-	private void validateName(String name) throws FieldInvalidException {
-		if (name.contains(" ")) throw new FieldInvalidException("Incomplete details provided");
-	}
+	
 	@Override
 	public AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest) {
 		medicationService.createMedication(addMedicationRequest);
