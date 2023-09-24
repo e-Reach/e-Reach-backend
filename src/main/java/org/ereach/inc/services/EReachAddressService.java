@@ -7,6 +7,7 @@ import com.github.fge.jsonpatch.JsonPatchException;
 import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.ereach.inc.data.dtos.request.AddressCreationRequest;
 import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
 import org.ereach.inc.data.dtos.response.AddressResponse;
@@ -16,7 +17,6 @@ import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +34,7 @@ public class EReachAddressService implements AddressService{
 	private EReachAddressRepository addressRepository;
 	private ModelMapper mapper;
 	private ObjectMapper objectMapper;
+	@Getter
 	private static String testId;
 	@Override
 	public AddressResponse saveAddress(AddressCreationRequest addressCreationRequest) {
@@ -92,8 +93,5 @@ public class EReachAddressService implements AddressService{
 	public void deleteAll() {
 	
 	}
-
-	public static String getTestId(){
-		return testId;
-	}
+	
 }

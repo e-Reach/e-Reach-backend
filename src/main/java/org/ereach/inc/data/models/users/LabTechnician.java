@@ -15,7 +15,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Lab_Technician extends Practitioner {
+public class LabTechnician extends Practitioner {
 
     @Id
     @GeneratedValue(strategy = UUID)

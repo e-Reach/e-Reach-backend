@@ -22,14 +22,14 @@ public class RecordServiceTest {
 
     @Test
     public void testThatRecordCanBeCreated(){
-        Hospital hospital = null;
-        LocalDateTime fixedDateTime = LocalDateTime.of(2023, Month.JANUARY, 15, 10, 0);
         CreateRecordRequest createRecordRequest = CreateRecordRequest.builder()
-                .centreCreated(null)
-                .dateCreated(LocalDate.from(fixedDateTime))
-                .lastTimeUpdated(LocalTime.from(fixedDateTime))
-                .build();
+                                                          .build();
         CreateRecordResponse createRecordResponse = recordService.createRecord(createRecordRequest);
         assertThat(createRecordResponse.getMessage()).isEqualTo("Record created successfully");
     }
+
+    @Test void testThatNewLogCanBeAddedToRecord(){
+
+    }
+    
 }
