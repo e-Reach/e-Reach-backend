@@ -22,5 +22,5 @@ public class Prescription extends Entry {
     private String id;
     @OneToMany
     private List<Medication> medications;
-
+    private String dosage;
 }

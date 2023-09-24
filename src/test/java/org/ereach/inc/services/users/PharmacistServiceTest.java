@@ -70,7 +70,6 @@ class PharmacistServiceTest {
 	}
 	@Test
 	void testThatPharmacistCanBeCreated(){
-
 	}
 	@Disabled
 	@Test void createNewPharmacistTest(){

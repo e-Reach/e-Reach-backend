@@ -16,6 +16,7 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.stereotype.Service;
+import static org.ereach.inc.utilities.Constants.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,27 +29,27 @@ public class EReachPharmacistService implements PharmacistService{
 	private final EreachMedicationService medicationService;
 	@Override
 	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest){
-		if(practitionerRepository.existsByEmail(practitionerRequest.getEmail())) throw new RegistrationFailedException("Email already exists");
+		if(practitionerRepository.existsByEmail(practitionerRequest.getEmail())) throw new RegistrationFailedException(EMAIL_ALREADY_EXIST);
 		validatePhoneNumber(practitionerRequest.getPhoneNumber());
 		validateName(practitionerRequest.getFirstName());
 		validateName(practitionerRequest.getLastName());
 		Practitioner builtPractitioner = mapFromRequestToPharmacist(practitionerRequest);
 		practitionerRepository.save(builtPractitioner);
-		return new PractitionerResponse("\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created");
+		return new PractitionerResponse(PHARMACIST_SUCCESSFULLY_CREATED);
 	}
 	private void validatePhoneNumber(String phoneNumber){
-	if (phoneNumber.length() != 11) throw new FieldInvalidException("Incomplete details provided");
+	if (phoneNumber.length() != 11) throw new FieldInvalidException(INCOMPLETE_DETAILS_PROVIDED);
 	for (int i = 0; i < phoneNumber.length(); i++) {
-		if (Character.isAlphabetic(phoneNumber.charAt(i))) throw new FieldInvalidException("Phonenumber must not contain alphabet");
+		if (Character.isAlphabetic(phoneNumber.charAt(i))) throw new FieldInvalidException(FIELD_INVALID_EXCEPTIONS);
 		}
 	}
 	private void validateName(String name){
-		if (name.contains(" ")) throw new FieldInvalidException("Incomplete details provided");
+		if (name.contains(" ")) throw new FieldInvalidException(INCOMPLETE_DETAILS_PROVIDED);
 	}
 	@Override
 	public AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest) {
 		medicationService.createMedication(addMedicationRequest);
-		return new AddMedicationResponse("Added Successfully");
+		return new AddMedicationResponse(MEDICATION_ADDED_SUCCESSFULLY);
 	}
 	
 	@Override
