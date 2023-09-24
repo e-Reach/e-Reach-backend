@@ -35,6 +35,8 @@ import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator
 public class EReachPractitionerService implements PractitionerService{
 	private EReachConfig config;
 	private ModelMapper mapper;
+	private DoctorService doctorService;
+	private PharmacistService pharmacistService;
 	private EReachPractitionerRepository practitionerRepository;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
 																		  "labTechnician", new LabTechnician(),
@@ -99,7 +101,11 @@ public class EReachPractitionerService implements PractitionerService{
 	@Override
 	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role) {
 		Practitioner practitioner = practitioners.get(role);
-		return null;
+		if (practitioner instanceof Doctor)
+			return doctorService.viewPatientRecord(patientIdentificationNumber);
+		if (practitioner instanceof Pharmacist)
+			return pharmacistService.viewPatientRecord(patientIdentificationNumber);
+		return GetRecordResponse.builder().build();
 	}
 	
 	@Override
