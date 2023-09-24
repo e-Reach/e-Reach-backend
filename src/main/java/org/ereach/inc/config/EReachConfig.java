@@ -2,6 +2,8 @@ package org.ereach.inc.config;
 
 
 import lombok.Getter;
+import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.models.users.Practitioner;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +32,10 @@ public class EReachConfig {
 	
 	@Bean
 	public ModelMapper getModelMapper(){
-		System.out.println(appJWTSecret);
-		return new ModelMapper();
+		ModelMapper mapper = new ModelMapper();
+		mapper.createTypeMap(CreatePractitionerRequest.class, Practitioner.class)
+				.addMappings(mapping -> mapping.map(CreatePractitionerRequest::getRole, Practitioner::setUserRole));
+		return mapper;
 	}
 	
 	@Bean

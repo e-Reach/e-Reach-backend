@@ -79,7 +79,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException {
+	public ResponseEntity<?> invitePractitioner(@NotNull InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException {
 		validator.validateEmail(practitionerRequest.getEmail());
 		verifyRole(practitionerRequest);
 		EReachNotificationRequest notificationRequest = buildNotificationRequest(practitionerRequest);
@@ -88,7 +88,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		return response;
 	}
 	
-	private static EReachNotificationRequest buildNotificationRequest(InvitePractitionerRequest practitionerRequest) {
+	private static EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
 		return EReachNotificationRequest.builder()
 				       .firstName(practitionerRequest.getFirstName())
 				       .lastName(practitionerRequest.getLastName())

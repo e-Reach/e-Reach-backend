@@ -1,4 +1,4 @@
-package org.ereach.inc.services;
+package org.ereach.inc.services.entries;
 
 import org.ereach.inc.data.dtos.request.CreateRecordRequest;
 import org.ereach.inc.data.dtos.response.CreateRecordResponse;

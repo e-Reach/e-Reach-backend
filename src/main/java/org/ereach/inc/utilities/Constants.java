@@ -38,7 +38,14 @@ public class Constants {
 	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
 	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
 	public static final String PATIENT_ID_MAIL_PATH = "classpath:/templates/patient_id_template.html";
-	public static final String CONSTRAINT_VIOLATION_MESSAGE = "Invalid Domain:: valid domain includes %s";
+	public static final String CONSTRAINT_VIOLATION_MESSAGE =
+                                """
+								Invalid email:: criteria for a valid email includes the following
+								1.) email must not contain any white space
+								2.) email domain must be a valid domain and valid domain includes %s
+								3.) email must be a valid email syntax, like contain an '@', which separate\
+								4.) the domain from the user name
+								""";
 	public static final String SENDER_FULL_NAME = "e-Reach inc";
 	public static final String SENDER_EMAIL = "noreply@ereachtech.com";
 	public static final String API_KEY = "api-key";

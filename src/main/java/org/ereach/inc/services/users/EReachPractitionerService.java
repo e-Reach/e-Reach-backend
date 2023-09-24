@@ -7,15 +7,18 @@ import org.ereach.inc.data.dtos.request.CloudUploadRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.TestRecommendationRequest;
 import org.ereach.inc.data.dtos.response.*;
-import org.ereach.inc.data.models.AccountStatus;
+
+import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
+import static org.ereach.inc.data.models.Role.*;
+
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.users.Doctor;
 import org.ereach.inc.data.models.users.LabTechnician;
 import org.ereach.inc.data.models.users.Pharmacist;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
+import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +33,6 @@ import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator
 @Service
 @AllArgsConstructor
 public class EReachPractitionerService implements PractitionerService{
-	
 	private EReachConfig config;
 	private ModelMapper mapper;
 	private EReachPractitionerRepository practitionerRepository;
@@ -38,44 +40,41 @@ public class EReachPractitionerService implements PractitionerService{
 																		  "labTechnician", new LabTechnician(),
 																		  "pharmacist", new Pharmacist());
 	@Override
-	public PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) {
+	public PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) throws RegistrationFailedException {
 		Practitioner practitioner = practitioners.get(registerDoctorRequest.getRole());
-		Converter<String, Role> stringToRole = role -> Role.valueOf(registerDoctorRequest.getRole().toUpperCase());
-		mapper.createTypeMap(CreatePractitionerRequest.class, Practitioner.class)
-			  .addMappings(mapping -> mapping.using(stringToRole).map(CreatePractitionerRequest::getRole, Practitioner::setUserRole));
-		
-		Practitioner savedPractitioner;
-		if (practitioner instanceof Doctor) {
-			Doctor mappedDoctor = mapper.map(registerDoctorRequest, Doctor.class);
-			String fullName = mappedDoctor.getFirstName() + SPACE + mappedDoctor.getLastName();
-			mappedDoctor.setActive(true);
-			mappedDoctor.setStatus(AccountStatus.ACTIVE);
-			mappedDoctor.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedDoctor.getEmail()));
-			savedPractitioner = practitionerRepository.save(mappedDoctor);
+		try {
+			Practitioner savedPractitioner;
+			if (practitioner instanceof Doctor) {
+				Doctor mappedDoctor = mapper.map(registerDoctorRequest, Doctor.class);
+				buildPractitioner(mappedDoctor, DOCTOR);
+				savedPractitioner = practitionerRepository.save(mappedDoctor);
+			} else if (practitioner instanceof Pharmacist) {
+				Pharmacist mappedPharmacist = mapper.map(registerDoctorRequest, Pharmacist.class);
+				buildPractitioner(mappedPharmacist, PHARMACIST);
+				savedPractitioner = practitionerRepository.save(mappedPharmacist);
+			} else {
+				LabTechnician mappedLabTechnician = mapper.map(registerDoctorRequest, LabTechnician.class);
+				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
+				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
+			}
+			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
+			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+			return response;
+		}catch (Throwable throwable){
+			throw new RegistrationFailedException(throwable);
 		}
-		else if (practitioner instanceof Pharmacist){
-			Pharmacist mappedPharmacist = mapper.map(registerDoctorRequest, Pharmacist.class);
-			String fullName = mappedPharmacist.getFirstName() + SPACE + mappedPharmacist.getLastName();
-			mappedPharmacist.setActive(true);
-			mappedPharmacist.setStatus(AccountStatus.ACTIVE);
-			mappedPharmacist.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPharmacist.getEmail()));
-			savedPractitioner = practitionerRepository.save(mappedPharmacist);
-		}
-		else{
-			LabTechnician mappedLabTechnician = mapper.map(registerDoctorRequest, LabTechnician.class);
-			String fullName = mappedLabTechnician.getFirstName() + SPACE + mappedLabTechnician.getLastName();
-			mappedLabTechnician.setActive(true);
-			mappedLabTechnician.setStatus(AccountStatus.ACTIVE);
-			mappedLabTechnician.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedLabTechnician.getEmail()));
-			savedPractitioner = practitionerRepository.save(mappedLabTechnician);
-		}
-		PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
-		response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
-		return response;
+	}
+	
+	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
+		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
+		mappedPractitioner.setActive(true);
+		mappedPractitioner.setStatus(ACTIVE);
+		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
+		mappedPractitioner.setUserRole(role);
 	}
 	
 	@Override
-	public PractitionerResponse activatePractitionerAccount(String token) throws RequestInvalidException {
+	public PractitionerResponse activatePractitionerAccount(String token) throws RequestInvalidException, RegistrationFailedException {
 		if (isValidToken(token, config.getAppJWTSecret())){
 			CreatePractitionerRequest createPractitionerRequest = buildPractitionerCreationRequest(token);
 			return activatePractitionerAccount(createPractitionerRequest);

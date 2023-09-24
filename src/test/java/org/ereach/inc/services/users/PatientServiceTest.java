@@ -129,7 +129,6 @@ public class PatientServiceTest {
                        .nin("111111259090")
                        .streetName("harvey road")
                        .build();
-        
     }
     
     public CreatePatientRequest buildPatientFieldsForEreachUsername(){

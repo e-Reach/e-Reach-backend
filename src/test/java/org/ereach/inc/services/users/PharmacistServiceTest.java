@@ -20,10 +20,6 @@ class PharmacistServiceTest {
 	
 	@Autowired
 	private PharmacistService pharmacistService;
-	private CreatePractitionerRequest practitionerRequest1;
-	private CreatePractitionerRequest practitionerRequest2;
-	private CreatePractitionerRequest practitionerRequest3;
-
 	private AddMedicationRequest medicationRequest1;
 	private AddMedicationRequest medicationRequest2;
 	private AddMedicationRequest medicationRequest3;
@@ -31,27 +27,6 @@ class PharmacistServiceTest {
 	private UpdateEntryRequest entryRequest;
 	@BeforeEach
 	void startEachTestWith() {
-		practitionerRequest1 = new CreatePractitionerRequest();
-		practitionerRequest1.setEmail("desyFavour54@gmail.com");
-		practitionerRequest1.setFirstName("Favour");
-		practitionerRequest1.setLastName("Chiemela");
-//		practitionerRequest1.setPhoneNumber("09034687770");
-		practitionerRequest1.setRole("pharmacist");
-
-		practitionerRequest2 = new CreatePractitionerRequest();
-		practitionerRequest2.setEmail("deegFav63@gmail.com");
-		practitionerRequest2.setFirstName("Goodness");
-		practitionerRequest2.setLastName("Obinali");
-//		practitionerRequest2.setPhoneNumber("07034687770");
-		practitionerRequest2.setRole("pharmacist");
-
-		practitionerRequest3 = new CreatePractitionerRequest();
-		practitionerRequest3.setEmail("dessyFav644@gmail.com");
-		practitionerRequest3.setFirstName("Favwhite");
-		practitionerRequest3.setLastName("nwadike");
-//		practitionerRequest3.setPhoneNumber("07037887770");
-		practitionerRequest3.setRole("pharmacist");
-
 		medicationRequest1 = new AddMedicationRequest();
 		medicationRequest1.setPrice(BigDecimal.valueOf(1500));
 		medicationRequest1.setDrugName("Paracetamol");

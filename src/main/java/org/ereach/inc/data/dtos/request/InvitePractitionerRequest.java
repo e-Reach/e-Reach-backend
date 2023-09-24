@@ -7,7 +7,6 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Data
-@SuppressWarnings("/unchecked/")
 public class InvitePractitionerRequest {
 	
 	private String firstName;

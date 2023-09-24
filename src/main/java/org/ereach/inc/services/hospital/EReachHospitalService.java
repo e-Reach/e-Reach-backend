@@ -9,8 +9,9 @@ import org.ereach.inc.data.dtos.response.AddressResponse;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.models.Address;
-import org.ereach.inc.data.models.Role;
+import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
+import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.ereach.inc.data.models.Role.HOSPITAL_ADMIN;
+import static org.ereach.inc.data.models.Role.HOSPITAL;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
@@ -60,14 +62,16 @@ public class EReachHospitalService implements HospitalService {
 		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
 		
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
-		mappedHospital.setRole(Role.HOSPITAL);
+		mappedHospital.setRole(HOSPITAL);
 		mappedHospital.setAddress(savedAddress);
+		mappedHospital.setLogsCreated(new HashSet<>());
 		mappedHospital.setAdmins(new HashSet<>());
 		mappedHospital.setPractitioners(new HashSet<>());
 		mappedHospital.setRecords(new HashSet<>());
 		
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
 		admin.setId(null);
+		admin.setAdminRole(HOSPITAL_ADMIN);
 		mappedHospital.getAdmins().add(admin);
 		
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
@@ -190,5 +194,26 @@ public class EReachHospitalService implements HospitalService {
 	public void removeHospital(String mail) {
 		hospitalRepository.deleteAll();
 		hospitalRepository.deleteByHospitalEmail(mail);
+	}
+	
+	@Override
+	public void addToLog(String hospitalEmail, MedicalLog medicalLog) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		foundHospital.map(hospital->{
+			hospital.getLogsCreated().add(medicalLog);
+			hospitalRepository.save(hospital);
+			return hospital;
+		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
+	}
+	
+	@Override
+	public void addToRecords(String hospitalEmail, Record savedRecord) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		foundHospital.map(hospital->{
+			hospital.getRecords().add(savedRecord);
+			hospitalRepository.save(hospital);
+			return hospital;
+		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
+		
 	}
 }
