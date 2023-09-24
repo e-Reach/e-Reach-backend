@@ -97,7 +97,8 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	@Override
-	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber) {
+	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role) {
+		Practitioner practitioner = practitioners.get(role);
 		return null;
 	}
 	

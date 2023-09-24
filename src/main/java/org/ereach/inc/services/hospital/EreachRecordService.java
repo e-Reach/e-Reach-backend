@@ -36,9 +36,7 @@ public class EreachRecordService implements RecordService {
                                    .lastTimeUpdated(LocalTime.now())
                                    .build();
         newRecord.setPatientIdentificationNumber(createRecordRequest.getPatientIdentificationNumber());
-        System.out.println("In the record service Before saving the record: "+newRecord.getPatientIdentificationNumber());
         Record savedRecord = recordRepository.save(newRecord);
-        System.out.println("In the record service after saving the record: "+savedRecord.getPatientIdentificationNumber());
         hospitalService.addToRecords(foundHospital.getHospitalEmail(), savedRecord);
         return modelMapper.map(savedRecord, CreateRecordResponse.class);
     }

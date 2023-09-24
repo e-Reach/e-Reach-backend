@@ -6,6 +6,8 @@ import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.repositories.entries.EReachMedicalLogRepository;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
+import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.hospital.RecordService;
 import org.ereach.inc.services.users.PatientService;
@@ -16,6 +18,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static org.ereach.inc.utilities.Constants.NO_MEDICAL_LOGS_FOUND_FOR_PATIENT;
+import static org.ereach.inc.utilities.Constants.NO_MEDICAL_LOGS_FOUND_FOR_PATIENT_WITH_DATE;
 
 @Service
 @AllArgsConstructor
@@ -54,18 +60,19 @@ public class EreachMedicalLogService implements MedicalLogService {
     }
     
     @Override
-    public List<MedicalLogResponse> viewPatientMedicalLogs(String patientIdentificationNumber) {
-        return null;
+    public List<MedicalLogResponse> viewPatientMedicalLogs(String patientIdentificationNumber) throws RequestInvalidException {
+        List<MedicalLog> medicalLogs = medicalLogRepository.findAllByPatientIdentificationNumber(patientIdentificationNumber);
+        if (medicalLogs.isEmpty())
+            throw new RequestInvalidException(String.format(NO_MEDICAL_LOGS_FOUND_FOR_PATIENT, patientIdentificationNumber));
+        else return medicalLogs.stream()
+                               .map(medicalLog -> modelMapper.map(medicalLog, MedicalLogResponse.class))
+                               .toList();
     }
-    
     @Override
     public MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date) {
-        return null;
-    }
-    
-    @Override
-    public List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail) {
-        return null;
+        Optional<MedicalLog> foundLog = medicalLogRepository.findByPatientIdentificationNumberAndDateCreated(patientIdentificationNumber, date);
+        return foundLog.map(medicalLog -> modelMapper.map(medicalLog, MedicalLogResponse.class))
+                       .orElseThrow(()-> new EReachUncheckedBaseException(String.format(NO_MEDICAL_LOGS_FOUND_FOR_PATIENT_WITH_DATE, patientIdentificationNumber, date)));
     }
     
     @Override

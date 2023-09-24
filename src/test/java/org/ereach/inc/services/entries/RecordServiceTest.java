@@ -29,7 +29,7 @@ public class RecordServiceTest {
     }
 
     @Test void testThatNewLogCanBeAddedToRecord(){
-
+    
     }
     
 }

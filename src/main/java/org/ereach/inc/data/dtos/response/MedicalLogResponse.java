@@ -13,5 +13,4 @@ public class MedicalLogResponse {
 	private LocalDate dateCreated;
 	private LocalTime timeCreated;
 	private String patientIdentificationNumber;
-	private String hospitalEmail;
 }

@@ -8,6 +8,7 @@ import org.ereach.inc.data.dtos.request.CreateRecordRequest;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.hospital.RecordService;
@@ -20,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -38,15 +40,15 @@ class MedicalLogServiceTest {
     private InMemoryDatabase inMemoryDatabase;
     @Autowired
     private PatientService patientService;
+    HospitalResponse hospitalResponse;
     
     @Test
     @SneakyThrows
     public void createNewMedicalLogTest() {
         hospitalAdminService.registerHospital(buildCreateHospitalRequest());
-        HospitalResponse hospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
+        hospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
         hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
         CreatePatientResponse response = patientService.createPatient(buildPatient());
-        System.out.println("In test class it was: "+response.getPatientIdentificationNumber());
         recordService.createRecord(buildRecordRequest(hospitalResponse, response.getPatientIdentificationNumber()));
         MedicalLogResponse medicalLogResponse = medicalLogService.createNewLog(buildCreateMedicalLogRequest(hospitalResponse, response.getPatientIdentificationNumber()));
         
@@ -55,20 +57,21 @@ class MedicalLogServiceTest {
         assertThat(medicalLogResponse.getMessage()).isNotNull();
         assertThat(medicalLogResponse.getDateCreated()).isEqualTo(LocalDate.now());
     }
-    
     @Test
-    void medicalLogsCanBeFetched_UsingTheEmailOfTheHospitalCreatedAt() {
-    
-    }
-    
-    @Test
-    void addMedicalLog_MedicalLogIsFetchedByPatientIdentificationNumber() {
-    
+    void addMedicalLog_MedicalLogIsFetchedByPatientIdentificationNumber() throws RequestInvalidException {
+        List<MedicalLogResponse> logResponses = medicalLogService.viewPatientMedicalLogs("1ca5634bd5");
+        MedicalLogResponse logResponse = medicalLogService.viewPatientMedicalLog("7f64481934", LocalDate.of(2023, 9, 24));
+        logResponses.forEach(medicalLogResponse -> {
+            assertThat(medicalLogResponse).isNotNull();
+            assertThat(medicalLogResponse.getPatientIdentificationNumber()).isNotNull();
+        });
+        assertThat(logResponse).isNotNull();
+        assertThat(logResponse.getPatientIdentificationNumber()).isNotNull();
     }
     
     @Test
     void deactivateMedicalLogByMidnightTest() {
-    
+        
     }
     
     @Test
