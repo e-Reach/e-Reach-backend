@@ -90,12 +90,12 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	private static EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
 		return EReachNotificationRequest.builder()
-				       .firstName(practitionerRequest.getFirstName())
-				       .lastName(practitionerRequest.getLastName())
-				       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
-				       .email(practitionerRequest.getEmail())
-				       .role(practitionerRequest.getRole())
-				       .build();
+								       .firstName(practitionerRequest.getFirstName())
+								       .lastName(practitionerRequest.getLastName())
+								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+								       .email(practitionerRequest.getEmail())
+								       .role(practitionerRequest.getRole())
+								       .build();
 	}
 	
 	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {

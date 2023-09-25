@@ -7,7 +7,7 @@ import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
-import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;

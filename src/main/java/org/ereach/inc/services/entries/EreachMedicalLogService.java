@@ -2,9 +2,13 @@ package org.ereach.inc.services.entries;
 
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.dtos.request.entries.CreateMedicalLogRequest;
-import org.ereach.inc.data.dtos.request.entries.DoctorReportDTO;
+import org.ereach.inc.data.dtos.request.entries.TestDTO;
 import org.ereach.inc.data.dtos.response.GetPatientResponse;
-import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.entries.DoctorReportResponseDTO;
+import org.ereach.inc.data.dtos.response.entries.PrescriptionsResponseDTO;
+import org.ereach.inc.data.dtos.response.entries.TestResponseDTO;
+import org.ereach.inc.data.dtos.response.entries.VitalsResponseDTO;
 import org.ereach.inc.data.models.entries.*;
 import org.ereach.inc.data.repositories.entries.EReachEntryRepository;
 import org.ereach.inc.data.repositories.entries.EReachMedicalLogRepository;
@@ -38,30 +42,52 @@ public class EreachMedicalLogService implements MedicalLogService {
     private HospitalService hospitalService;
     @Override
     public MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest){
+        scanForFile(createLogRequest.getTestDTO());
+       
         Vitals mappedVital = modelMapper.map(createLogRequest.getVitalsDTO(), Vitals.class);
         DoctorsReport mappedDocReport = modelMapper.map(createLogRequest.getDoctorReportDTO(), DoctorsReport.class);
         List<Tests> mappedTests = mapList(createLogRequest.getTestDTO(), Tests.class);
         List<Prescription> mappedPrescriptions = mapList(createLogRequest.getPrescriptionsDTO(), Prescription.class);
-        MedicalLog medicalLog = buildMedicalLog(createLogRequest);
+        
         Vitals savedVital = entryRepository.save(mappedVital);
         DoctorsReport savedDocReport = entryRepository.save(mappedDocReport);
         List<Tests> savedTests = entryRepository.saveAll(mappedTests);
         List<Prescription> savedPrescriptions = entryRepository.saveAll(mappedPrescriptions);
+        
+        MedicalLog medicalLog = buildMedicalLog(createLogRequest);
         medicalLog.getEntries().add(savedVital);
         medicalLog.getEntries().add(savedDocReport);
         medicalLog.getEntries().addAll(savedTests);
         medicalLog.getEntries().addAll(savedPrescriptions);
-        System.out.println("\t\t\t\tMedical log "+medicalLog);
-        System.out.println("=".repeat(20));
-        System.out.println(medicalLog);
-        System.out.println("=".repeat(20));
+       
         GetPatientResponse foundPatient = patientService.findByPatientIdentificationNumber(createLogRequest.getPatientIdentificationNumber());
         MedicalLog savedMedicalLog = medicalLogRepository.save(medicalLog);
         recordService.addLogToRecord(foundPatient.getPatientIdentificationNumber(), savedMedicalLog);
         hospitalService.addToLog(createLogRequest.getHospitalEmail(), savedMedicalLog);
-        MedicalLogResponse response = modelMapper.map(savedMedicalLog, MedicalLogResponse.class);
-        response.setMessage(MEDICAL_LOG_CREATED_SUCCESSFULLY);
-        return response;
+        
+        VitalsResponseDTO vitalsResponse = modelMapper.map(savedVital, VitalsResponseDTO.class);
+        DoctorReportResponseDTO docReportsResponse = modelMapper.map(savedDocReport, DoctorReportResponseDTO.class);
+        List<TestResponseDTO> testsResponses = mapList(savedTests, TestResponseDTO.class);
+        List<PrescriptionsResponseDTO> prescriptionsResponses = mapList(savedPrescriptions, PrescriptionsResponseDTO.class);
+	    
+	    return medicalLogResponse(savedMedicalLog, docReportsResponse, testsResponses, prescriptionsResponses, vitalsResponse);
+    }
+    
+    private static MedicalLogResponse medicalLogResponse(MedicalLog savedMedicalLog,
+                                                         DoctorReportResponseDTO docReportsResponse,
+                                                         List<TestResponseDTO> testsResponses,
+                                                         List<PrescriptionsResponseDTO> prescriptionsResponses,
+                                                         VitalsResponseDTO vitalsResponse) {
+        return MedicalLogResponse.builder()
+                       .dateCreated(savedMedicalLog.getDateCreated())
+                       .doctorReportResponseDTO(docReportsResponse)
+                       .message(MEDICAL_LOG_CREATED_SUCCESSFULLY)
+                       .testResponseDTO(testsResponses)
+                       .prescriptionsResponseDTO(prescriptionsResponses)
+                       .vitalsResponseDTO(vitalsResponse)
+                       .timeCreated(savedMedicalLog.getTimeCreated())
+                       .patientIdentificationNumber(savedMedicalLog.getPatientIdentificationNumber())
+                       .build();
     }
     
     <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
@@ -70,6 +96,18 @@ public class EreachMedicalLogService implements MedicalLogService {
                      .collect(Collectors.toList());
     }
 
+    public void scanForFile(List<TestDTO> tests){
+        for (TestDTO testDTO: tests) {
+            if (testDTO.getMultipartFile().isEmpty())
+                continue;
+            pushToCloud(testDTO);
+        }
+    }
+    
+    private void pushToCloud(TestDTO testDTO) {
+    
+    }
+    
     private static MedicalLog buildMedicalLog(CreateMedicalLogRequest createLogRequest) {
         return MedicalLog.builder()
                          .dateCreated(LocalDate.now())
@@ -105,4 +143,5 @@ public class EreachMedicalLogService implements MedicalLogService {
     public void deActivateMedicalLogWhosePatientsAreNotDeactivate() {
 
     }
+    //        System.out.println("=".repeat(100)+"\n"+"Medical log::==> "+medicalLog+"\n"+"=".repeat(100));
 }

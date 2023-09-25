@@ -56,12 +56,16 @@ public class Constants {
 	public static final String MESSAGE_FAILED_TO_SEND = "Message Could Not Be Sent";
 	public static final String MESSAGE_SUBJECT = "Support At e-Reach inc";
 	public static final String TEMPLATE_LOAD_FAILED = "Error loading template content Template failed to load:: ";
+<<<<<<< HEAD
 	public static final String PATIENT_ACCOUNT_CREATED_SUCCESSFULLY = "Patient %s Account Created Successfully";
 	public static  final String FIELD_INVALID_EXCEPTIONS = "Phone number must not contain alphabet";
 	public  static final String INCOMPLETE_DETAILS_PROVIDED = "Incomplete details provided";
 	public static  final  String MEDICATION_ADDED_SUCCESSFULLY = "Added Successfully";
 	public static  final  String PHARMACIST_SUCCESSFULLY_CREATED = "\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created";
 	public static  final  String EMAIL_ALREADY_EXIST = "Email already exists";
+=======
+	public static final String PATIENT_ACCOUNT_CREATED_SUCCESSFULLY = "Patient %s Account Created Successfully, you will receive a mail with your P.I.N and Username very soon which";
+>>>>>>> 3bc916e9dff22bcbcfd8122087f8bdb14deddfdb
 	public static final String DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY = "Doctor %s Account Created Successfully";
 	public static final String PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
 	public static final String NO_MEDICAL_LOGS_FOUND_FOR_PATIENT = "No medical log(s) found for patient with P.I.N %s";

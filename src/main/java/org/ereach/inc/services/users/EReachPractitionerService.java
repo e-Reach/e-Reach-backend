@@ -11,6 +11,7 @@ import org.ereach.inc.data.dtos.response.*;
 import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
 import static org.ereach.inc.data.models.Role.*;
 
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.users.Doctor;
 import org.ereach.inc.data.models.users.LabTechnician;
@@ -20,6 +21,8 @@ import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
+import org.ereach.inc.services.notifications.EReachNotificationRequest;
+import org.ereach.inc.services.notifications.MailService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +41,7 @@ public class EReachPractitionerService implements PractitionerService{
 	private ModelMapper mapper;
 	private DoctorService doctorService;
 	private PharmacistService pharmacistService;
+	private MailService mailService;
 	private EReachPractitionerRepository practitionerRepository;
 	private HospitalService hospitalService;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
@@ -61,6 +65,7 @@ public class EReachPractitionerService implements PractitionerService{
 				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
 				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 			}
+			mailService.sendMail(buildNotificationRequest(practitioner));
 			hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPractitioner);
 			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
 			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
@@ -68,6 +73,17 @@ public class EReachPractitionerService implements PractitionerService{
 		}catch (Throwable throwable){
 			throw new RegistrationFailedException(throwable);
 		}
+	}
+	
+	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
+		return EReachNotificationRequest.builder()
+								       .firstName(practitioner.getFirstName())
+								       .lastName(practitioner.getLastName())
+								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+								       .email(practitioner.getEmail())
+								       .username(practitioner.getPractitionerIdentificationNumber())
+								       .role(practitioner.getUserRole().toString())
+								       .build();
 	}
 	
 	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {

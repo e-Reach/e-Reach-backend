@@ -18,7 +18,6 @@ import static jakarta.persistence.GenerationType.UUID;
 @Getter
 @Setter
 public class Medication {
-    
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;

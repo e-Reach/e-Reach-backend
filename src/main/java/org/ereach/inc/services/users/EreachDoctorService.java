@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
-import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.services.hospital.RecordService;
 import org.ereach.inc.services.validators.EmailValidator;
