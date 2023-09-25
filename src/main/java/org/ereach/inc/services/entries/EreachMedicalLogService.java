@@ -2,7 +2,7 @@ package org.ereach.inc.services.entries;
 
 import lombok.AllArgsConstructor;
 import org.ereach.inc.data.dtos.request.entries.CreateMedicalLogRequest;
-import org.ereach.inc.data.dtos.request.entries.DoctorReportDTO;
+import org.ereach.inc.data.dtos.request.entries.TestDTO;
 import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.*;
@@ -38,6 +38,7 @@ public class EreachMedicalLogService implements MedicalLogService {
     private HospitalService hospitalService;
     @Override
     public MedicalLogResponse createNewLog(CreateMedicalLogRequest createLogRequest){
+        scanForFile(createLogRequest.getTestDTO());
         Vitals mappedVital = modelMapper.map(createLogRequest.getVitalsDTO(), Vitals.class);
         DoctorsReport mappedDocReport = modelMapper.map(createLogRequest.getDoctorReportDTO(), DoctorsReport.class);
         List<Tests> mappedTests = mapList(createLogRequest.getTestDTO(), Tests.class);
@@ -51,10 +52,7 @@ public class EreachMedicalLogService implements MedicalLogService {
         medicalLog.getEntries().add(savedDocReport);
         medicalLog.getEntries().addAll(savedTests);
         medicalLog.getEntries().addAll(savedPrescriptions);
-        System.out.println("\t\t\t\tMedical log "+medicalLog);
-        System.out.println("=".repeat(20));
-        System.out.println(medicalLog);
-        System.out.println("=".repeat(20));
+        System.out.println("=".repeat(100)+"\n"+"Medical log::==> "+medicalLog+"\n"+"=".repeat(100));
         GetPatientResponse foundPatient = patientService.findByPatientIdentificationNumber(createLogRequest.getPatientIdentificationNumber());
         MedicalLog savedMedicalLog = medicalLogRepository.save(medicalLog);
         recordService.addLogToRecord(foundPatient.getPatientIdentificationNumber(), savedMedicalLog);
@@ -70,6 +68,18 @@ public class EreachMedicalLogService implements MedicalLogService {
                      .collect(Collectors.toList());
     }
 
+    public void scanForFile(List<TestDTO> tests){
+        for (TestDTO testDTO: tests) {
+            if (testDTO.getMultipartFile().isEmpty())
+                continue;
+            pushToCloud(testDTO);
+        }
+    }
+    
+    private void pushToCloud(TestDTO testDTO) {
+    
+    }
+    
     private static MedicalLog buildMedicalLog(CreateMedicalLogRequest createLogRequest) {
         return MedicalLog.builder()
                          .dateCreated(LocalDate.now())

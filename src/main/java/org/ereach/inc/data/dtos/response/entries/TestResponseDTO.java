@@ -1,8 +1,9 @@
-package org.ereach.inc.data.dtos.request.entries;
+package org.ereach.inc.data.dtos.response.entries;
 
-import jakarta.persistence.OneToOne;
-import lombok.*;
-import org.ereach.inc.data.models.entries.TestResult;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -11,10 +12,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TestDTO {
+public class TestResponseDTO {
 	
 	private String testName;
-	private MultipartFile multipartFile;
+	private String fileUrl;
 	private LocalDate testDate;
 	private String testReport;
 	private String practitionerEmail;
