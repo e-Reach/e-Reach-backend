@@ -7,6 +7,7 @@ import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
@@ -20,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static java.math.BigInteger.ZERO;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
@@ -121,6 +124,18 @@ class HospitalAdminServiceTest {
 		assertThat(invitationResponse.getStatusCode().value()).isEqualTo(HttpStatus.CREATED.value());
 		assertThat(invitationResponse.getBody()).isNotNull();
 	}
+	
+	@Test
+	void medicalLogsCanBeFetched_UsingTheEmailOfTheHospitalCreatedAt() {
+		List<MedicalLogResponse> foundLogs = hospitalService.viewPatientsMedicalLogs(response.getHospitalEmail());
+		assertThat(foundLogs.isEmpty()).isFalse();
+		foundLogs.forEach(logResponse->{
+			assertThat(logResponse).isNotNull();
+			assertThat(logResponse.getMessage()).isNotNull();
+			assertThat(logResponse.getPatientIdentificationNumber()).isNotNull();
+		});
+	}
+	
 	
 	private InvitePractitionerRequest buildPractitionerInvitationRequest() {
 		return InvitePractitionerRequest.builder()

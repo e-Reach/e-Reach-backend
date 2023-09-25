@@ -3,6 +3,7 @@ package org.ereach.inc.services.users;
 import lombok.SneakyThrows;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
+import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
@@ -85,7 +86,9 @@ class PractitionerServiceTest {
 	}
 	
 	@Test void viewMedicalRecordTest(){
-	
+		GetRecordResponse response = practitionerService.viewPatientRecord("58a8c166fa", "pharmacist");
+		assertThat(response).isNotNull();
+		assertThat(response.getMessage()).isNotNull();
 	}
 	
 	

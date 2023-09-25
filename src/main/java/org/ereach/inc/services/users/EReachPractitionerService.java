@@ -19,6 +19,7 @@ import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
+import org.ereach.inc.services.hospital.HospitalService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,10 @@ import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator
 public class EReachPractitionerService implements PractitionerService{
 	private EReachConfig config;
 	private ModelMapper mapper;
+	private DoctorService doctorService;
+	private PharmacistService pharmacistService;
 	private EReachPractitionerRepository practitionerRepository;
+	private HospitalService hospitalService;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
 																		  "labTechnician", new LabTechnician(),
 																		  "pharmacist", new Pharmacist());
@@ -57,6 +61,7 @@ public class EReachPractitionerService implements PractitionerService{
 				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
 				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 			}
+			hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPractitioner);
 			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
 			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
 			return response;
@@ -97,8 +102,13 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	@Override
-	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber) {
-		return null;
+	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role) {
+		Practitioner practitioner = practitioners.get(role);
+		if (practitioner instanceof Doctor)
+			return doctorService.viewPatientRecord(patientIdentificationNumber);
+		if (practitioner instanceof Pharmacist)
+			return pharmacistService.viewPatientRecord(patientIdentificationNumber);
+		return GetRecordResponse.builder().build();
 	}
 	
 	@Override

@@ -13,7 +13,7 @@ public interface PractitionerService {
 	PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
 	PractitionerResponse activatePractitionerAccount(String token) throws RequestInvalidException, RegistrationFailedException;
 	void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber);
-	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);
+	GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role);
 	MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date);
 	TestRecommendationResponse recommendTest(TestRecommendationRequest testRecommendationRequest);
 	AppointmentScheduleResponse scheduleAppointment(AppointmentScheduleRequest appointmentScheduleRequest);

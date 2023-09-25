@@ -1,5 +1,6 @@
 package org.ereach.inc.services.users;
 
+import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ public class DoctorServiceTest {
 	
 	@Test
 	void viewMedicalRecordTest(){
-		doctorService.viewPatientRecord(null);
+		GetRecordResponse foundRecord = doctorService.viewPatientRecord("58a8c166fa");
 	}
 	
 	@Test void testThatDoctorViewsMedicalRecord_AListOfMedicalLogsIsReturned_WIthEachLogContainingAllEntries(){

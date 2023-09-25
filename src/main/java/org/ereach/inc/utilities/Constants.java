@@ -64,4 +64,6 @@ public class Constants {
 	public static  final  String EMAIL_ALREADY_EXIST = "Email already exists";
 	public static final String DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY = "Doctor %s Account Created Successfully";
 	public static final String PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
+	public static final String NO_MEDICAL_LOGS_FOUND_FOR_PATIENT = "No medical log(s) found for patient with P.I.N %s";
+	public static final String NO_MEDICAL_LOGS_FOUND_FOR_PATIENT_WITH_DATE = "No medical log(s) found for patient with P.I.N %s on this day: %s";
 }

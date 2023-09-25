@@ -8,11 +8,13 @@ import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.AddressResponse;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.HospitalAdmin;
+import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
@@ -215,5 +217,21 @@ public class EReachHospitalService implements HospitalService {
 			return hospital;
 		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 		
+	}
+	
+	@Override
+	public void addPractitioners(String hospitalEmail, Practitioner savedPractitioner) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		foundHospital.map(hospital->{
+			hospital.getPractitioners().add(savedPractitioner);
+			hospitalRepository.save(hospital);
+			return hospital;
+		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
+		
+	}
+	
+	@Override
+	public List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail) {
+		return null;
 	}
 }
