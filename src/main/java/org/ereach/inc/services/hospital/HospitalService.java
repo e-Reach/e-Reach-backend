@@ -7,6 +7,7 @@ import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Record;
+import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 
@@ -31,4 +32,5 @@ public interface HospitalService {
 	void addToRecords(String hospitalEmail, Record savedRecord);
 	List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail);
 	
+	void addPractitioners(String hospitalEmail, Practitioner savedPractitioner);
 }

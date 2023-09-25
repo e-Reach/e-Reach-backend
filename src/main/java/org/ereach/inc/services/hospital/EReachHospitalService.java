@@ -14,6 +14,7 @@ import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.HospitalAdmin;
+import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
@@ -212,6 +213,17 @@ public class EReachHospitalService implements HospitalService {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
 		foundHospital.map(hospital->{
 			hospital.getRecords().add(savedRecord);
+			hospitalRepository.save(hospital);
+			return hospital;
+		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
+		
+	}
+	
+	@Override
+	public void addPractitioners(String hospitalEmail, Practitioner savedPractitioner) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		foundHospital.map(hospital->{
+			hospital.getPractitioners().add(savedPractitioner);
 			hospitalRepository.save(hospital);
 			return hospital;
 		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));

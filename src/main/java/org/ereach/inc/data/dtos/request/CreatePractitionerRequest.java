@@ -25,4 +25,5 @@ public class CreatePractitionerRequest {
 	@NotEmpty
 	private String email;
 	private String phoneNumber;
+	private String hospitalEmail;
 }

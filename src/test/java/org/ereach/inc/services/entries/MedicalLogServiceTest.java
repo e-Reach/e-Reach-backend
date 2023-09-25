@@ -18,7 +18,6 @@ import org.ereach.inc.utilities.JWTUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -81,7 +80,6 @@ class MedicalLogServiceTest {
     
     private static CreateRecordRequest buildRecordRequest(HospitalResponse hospitalResponse, String PIN) {
         return CreateRecordRequest.builder()
-                       .officerIdentificationNumber("")
                        .patientIdentificationNumber(PIN)
                        .hospitalEmail(hospitalResponse.getHospitalEmail())
                        .build();
