@@ -27,7 +27,7 @@ public class EreachDoctorService implements DoctorService {
     
     @Override
     public GetRecordResponse viewPatientRecord(String patientIdentificationNumber) {
-        recordService.viewPatientRecord(patientIdentificationNumber);
+//        recordService.viewPatientRecord(patientIdentificationNumber);
         return null;
     }
     

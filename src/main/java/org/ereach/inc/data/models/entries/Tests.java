@@ -4,10 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -18,6 +15,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Tests extends Entry {
 
     @Id

@@ -17,6 +17,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Prescription extends Entry {
     @Id
     @GeneratedValue(strategy = UUID)

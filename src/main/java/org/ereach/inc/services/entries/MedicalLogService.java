@@ -1,6 +1,6 @@
 package org.ereach.inc.services.entries;
 
-import org.ereach.inc.data.dtos.request.CreateMedicalLogRequest;
+import org.ereach.inc.data.dtos.request.entries.CreateMedicalLogRequest;
 import org.ereach.inc.data.dtos.response.MedicalLogResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.RequestInvalidException;

@@ -16,6 +16,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class MedicalLog {
 
     @Id

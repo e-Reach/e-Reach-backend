@@ -25,6 +25,7 @@ public class EReachRecordService implements RecordService {
     private ModelMapper modelMapper;
     private HospitalService hospitalService;
     
+    // TODO: 9/25/2023 TO DELETE CAUSE IT's NO MORE NECESSARY
     @Override
     public CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest) {
         HospitalResponse foundHospital = hospitalService.findHospitalByEmail(createRecordRequest.getHospitalEmail());
@@ -35,8 +36,8 @@ public class EReachRecordService implements RecordService {
                                    .lastTimeUpdated(LocalTime.now())
                                    .build();
         newRecord.setPatientIdentificationNumber(createRecordRequest.getPatientIdentificationNumber());
-        Record savedRecord = recordRepository.save(newRecord);
-        hospitalService.addToRecords(foundHospital.getHospitalEmail(), savedRecord);
+        Record savedRecord = newRecord;//recordRepository.save(newRecord);
+//        hospitalService.addToRecords(foundHospital.getHospitalEmail(), savedRecord);
         return modelMapper.map(savedRecord, CreateRecordResponse.class);
     }
     
