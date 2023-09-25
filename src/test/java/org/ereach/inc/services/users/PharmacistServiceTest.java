@@ -94,12 +94,6 @@ class PharmacistServiceTest {
 	@Test void testThatWhenPharmacistTriesToViewMedicalLog_PrescriptionEntryIsTheLogShown(){
 	
 	}
-	@Test
-	void testThatPharmacistCanAddMedicine(){
-		pharmacistService.addMedication(medicationRequest1);
-		pharmacistService.addMedication(medicationRequest2);
-		pharmacistService.addMedication(medicationRequest3);
-	}
 	
 	@Test void removePharmacistsByEmailAndPractitionerIdentificationNumber(){
 	

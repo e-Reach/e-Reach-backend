@@ -22,21 +22,24 @@ import java.util.Optional;
 public class EreachRecordService implements RecordService {
     
     public static final String RECORD_WITH_P_I_N_NOT_FOUND = "Record with p.i.n %s not found";
-    private HospitalAdminService hospitalAdminService;
     private EReachRecordRepository recordRepository;
     private ModelMapper modelMapper;
+    private HospitalService hospitalService;
 
     @Override
     public CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest) {
-        HospitalResponse foundHospital = hospitalAdminService.getHospitalRegisteredWith(createRecordRequest.getOfficerIdentificationNumber());
+        HospitalResponse foundHospital = hospitalService.findHospitalByEmail(createRecordRequest.getHospitalEmail());
         Record newRecord = Record.builder()
                                    .dateCreated(LocalDate.now())
-                                   .centreCreated(null)
                                    .medicalLogs(new ArrayList<>())
+                                   .patientIdentificationNumber(createRecordRequest.getPatientIdentificationNumber())
                                    .lastTimeUpdated(LocalTime.now())
                                    .build();
         newRecord.setPatientIdentificationNumber(createRecordRequest.getPatientIdentificationNumber());
+        System.out.println("In the record service Before saving the record: "+newRecord.getPatientIdentificationNumber());
         Record savedRecord = recordRepository.save(newRecord);
+        System.out.println("In the record service after saving the record: "+savedRecord.getPatientIdentificationNumber());
+        hospitalService.addToRecords(foundHospital.getHospitalEmail(), savedRecord);
         return modelMapper.map(savedRecord, CreateRecordResponse.class);
     }
 

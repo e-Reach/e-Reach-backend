@@ -27,7 +27,7 @@ public class Practitioner {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Enumerated(STRING)
+    @Enumerated(value = STRING)
     private Role userRole;
     @Column(unique = true)
     @NaturalId(mutable = true)

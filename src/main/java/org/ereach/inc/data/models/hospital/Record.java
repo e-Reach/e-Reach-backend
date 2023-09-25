@@ -25,10 +25,8 @@ public class Record {
     @GeneratedValue(strategy = UUID)
     private String id;
     private String patientIdentificationNumber;
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<MedicalLog> medicalLogs;
-    @ManyToOne
-    private Hospital centreCreated;
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
 

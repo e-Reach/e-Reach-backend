@@ -5,6 +5,8 @@ public class Constants {
 	public static final String E_REACH_USERNAME_PREFIX = "e-Reach-";
 	public static final String SHA_256_ALGORITHM = "SHA-256";
 	public static final String HOSPITAL = "hospital";
+	public static final String NO_PRACTITIONER_FOUND = "No Practitioner(s) found";
+	
 	public static final String ACCOUNT_ACTIVATION_SUCCESSFUL = "Account Activation Successful";
 	public static final String PRACTITIONER = "practitioner";
 	public static final String PATIENT_WITH_PIN_DOES_NOT_EXIST = "patient with pin %s does not exist";
@@ -36,7 +38,14 @@ public class Constants {
 	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
 	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
 	public static final String PATIENT_ID_MAIL_PATH = "classpath:/templates/patient_id_template.html";
-	public static final String CONSTRAINT_VIOLATION_MESSAGE = "Invalid Domain:: valid domain includes %s";
+	public static final String CONSTRAINT_VIOLATION_MESSAGE =
+                                """
+								Invalid email:: criteria for a valid email includes the following
+								1.) email must not contain any white space
+								2.) email domain must be a valid domain and valid domain includes %s
+								3.) email must be a valid email syntax, like contain an '@', which separate\
+								4.) the domain from the user name
+								""";
 	public static final String SENDER_FULL_NAME = "e-Reach inc";
 	public static final String SENDER_EMAIL = "noreply@ereachtech.com";
 	public static final String API_KEY = "api-key";
@@ -54,5 +63,5 @@ public class Constants {
 	public static  final  String PHARMACIST_SUCCESSFULLY_CREATED = "\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created";
 	public static  final  String EMAIL_ALREADY_EXIST = "Email already exists";
 	public static final String DOCTOR_ACCOUNT_CREATED_SUCCESSFULLY = "Doctor %s Account Created Successfully";
-	public static final String DOCTOR_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
+	public static final String PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION = "Doctor %s Account awaiting confirmation";
 }

@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.Role;
+import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
-import org.hibernate.annotations.NaturalId;
 
 import java.util.Set;
 
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.UUID;
 
 @Entity
@@ -34,10 +36,12 @@ public class Hospital {
     @Column(unique = true)
     private String hospitalEmail;
     private Role role;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = REMOVE, fetch = EAGER)
+    private Set<MedicalLog> logsCreated;
+    @OneToMany(cascade = REMOVE, fetch = EAGER)
     private Set<Practitioner> practitioners;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = REMOVE, fetch = EAGER)
     private Set<HospitalAdmin> admins;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = DETACH, fetch = EAGER)
     private Set<Record> records;
 }

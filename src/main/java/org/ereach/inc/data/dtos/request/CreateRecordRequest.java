@@ -22,5 +22,6 @@ import static jakarta.persistence.GenerationType.UUID;
 public class CreateRecordRequest {
     
     private String officerIdentificationNumber;
+    private String hospitalEmail;
     private String patientIdentificationNumber;
 }

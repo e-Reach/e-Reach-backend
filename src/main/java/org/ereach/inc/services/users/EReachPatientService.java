@@ -54,14 +54,14 @@ public class EReachPatientService implements PatientService{
     private static String testUsername;
 
     @Override
-public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
+    public CreatePatientResponse createPatient(CreatePatientRequest request) throws EReachBaseException {
         CreatePatientResponse response;
         try {
             validator.validateEmail(request.getEmail());
             PersonalInfo savedPersonalInfo = createPersonalInfo(request);
             Patient patient = modelMapper.map(request, Patient.class);
             patient.setPatientIdentificationNumber(generateUniquePIN(fullName(request), request.getPhoneNumber()));
-            patient.setRecord(patientRecord());
+            System.out.println("In the patient service class it was: "+patient.getPatientIdentificationNumber());
             patient.setPersonalInfo(savedPersonalInfo);
             patient.setEReachUsername(generateUniqueUsername(fullName(request), patient.getPatientIdentificationNumber()));
             Patient savedPatient = patientsRepository.save(patient);
@@ -84,11 +84,10 @@ public CreatePatientResponse createPatient(CreatePatientRequest request) throws 
     public GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber) {
         Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
         AtomicReference<GetPatientResponse> response = new AtomicReference<>();
-        foundPatient.ifPresentOrElse(patient-> response.set(modelMapper.map(patient, GetPatientResponse.class)),
-                                                       ()-> {
-                                                            String format = String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber);
-                                                            throw new EReachUncheckedBaseException(format);
-                                                       });
+        foundPatient.map(patient -> {
+            response.set(modelMapper.map(patient, GetPatientResponse.class));
+            return patient;
+        }).orElseThrow(()-> new EReachUncheckedBaseException(String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber)));
         return response.get();
     }
     
