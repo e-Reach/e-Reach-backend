@@ -7,7 +7,7 @@ import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.CreateRecordRequest;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
-import org.ereach.inc.data.dtos.response.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

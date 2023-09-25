@@ -1,7 +1,7 @@
 package org.ereach.inc.services.entries;
 
 import org.ereach.inc.data.dtos.request.CreateRecordRequest;
-import org.ereach.inc.data.dtos.response.entries.CreateRecordResponse;
+import org.ereach.inc.data.dtos.response.CreateRecordResponse;
 import org.ereach.inc.services.hospital.RecordService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

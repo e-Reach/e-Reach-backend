@@ -11,6 +11,7 @@ import org.ereach.inc.data.dtos.response.*;
 import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
 import static org.ereach.inc.data.models.Role.*;
 
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.users.Doctor;
 import org.ereach.inc.data.models.users.LabTechnician;

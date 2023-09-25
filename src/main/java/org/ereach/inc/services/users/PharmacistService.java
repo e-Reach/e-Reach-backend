@@ -1,11 +1,9 @@
 package org.ereach.inc.services.users;
 
 import org.ereach.inc.data.dtos.request.AddMedicationRequest;
-import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateEntryRequest;
 import org.ereach.inc.data.dtos.response.*;
-import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RegistrationFailedException;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 
 import java.time.LocalDate;
 
