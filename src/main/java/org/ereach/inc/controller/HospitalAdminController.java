@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.response.ApiResponse;
-import org.ereach.inc.data.dtos.response.CreatePatientResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.users.HospitalAdminService;
@@ -23,12 +22,12 @@ public class HospitalAdminController {
 	@PostMapping("register-hospital/")
 	public ResponseEntity<?> registerHospital(@RequestBody CreateHospitalRequest createHospitalRequest){
 		ApiResponse<HospitalResponse> apiResponse = new ApiResponse<>();
-		HospitalResponse response = null;
+		HospitalResponse response;
 		try {
 			response = adminService.registerHospital(createHospitalRequest);
 			apiResponse.setData(response);
-			apiResponse.setSuccessful(HttpStatus.CREATED.is2xxSuccessful());
-			apiResponse.setStatusCode(HttpStatus.CREATED.value());
+			apiResponse.setSuccessful(HttpStatus.OK.is2xxSuccessful());
+			apiResponse.setStatusCode(HttpStatus.OK.value());
 			return new ResponseEntity<>(response, HttpStatus.valueOf(apiResponse.getStatusCode()));
 		} catch (EReachBaseException baseException) {
 			response = new HospitalResponse();
