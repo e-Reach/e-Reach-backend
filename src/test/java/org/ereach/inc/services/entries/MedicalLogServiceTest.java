@@ -15,16 +15,26 @@ import org.ereach.inc.services.hospital.RecordService;
 import org.ereach.inc.services.users.HospitalAdminService;
 import org.ereach.inc.services.users.PatientService;
 import org.ereach.inc.utilities.JWTUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MedicalLogServiceTest {
     
     @Autowired
@@ -41,29 +51,48 @@ class MedicalLogServiceTest {
     private PatientService patientService;
     HospitalResponse hospitalResponse;
     CreatePatientResponse response;
+    MedicalLogResponse medicalLogResponse;
     
-    @Test
+    @BeforeEach
     @SneakyThrows
-    public void createNewMedicalLogTest() {
+    void startEachTestWith(){
         hospitalAdminService.registerHospital(buildCreateHospitalRequest());
         hospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
         hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
         response = patientService.createPatient(buildPatient());
         recordService.createRecord(buildRecordRequest(hospitalResponse, response.getPatientIdentificationNumber()));
-        MedicalLogResponse medicalLogResponse = medicalLogService.createNewLog(buildCreateMedicalLogRequest(hospitalResponse, response.getPatientIdentificationNumber()));
-        
+        medicalLogResponse = medicalLogService.createNewLog(buildCreateMedicalLogRequest(hospitalResponse, response.getPatientIdentificationNumber()));
+    }
+    
+    @Test
+    @Sql(scripts = "classpath:cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    public void createNewMedicalLogTest() {
         assertThat(medicalLogResponse).isNotNull();
         assertThat(medicalLogResponse.getTimeCreated()).isNotNull();
         assertThat(medicalLogResponse.getMessage()).isNotNull();
         assertThat(medicalLogResponse.getDateCreated()).isEqualTo(LocalDate.now());
     }
     
+    @Test void testThatTheMedicalLogSavedHasARecordThatItIsSavedInto(){
+    
+    }
+    
+    @Sql(scripts = "classpath:cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    @Test void testThatTheMedicalLogSavedHasAReferenceToTheHospitalItWasCreated(){
+        assertThat(medicalLogResponse.getHospitalName()).isNotNull();
+        assertThat(medicalLogResponse.getHospitalEmail()).isNotNull();
+    }
+    
+    
+    
     @Test
     @SneakyThrows
+    @Sql(scripts = "classpath:cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void testThatTheSystemAutomaticallyUploadsAFileToTheCloud_IfTheMedicalLogContainsAFile(){
         medicalLogService.createNewLog(buildCreateMedicalLogRequest(hospitalResponse, response.getPatientIdentificationNumber()));
     }
     @Test
+    @Sql(scripts = "classpath:cleanup.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void addMedicalLog_MedicalLogIsFetchedByPatientIdentificationNumber() throws RequestInvalidException {
         List<MedicalLogResponse> logResponses = medicalLogService.viewPatientMedicalLogs("1ca5634bd5");
         MedicalLogResponse logResponse = medicalLogService.viewPatientMedicalLog("7f64481934", LocalDate.of(2023, 9, 24));
@@ -92,15 +121,25 @@ class MedicalLogServiceTest {
                        .build();
     }
     
-    private CreateMedicalLogRequest buildCreateMedicalLogRequest(HospitalResponse hospitalResponse, String patientIdentificationNumber) {
+    private CreateMedicalLogRequest buildCreateMedicalLogRequest(HospitalResponse hospitalResponse, String patientIdentificationNumber) throws IOException {
         return CreateMedicalLogRequest.builder()
                        .hospitalEmail(hospitalResponse.getHospitalEmail())
-                       .testDTO(List.of(TestDTO.builder().testName("HIV").testDate(LocalDate.now()).build()))
+                       .testDTO(List.of(TestDTO.builder()
+                                                .testName("HIV")
+                                                .multipartFile(buildMultipartFile())
+                                                .testDate(LocalDate.now()).build()))
                        .doctorReportDTO(DoctorReportDTO.builder().reportContent("hello").build())
                        .vitalsDTO(VitalsDTO.builder().bloodPressure(34.6).dateTaken(LocalDate.now()).build())
                        .prescriptionsDTO(List.of(PrescriptionsDTO.builder().medicationName("PCM").build()))
                        .patientIdentificationNumber(patientIdentificationNumber)
                        .build();
+    }
+    
+    private MultipartFile buildMultipartFile() throws IOException {
+        Path path = Path.of("C:\\Users\\USER\\IdeaProjects\\e-Reach\\src\\test\\resources\\e-reach-low-resolution-logo-black-on-white-background.png");
+        try(InputStream inputStream = Files.newInputStream(path)) {
+            return new MockMultipartFile("testImage", inputStream);
+        }
     }
     
     private CreateHospitalRequest buildCreateHospitalRequest() {

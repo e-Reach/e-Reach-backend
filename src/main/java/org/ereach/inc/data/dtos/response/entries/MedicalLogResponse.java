@@ -23,4 +23,6 @@ public class MedicalLogResponse {
 	private List<TestResponseDTO> testResponseDTO;
 	private List<PrescriptionsResponseDTO> prescriptionsResponseDTO;
 	private DoctorReportResponseDTO doctorReportResponseDTO;
+	private String hospitalName;
+	private String hospitalEmail;
 }

@@ -27,7 +27,7 @@ public interface HospitalService {
 	HospitalResponse findHospitalById(String id);
 	
 	void removeHospital(String mail);
-	void addToLog(String hospitalEmail, MedicalLog medicalLog);
+	MedicalLogResponse addToLog(String hospitalEmail, MedicalLog medicalLog);
 	
 	void addToRecords(String hospitalEmail, Record savedRecord);
 	List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail);

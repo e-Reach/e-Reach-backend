@@ -20,8 +20,8 @@ public class InMemoryDatabase {
 	public Hospital temporarySave(Hospital hospital){
 		hospital.setId(generateTemporaryId());
 		if(hospitals.stream().anyMatch(hospital1 -> Objects.equals(hospital1.getHospitalEmail(), hospital.getHospitalEmail())))
-			throw new EReachUncheckedBaseException(USER_ALREADY_EXISTS);hospitals.add(hospital);
-		System.out.println(hospital);
+			throw new EReachUncheckedBaseException(USER_ALREADY_EXISTS);
+		hospitals.add(hospital);
 		return hospital;
 	}
 	

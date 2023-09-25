@@ -199,12 +199,15 @@ public class EReachHospitalService implements HospitalService {
 	}
 	
 	@Override
-	public void addToLog(String hospitalEmail, MedicalLog medicalLog) {
+	public MedicalLogResponse addToLog(String hospitalEmail, MedicalLog medicalLog) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
-		foundHospital.map(hospital->{
+		return foundHospital.map(hospital->{
 			hospital.getLogsCreated().add(medicalLog);
-			hospitalRepository.save(hospital);
-			return hospital;
+			Hospital savedHospital = hospitalRepository.save(hospital);
+			return MedicalLogResponse.builder()
+								     .hospitalEmail(savedHospital.getHospitalEmail())
+								     .hospitalName(savedHospital.getHospitalName())
+					                 .build();
 		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 	}
 	

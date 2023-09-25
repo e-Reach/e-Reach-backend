@@ -144,6 +144,4 @@ public class EreachMedicalLogService implements MedicalLogService {
 
     }
     //        System.out.println("=".repeat(100)+"\n"+"Medical log::==> "+medicalLog+"\n"+"=".repeat(100));
-    
-    
 }
