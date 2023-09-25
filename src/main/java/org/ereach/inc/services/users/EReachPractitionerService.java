@@ -65,7 +65,7 @@ public class EReachPractitionerService implements PractitionerService{
 				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
 				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 			}
-			mailService.sendMail(buildNotificationRequest(registerDoctorRequest));
+			mailService.sendMail(buildNotificationRequest(practitioner));
 			hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPractitioner);
 			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
 			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
@@ -75,14 +75,15 @@ public class EReachPractitionerService implements PractitionerService{
 		}
 	}
 	
-	private EReachNotificationRequest buildNotificationRequest(CreatePractitionerRequest registerDoctorRequest) {
+	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
 		return EReachNotificationRequest.builder()
-				       .firstName(registerDoctorRequest.getFirstName())
-				       .lastName(registerDoctorRequest.getLastName())
-				       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
-				       .email(registerDoctorRequest.getEmail())
-				       .role(registerDoctorRequest.getRole())
-				       .build();
+								       .firstName(practitioner.getFirstName())
+								       .lastName(practitioner.getLastName())
+								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+								       .email(practitioner.getEmail())
+								       .username(practitioner.getPractitionerIdentificationNumber())
+								       .role(practitioner.getUserRole().toString())
+								       .build();
 	}
 	
 	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
