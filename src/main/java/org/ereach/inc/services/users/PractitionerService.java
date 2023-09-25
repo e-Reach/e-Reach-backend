@@ -2,6 +2,7 @@ package org.ereach.inc.services.users;
 
 import org.ereach.inc.data.dtos.request.*;
 import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 

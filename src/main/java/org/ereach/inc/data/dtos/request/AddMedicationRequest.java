@@ -11,6 +11,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Setter
 @Getter
+@Builder
 public class AddMedicationRequest {
     private BigDecimal price;
     private LocalDate dateAdded;

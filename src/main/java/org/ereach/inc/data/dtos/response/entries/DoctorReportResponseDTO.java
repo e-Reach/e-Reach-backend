@@ -1,6 +1,9 @@
-package org.ereach.inc.data.dtos.request.entries;
+package org.ereach.inc.data.dtos.response.entries;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -8,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DoctorReportDTO {
+public class DoctorReportResponseDTO {
 	
 	private LocalDateTime date;
 	private String reportContent;
