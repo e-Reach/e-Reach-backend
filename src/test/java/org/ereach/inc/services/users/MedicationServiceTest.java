@@ -35,4 +35,8 @@ public class MedicationServiceTest {
     public void testThatMedicationCanBeUpdated(){
 
     }
+
+    public CreateMedicationRequest buildMedication(){
+        return  CreateMedicationRequest.builder.build
+    }
 }

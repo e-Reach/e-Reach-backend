@@ -68,6 +68,7 @@ public class PatientServiceTest {
     }
     @Test
     void testThatPatientReceivesEReachUsernameOnSuccessfulRegistration() {
+        assertThat(createPatientResponse.getEReachUsername()).isNotNull().isInstanceOf(String.class);
     }
     
     @Test
