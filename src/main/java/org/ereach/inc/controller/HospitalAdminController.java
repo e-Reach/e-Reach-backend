@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
-import org.ereach.inc.data.dtos.response.ApiResponse;
-import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
-import org.ereach.inc.data.dtos.response.HospitalAdminResponse;
-import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -83,13 +80,14 @@ public class HospitalAdminController {
 			return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
 		}
 	}
-	@PostMapping("")
+	@PostMapping("register-patient")
 	public ResponseEntity<?> registerPatient(@RequestBody CreatePatientRequest createPatientRequest){
+		CreatePatientResponse response = adminService.registerPatient(createPatientRequest);
 		return null;
 	}
 	
-	@GetMapping
-	public ResponseEntity<?> findAdminByEmail(String adminEmail, String hospitalEmail){
+	@GetMapping("admin/{adminEmail}/{hospitalEmail}")
+	public ResponseEntity<?> findAdminByEmail(@PathVariable String adminEmail, @PathVariable String hospitalEmail){
 		GetHospitalAdminResponse response;
 		ApiResponse<GetHospitalAdminResponse> apiResponse = new ApiResponse<>();
 		try{
