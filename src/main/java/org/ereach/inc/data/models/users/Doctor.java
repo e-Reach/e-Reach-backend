@@ -22,4 +22,5 @@ public class Doctor extends Practitioner {
     @Column(unique = true)
     private String doctorIdentificationNumber;
     private DoctorStatus doctorStatus;
+    private String password;
 }

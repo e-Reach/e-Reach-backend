@@ -1,5 +1,6 @@
 package org.ereach.inc.data.dtos.request;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class CreateDoctorRequest {
     private String lastName;
     @NonNull
     @Email(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")
+    @Valid
     private String email;
     @NotEmpty
     @NonNull
@@ -24,4 +26,7 @@ public class CreateDoctorRequest {
     @NotEmpty
     @NonNull
     private Role role;
+    @NotEmpty
+    @NonNull
+    private String password;
 }
