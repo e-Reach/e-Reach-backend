@@ -112,7 +112,7 @@ public class EreachMedicalLogService implements MedicalLogService {
         return MedicalLog.builder()
                          .dateCreated(LocalDate.now())
                          .patientIdentificationNumber(createLogRequest.getPatientIdentificationNumber())
-                         .isActive(true)
+                         .isActive(false)
                          .timeCreated(LocalTime.now())
                          .entries(new ArrayList<>())
                          .build();

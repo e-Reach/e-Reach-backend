@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.CreatePersonalInfoRequest;
-import org.ereach.inc.data.dtos.response.CreatePatientResponse;
-import org.ereach.inc.data.dtos.response.GetPatientResponse;
-import org.ereach.inc.data.dtos.response.HospitalResponse;
-import org.ereach.inc.data.dtos.response.PersonalInfoResponse;
+import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.PersonalInfo;
 import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.Patient;
@@ -18,6 +16,8 @@ import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.PersonalInfoService;
+import org.ereach.inc.services.entries.EreachMedicalLogService;
+import org.ereach.inc.services.entries.MedicalLogService;
 import org.ereach.inc.services.hospital.EReachRecordService;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.ereach.inc.utilities.Constants.*;
@@ -47,6 +48,7 @@ public class EReachPatientService implements PatientService{
     private EReachPatientsRepository patientsRepository;
     private EReachRecordService recordService;
     private HospitalService hospitalService;
+    private MedicalLogService medicalLogService;
     @Getter
     private static String testPIN;
     @Getter
@@ -97,7 +99,17 @@ public class EReachPatientService implements PatientService{
         return foundPatient.map(patient -> modelMapper.map(patient, GetPatientResponse.class))
                            .orElseThrow(()-> new EReachUncheckedBaseException(String.format(PATIENT_WITH_ID_DOES_NOT_EXIST, id)));
     }
-    
+
+    @Override
+    public GetRecordResponse viewRecord(String patientIdentificationNumber) {
+        return null;
+    }
+
+    @Override
+    public MedicalLogResponse viewMedicalLog(String patientIdentificationNumber, LocalDate date) {
+        return null;
+    }
+
     public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
                 .firstName(fullName)

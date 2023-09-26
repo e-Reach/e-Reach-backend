@@ -21,7 +21,7 @@ public class PatientController {
     
     @PostMapping("create-patient/")
     public ResponseEntity<?> createPatient(@RequestBody CreatePatientRequest createPatientRequest){
-        CreatePatientResponse response = null;
+        CreatePatientResponse response;
         ApiResponse<CreatePatientResponse> apiResponse = new ApiResponse<>();
         try {
             response = patientService.createPatient(createPatientRequest);
