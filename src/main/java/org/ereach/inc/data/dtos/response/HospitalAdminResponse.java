@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class HospitalAdminResponse {
-	
+	private String message;
 	private String adminEmail;
 	private String adminFirstName;
 	private String adminLastName;
