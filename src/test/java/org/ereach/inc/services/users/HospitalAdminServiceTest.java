@@ -47,6 +47,7 @@ class HospitalAdminServiceTest {
 	}
 	
 	@AfterEach
+	@SneakyThrows
 	void tearDown() {
 		hospitalService.removeHospital("alaabdulmalik03@gmail.com");
 		inMemoryDatabase.deleteAll("admin");

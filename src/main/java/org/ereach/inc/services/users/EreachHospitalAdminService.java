@@ -3,6 +3,7 @@ package org.ereach.inc.services.users;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
+import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
@@ -11,6 +12,7 @@ import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -36,14 +38,15 @@ import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 @AllArgsConstructor
 public class EreachHospitalAdminService implements HospitalAdminService {
 	
-	private EReachHospitalRepository hospitalRepository;
-	private ModelMapper modelMapper;
-	private InMemoryDatabase inMemoryDatabase;
-	private HospitalService hospitalService;
+	private final EReachHospitalRepository hospitalRepository;
+	private final ModelMapper modelMapper;
+	private final InMemoryDatabase inMemoryDatabase;
+	private final HospitalService hospitalService;
+	private PatientService patientService;
 	private final EReachConfig config;
-	private HospitalAdminRepository hospitalAdminRepository;
-	private MailService mailService;
-	private EmailValidator validator;
+	private final HospitalAdminRepository hospitalAdminRepository;
+	private final MailService mailService;
+	private final EmailValidator validator;
 	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
@@ -57,6 +60,11 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
 			return activateAccount(token);
 		else throw new RequestInvalidException("Request failed");
+	}
+	
+	@Override
+	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException {
+		return patientService.createPatient(createPatientRequest);
 	}
 	
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
@@ -150,6 +158,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public PractitionerResponse removePractitioner(String email) {
+		
 		return null;
 	}
 	

@@ -13,4 +13,6 @@ public interface EReachHospitalRepository extends JpaRepository<Hospital, String
 	
 	 @Transactional
 	 void deleteByHospitalEmail(String mail);
+	
+	boolean existsByHospitalEmail(String mail);
 }

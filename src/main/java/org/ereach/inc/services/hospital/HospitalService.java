@@ -26,7 +26,7 @@ public interface HospitalService {
 	List<HospitalResponse> getAllHospitals();
 	HospitalResponse findHospitalById(String id);
 	
-	void removeHospital(String mail);
+	String removeHospital(String mail) throws RequestInvalidException;
 	MedicalLogResponse addToLog(String hospitalEmail, MedicalLog medicalLog);
 	
 	void addToRecords(String hospitalEmail, Record savedRecord);
