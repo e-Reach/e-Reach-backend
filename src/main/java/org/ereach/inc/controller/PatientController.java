@@ -70,4 +70,5 @@ public class PatientController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
     }
+
 }
