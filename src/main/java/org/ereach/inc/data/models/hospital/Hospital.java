@@ -6,6 +6,7 @@ import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.users.HospitalAdmin;
+import org.ereach.inc.data.models.users.Patient;
 import org.ereach.inc.data.models.users.Practitioner;
 
 import java.util.Set;

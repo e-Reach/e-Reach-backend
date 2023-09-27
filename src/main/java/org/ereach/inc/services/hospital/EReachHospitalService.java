@@ -1,13 +1,23 @@
 package org.ereach.inc.services.hospital;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchException;
+import com.github.fge.jsonpatch.JsonPatchOperation;
+import com.github.fge.jsonpatch.ReplaceOperation;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.AddressCreationRequest;
+import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.AddressResponse;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.entries.MedicalLog;
@@ -16,6 +26,7 @@ import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
+import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -28,15 +39,17 @@ import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.ereach.inc.data.models.Role.HOSPITAL_ADMIN;
+import static org.apache.catalina.util.Introspection.getDeclaredFields;
 import static org.ereach.inc.data.models.Role.HOSPITAL;
+import static org.ereach.inc.data.models.Role.HOSPITAL_ADMIN;
+import static org.ereach.inc.utilities.AppUtil.doReplace;
+import static org.ereach.inc.utilities.AppUtil.filterEmptyField;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
@@ -46,12 +59,14 @@ public class EReachHospitalService implements HospitalService {
 	
 	
 	private EReachHospitalRepository hospitalRepository;
+	private HospitalAdminRepository hospitalAdminRepository;
 	private ModelMapper modelMapper;
 	private MailService mailService;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
 	private InMemoryDatabase inMemoryDatabase;
 	private final EReachConfig config;
+	private ObjectMapper objectMapper;
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
 		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
@@ -105,12 +120,36 @@ public class EReachHospitalService implements HospitalService {
 	
 	@Override
 	public List<GetHospitalAdminResponse> findAllAdminByHefamaaId(String hospitalHefamaaId) {
-		return null;
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalHefamaaId);
+		List<GetHospitalAdminResponse> responses = new ArrayList<>();
+		return foundHospital.map(hospital -> hospital.getAdmins()
+				                                     .stream()
+				                                     .map(admin -> modelMapper.map(admin, GetHospitalAdminResponse.class))
+				                                     .toList())
+				            .orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_ID_DOES_NOT_EXIST, hospitalHefamaaId)));
+		
 	}
 	
 	@Override
 	public List<GetHospitalAdminResponse> findAllAdminByHospitalEmail(String hospitalEmail) {
-		return null;
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		List<GetHospitalAdminResponse> responses = new ArrayList<>();
+		return foundHospital.map(hospital -> hospital.getAdmins()
+				                                     .stream()
+				                                     .map(admin -> modelMapper.map(admin, GetHospitalAdminResponse.class))
+				                                     .toList())
+				            .orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
+	}
+	
+	@Override
+	public List<PractitionerResponse> getAllPractitioners(String hospitalEmail) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		List<GetHospitalAdminResponse> responses = new ArrayList<>();
+		return foundHospital.map(hospital -> hospital.getPractitioners()
+				                                     .stream()
+				                                     .map(practitioner -> modelMapper.map(practitioner, PractitionerResponse.class))
+				                                     .toList())
+				            .orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 	}
 	
 	private HospitalResponse activateAccount(String token){
@@ -161,7 +200,61 @@ public class EReachHospitalService implements HospitalService {
 	
 	@Override
 	public HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest) {
+		String logoUrl = scanForFile(hospitalRequest.getLogo());
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalRequest.getHospitalEmail());
+		AtomicReference<HospitalResponse> atomicReference = new AtomicReference<>();
+		foundHospital.ifPresentOrElse(hospital -> {
+			JsonPatch updatePatch = buildHospitalUpdatePatch(hospitalRequest);
+			try {
+				HospitalResponse response = applyPatchTo(hospital, updatePatch);
+				response.setLogoCloudUrl(logoUrl);
+				atomicReference.set(response);
+			} catch (JsonPatchException e) {
+				throw new EReachUncheckedBaseException(e);
+			}
+		}, ()->{});
+		return atomicReference.get();
+	}
+	
+	private String scanForFile(MultipartFile logo) {
+		if (!logo.isEmpty())
+			return pushToCloud(logo);
 		return null;
+	}
+	
+	private String pushToCloud(MultipartFile logo) {
+		Cloudinary cloudinary = new Cloudinary();
+		Uploader uploader = cloudinary.uploader();
+		Map<String, Object> map = new HashMap<>();
+		map.put("public_id","e-Reach/hospital/media/"+logo.getName());
+		map.put("api_key",config.getCloudApiKey());
+		map.put("api_secret",config.getCloudApiSecret());
+		map.put("cloud_name",config.getCloudApiName());
+		map.put("secure",true);
+		map.put("resource_type", "auto");
+		try{
+			Map<?,?> response = uploader.upload(logo.getBytes(), map);
+			return response.get("url").toString();
+		}catch (IOException exception){
+			throw new EReachUncheckedBaseException(exception+" File upload failed");
+		}
+	}
+	
+	private HospitalResponse applyPatchTo(Hospital hospital, JsonPatch updatePatch) throws JsonPatchException {
+		JsonNode convertedAddress = objectMapper.convertValue(hospital, JsonNode.class);
+		JsonNode updatedNode = updatePatch.apply(convertedAddress);
+		hospital = objectMapper.convertValue(updatedNode, Hospital.class);
+		hospitalRepository.save(hospital);
+		return modelMapper.map(hospital, HospitalResponse.class) ;
+	}
+	
+	private JsonPatch buildHospitalUpdatePatch(UpdateHospitalRequest hospitalRequest) {
+		List<ReplaceOperation> operations = Arrays.stream(getDeclaredFields(AddressUpdateRequest.class))
+				                                  .filter(field -> filterEmptyField(hospitalRequest, field))
+				                                  .map(field -> doReplace(hospitalRequest, field))
+				                                  .toList();
+		List<JsonPatchOperation> patchOperations = new ArrayList<>(operations);
+		return new JsonPatch(patchOperations);
 	}
 	
 	@Override
@@ -171,7 +264,10 @@ public class EReachHospitalService implements HospitalService {
 	
 	@Override
 	public List<HospitalResponse> getAllHospitals() {
-		return null;
+		return hospitalRepository.findAll()
+							     .stream()
+				                 .map(hospital -> modelMapper.map(hospital, HospitalResponse.class))
+							     .toList();
 	}
 	
 	@Override
@@ -202,9 +298,10 @@ public class EReachHospitalService implements HospitalService {
 	}
 	
 	@Override
-	public void removeHospital(String mail) {
-		hospitalRepository.deleteAll();
-		hospitalRepository.deleteByHospitalEmail(mail);
+	public String removeHospital(String mail) throws RequestInvalidException {
+		if (hospitalRepository.existsByHospitalEmail(mail))
+			hospitalRepository.deleteByHospitalEmail(mail);
+		throw new RequestInvalidException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, mail));
 	}
 	
 	@Override

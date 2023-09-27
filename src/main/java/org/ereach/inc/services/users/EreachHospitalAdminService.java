@@ -12,6 +12,7 @@ import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -37,14 +38,15 @@ import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 @AllArgsConstructor
 public class EreachHospitalAdminService implements HospitalAdminService {
 	
-	private EReachHospitalRepository hospitalRepository;
-	private ModelMapper modelMapper;
-	private InMemoryDatabase inMemoryDatabase;
-	private HospitalService hospitalService;
+	private final EReachHospitalRepository hospitalRepository;
+	private final ModelMapper modelMapper;
+	private final InMemoryDatabase inMemoryDatabase;
+	private final HospitalService hospitalService;
+	private PatientService patientService;
 	private final EReachConfig config;
-	private HospitalAdminRepository hospitalAdminRepository;
-	private MailService mailService;
-	private EmailValidator validator;
+	private final HospitalAdminRepository hospitalAdminRepository;
+	private final MailService mailService;
+	private final EmailValidator validator;
 	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
@@ -59,12 +61,11 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 			return activateAccount(token);
 		else throw new RequestInvalidException("Request failed");
 	}
-
+	
 	@Override
-	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) {
-		return null;
+	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException {
+		return patientService.createPatient(createPatientRequest);
 	}
-
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
@@ -156,6 +157,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public PractitionerResponse removePractitioner(String email) {
+		
 		return null;
 	}
 	

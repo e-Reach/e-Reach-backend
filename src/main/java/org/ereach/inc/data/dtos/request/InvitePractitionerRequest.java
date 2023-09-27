@@ -16,5 +16,11 @@ public class InvitePractitionerRequest {
 	@NonNull
 	@NotEmpty
 	private String email;
+	@NonNull
+	@NotEmpty
 	private String role;
+	@NonNull
+	@NotEmpty
+	private String hospitalEmail;
+	private String phoneNumber;
 }

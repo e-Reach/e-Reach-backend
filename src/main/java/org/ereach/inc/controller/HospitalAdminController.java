@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
+import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
@@ -82,8 +83,21 @@ public class HospitalAdminController {
 	}
 	@PostMapping("register-patient")
 	public ResponseEntity<?> registerPatient(@RequestBody CreatePatientRequest createPatientRequest){
-		CreatePatientResponse response = adminService.registerPatient(createPatientRequest);
-		return null;
+		CreatePatientResponse response;
+		ApiResponse<CreatePatientResponse> apiResponse = new ApiResponse<>();
+		try {
+			response = adminService.registerPatient(createPatientRequest);
+			apiResponse.setData(response);
+			apiResponse.setSuccessful(HttpStatus.CREATED.is2xxSuccessful());
+			apiResponse.setStatusCode(HttpStatus.CREATED.value());
+			return new ResponseEntity<>(response, HttpStatus.valueOf(apiResponse.getStatusCode()));
+		} catch (EReachBaseException e) {
+			response = new CreatePatientResponse();
+			response.setMessage("");
+			apiResponse.setData(response);
+			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+			return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	@GetMapping("admin/{adminEmail}/{hospitalEmail}")
@@ -104,5 +118,24 @@ public class HospitalAdminController {
 			return new ResponseEntity<>(failureResponse, HttpStatus.NOT_FOUND);
 		}
 	}
-
+	
+	@PutMapping("edit-profile/")
+	public ResponseEntity<?> editHospitalProfile(@RequestBody UpdateHospitalRequest hospitalRequest){
+		HospitalResponse response;
+		ApiResponse<HospitalResponse> apiResponse = new ApiResponse<>();
+		try {
+			response = adminService.editHospitalProfile(hospitalRequest);
+			apiResponse.setData(response);
+			apiResponse.setStatusCode(HttpStatus.ACCEPTED.value());
+			apiResponse.setSuccessful(HttpStatus.ACCEPTED.is2xxSuccessful());
+			return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+		}catch (Throwable throwable){
+			response = new HospitalResponse();
+			response.setMessage("update failed");
+			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+			apiResponse.setData(response);
+			apiResponse.setSuccessful(HttpStatus.BAD_GATEWAY.is4xxClientError());
+			return new ResponseEntity<>(apiResponse, HttpStatus.ACCEPTED);
+		}
+	}
 }

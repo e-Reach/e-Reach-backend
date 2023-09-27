@@ -34,7 +34,13 @@
             <artifactId>libphonenumber</artifactId>
             <version>8.13.19</version>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary</artifactId>
+            <version>1.0.14</version>
+        </dependency>
+
+        <!--        <dependency>-->
 <!--            <groupId>org.springframework.boot</groupId>-->
 <!--            <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>-->
 <!--        </dependency>-->
