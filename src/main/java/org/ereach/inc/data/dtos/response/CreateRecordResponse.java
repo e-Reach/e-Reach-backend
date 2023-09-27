@@ -15,4 +15,5 @@ public class CreateRecordResponse {
     private String patientIdentificationNumber;
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
+
 }

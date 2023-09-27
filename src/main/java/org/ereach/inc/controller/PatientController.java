@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.response.ApiResponse;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
+import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
-import org.ereach.inc.services.users.EReachPatientService;
+import org.ereach.inc.services.users.PatientService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/patient")
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 @Slf4j
 public class PatientController {
-    private final EReachPatientService patientService;
+    private final PatientService patientService;
     
     @PostMapping("create-patient/")
     public ResponseEntity<?> createPatient(@RequestBody CreatePatientRequest createPatientRequest){
@@ -40,5 +42,32 @@ public class PatientController {
         }
     }
 
+    @GetMapping("view-records/{patientIdentificationNumber}")
+    public ResponseEntity<?> viewRecord(@PathVariable String patientIdentificationNumber){
+        ApiResponse<GetRecordResponse> apiResponse = new ApiResponse<>();
+        GetRecordResponse response;
+        try {
+            response = patientService.viewRecord(patientIdentificationNumber);
+            apiResponse.setData(response);
+            apiResponse.setStatusCode(HttpStatus.FOUND.value());
+            apiResponse.setSuccessful(HttpStatus.FOUND.is2xxSuccessful());
+            return new ResponseEntity<>(apiResponse, HttpStatus.FOUND);
+        }catch(EReachBaseException baseException){
+            response = new GetRecordResponse();
+            response.setMessage(baseException.getMessage());
+            apiResponse.setData(response);
+            apiResponse.setSuccessful(HttpStatus.NOT_FOUND.is2xxSuccessful());
+            apiResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        }
+    }
 
+    @PostMapping("upload-profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(@RequestBody MultipartFile multipartFile){
+        try {
+            return patientService.uploadProfile(multipartFile);
+        } catch (EReachBaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
+    }
 }

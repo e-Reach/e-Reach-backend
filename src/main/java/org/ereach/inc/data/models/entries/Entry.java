@@ -25,6 +25,6 @@ public class Entry  {
     private String id;
     private LocalTime timeCreated;
     @ElementCollection
-//    @CollectionTable
+    @CollectionTable
     private List<String> fileCloudUrl;
 }

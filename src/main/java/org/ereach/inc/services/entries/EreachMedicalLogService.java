@@ -55,10 +55,10 @@ public class EreachMedicalLogService implements MedicalLogService {
         List<Prescription> savedPrescriptions = entryRepository.saveAll(mappedPrescriptions);
         
         MedicalLog medicalLog = buildMedicalLog(createLogRequest);
-        medicalLog.getEntries().add(savedVital);
-        medicalLog.getEntries().add(savedDocReport);
-        medicalLog.getEntries().addAll(savedTests);
-        medicalLog.getEntries().addAll(savedPrescriptions);
+        medicalLog.setVitals(savedVital);
+        medicalLog.setDoctorsReport(savedDocReport);
+        medicalLog.setTests(savedTests);
+        medicalLog.setPrescriptions(savedPrescriptions);
        
         GetPatientResponse foundPatient = patientService.findByPatientIdentificationNumber(createLogRequest.getPatientIdentificationNumber());
         MedicalLog savedMedicalLog = medicalLogRepository.save(medicalLog);
