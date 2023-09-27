@@ -1,5 +1,6 @@
 package org.ereach.inc.data.models.hospital;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -25,5 +26,6 @@ public class Medication {
     private BigDecimal price;
     private LocalDate dateAdded;
     private LocalTime timeAdded;
+    @Column(unique = true)
     private String drugName;
 }

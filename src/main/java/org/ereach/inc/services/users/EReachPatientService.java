@@ -48,7 +48,6 @@ public class EReachPatientService implements PatientService{
     private EReachPatientsRepository patientsRepository;
     private EReachRecordService recordService;
     private HospitalService hospitalService;
-    private MedicalLogService medicalLogService;
     @Getter
     private static String testPIN;
     @Getter

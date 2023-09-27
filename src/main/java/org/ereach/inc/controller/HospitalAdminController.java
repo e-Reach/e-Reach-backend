@@ -104,4 +104,5 @@ public class HospitalAdminController {
 			return new ResponseEntity<>(failureResponse, HttpStatus.NOT_FOUND);
 		}
 	}
+
 }

@@ -3,6 +3,7 @@ package org.ereach.inc.services.users;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
+import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
@@ -58,7 +59,12 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 			return activateAccount(token);
 		else throw new RequestInvalidException("Request failed");
 	}
-	
+
+	@Override
+	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) {
+		return null;
+	}
+
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
