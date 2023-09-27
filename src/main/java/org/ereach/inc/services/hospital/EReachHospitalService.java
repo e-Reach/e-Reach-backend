@@ -24,7 +24,6 @@ import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
-import org.ereach.inc.services.validators.PasswordValidator;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
@@ -50,7 +49,6 @@ public class EReachHospitalService implements HospitalService {
 	private ModelMapper modelMapper;
 	private MailService mailService;
 	private EmailValidator emailValidator;
-	private PasswordValidator passwordValidator;
 	private AddressService addressService;
 	private InMemoryDatabase inMemoryDatabase;
 	private final EReachConfig config;
@@ -64,7 +62,7 @@ public class EReachHospitalService implements HospitalService {
 		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
 		
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
-		mappedHospital.setRole(HOSPITAL);
+		mappedHospital.setUserRole(HOSPITAL);
 		mappedHospital.setAddress(savedAddress);
 		mappedHospital.setLogsCreated(new HashSet<>());
 		mappedHospital.setAdmins(new HashSet<>());
@@ -81,18 +79,21 @@ public class EReachHospitalService implements HospitalService {
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
 	}
 	
-	private static EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
+	private EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
 		return EReachNotificationRequest.builder()
 				       .firstName(hospital.getHospitalName())
 				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
 				       .email(hospital.getHospitalEmail())
-				       .role(hospital.getRole().toString())
+				       .role(hospital.getUserRole().toString())
+						.url(urlForHospital(hospital.getHospitalEmail(), hospital.getUserRole().toString(), hospital.getHospitalName(), hospital.getHospitalName()))
 				       .build();
 	}
 	private void verifyHefamaaId(String hefamaaId) {
 	
 	}
-	
+	private String urlForHospital(String email, String role, String firstName, String lastName){
+		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+	}
 	public HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException {
 		if (Objects.equals(token, config.getTestToken()))
 			return activateTestAccount();
@@ -133,16 +134,24 @@ public class EReachHospitalService implements HospitalService {
 		return modelMapper.map(savedHospital.get(), HospitalResponse.class);
 	}
 	
-	private static EReachNotificationRequest buildNotificationRequest(HospitalAdmin admin) {
+	private EReachNotificationRequest buildNotificationRequest(HospitalAdmin admin) {
 		return EReachNotificationRequest.builder()
 				       .firstName(admin.getAdminFirstName())
 				       .lastName(admin.getAdminLastName())
 				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
 				       .email(admin.getAdminEmail())
 				       .role(admin.getAdminRole().toString())
-				       .build();
+					   .url(urlForHospitalAdmin(admin.getAdminEmail(),
+							   admin.getAdminRole().toString(),
+							   admin.getAdminFirstName(),
+							   admin.getAdminLastName()))
+					  .build();
 	}
-	
+
+	private String urlForHospitalAdmin(String email, String role, String firstName, String lastName){
+		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+	}
+
 	private HospitalResponse activateTestAccount() {
 		return HospitalResponse.builder()
 				       .hospitalName(TEST_HOSPITAL_NAME)

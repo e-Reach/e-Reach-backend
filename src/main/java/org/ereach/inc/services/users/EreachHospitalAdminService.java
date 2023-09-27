@@ -3,6 +3,7 @@ package org.ereach.inc.services.users;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
+import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.request.InvitePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
@@ -58,7 +59,12 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 			return activateAccount(token);
 		else throw new RequestInvalidException("Request failed");
 	}
-	
+
+	@Override
+	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) {
+		return null;
+	}
+
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
@@ -88,7 +94,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		return response;
 	}
 	
-	private static EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
+	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
 		return EReachNotificationRequest.builder()
 								       .firstName(practitionerRequest.getFirstName())
 								       .lastName(practitionerRequest.getLastName())
@@ -97,7 +103,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 								       .role(practitionerRequest.getRole())
 								       .build();
 	}
-	
+
 	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {
 		if (EnumSet.allOf(Role.class)
 				   .stream()
