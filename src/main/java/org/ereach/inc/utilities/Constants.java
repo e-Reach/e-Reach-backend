@@ -22,7 +22,8 @@ public class Constants {
 	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST = "Admin with id %s does not exist";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with email %s does not exist in the hospital with email %s";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST = "Admin with email %s does not exist";
-	public static final String FRONTEND_ACTIVATE_ACCOUNT = "activate-account";
+	public static final String ACTIVATE_HOSPITAL_ACCOUNT = "activate-hospital-account";
+	public static final String ACTIVATE_HOSPITAL_ADMIN_ACCOUNT = "activate-hospital-admin-account";
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
 	public static final String USER_PHONE_NUMBER = "user phone number";

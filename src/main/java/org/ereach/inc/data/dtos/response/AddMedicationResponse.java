@@ -7,6 +7,5 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 public class AddMedicationResponse {
-
     private String message;
 }

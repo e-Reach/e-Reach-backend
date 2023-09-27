@@ -35,7 +35,7 @@ public class Hospital {
     private String hospitalPhoneNumber;
     @Column(unique = true)
     private String hospitalEmail;
-    private Role role;
+    private Role userRole;
     @OneToMany(cascade = REMOVE, fetch = EAGER)
     private Set<MedicalLog> logsCreated;
     @OneToMany(cascade = REMOVE, fetch = EAGER)

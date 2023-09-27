@@ -100,14 +100,14 @@ public class EReachMailer implements MailService{
 	}
 	
 	@Override
-	public ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String firstName, String path, String lastName) throws RequestInvalidException {
+	public ResponseEntity<EReachNotificationResponse> sendMail(String email, String role, String firstName, String path, String lastName, String url) throws RequestInvalidException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(API_KEY, eReachConfig.getMailApiKey());
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, firstName+SPACE+lastName, url(email, role, firstName, lastName));
+		String formattedContent = String.format(templateContent, firstName+SPACE+lastName, url);
 		
 		Recipient recipient = Recipient.builder().email(email).build();
 		
@@ -136,13 +136,12 @@ public class EReachMailer implements MailService{
 						notificationRequest.getRole(),
 						notificationRequest.getFirstName(),
 						notificationRequest.getTemplatePath(),
-						notificationRequest.getLastName());
+						notificationRequest.getLastName(), notificationRequest.getUrl());
 	}
 	
-	private @NotNull String url(String email, String role, String firstName, String lastName){
-		String url = FRONTEND_BASE_URL + FRONTEND_ACTIVATE_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,eReachConfig.getAppJWTSecret());
+	private @NotNull String url(String email, String role, String firstName, String lastName) {
+		String url = FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName, eReachConfig.getAppJWTSecret());
 		System.out.println(url);
 		return url;
 	}
-	
 	}

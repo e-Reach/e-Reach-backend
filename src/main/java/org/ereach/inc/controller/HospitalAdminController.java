@@ -59,7 +59,7 @@ public class HospitalAdminController {
 			response = new HospitalAdminResponse();
 			log.error("error occurred", baseException);
 			response.setMessage(baseException.getMessage());
-			apiResponse.setData(response);
+			apiResponse.setData(response	);
 			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
 			apiResponse.setSuccessful(HttpStatus.BAD_REQUEST.is4xxClientError());
 			return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
