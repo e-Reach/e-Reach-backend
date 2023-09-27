@@ -4,6 +4,7 @@ import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
 import org.ereach.inc.data.dtos.response.HospitalResponse;
+import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Record;
@@ -22,14 +23,16 @@ public interface HospitalService {
 	HospitalResponse findHospitalByHefamaaId(String hefamaa_Id);
 	List<GetHospitalAdminResponse> findAllAdminByHefamaaId(String hospitalHefamaaId);
 	List<GetHospitalAdminResponse> findAllAdminByHospitalEmail(String hospitalEmail);
+	List<PractitionerResponse> getAllPractitioners(String hospitalEmail);
 	HospitalResponse viewHospitalProfileByEmailOrHefamaaId(String email, String hefamaaId);
 	List<HospitalResponse> getAllHospitals();
+	
 	HospitalResponse findHospitalById(String id);
-	
 	String removeHospital(String mail) throws RequestInvalidException;
-	MedicalLogResponse addToLog(String hospitalEmail, MedicalLog medicalLog);
 	
+	MedicalLogResponse addToLog(String hospitalEmail, MedicalLog medicalLog);
 	void addToRecords(String hospitalEmail, Record savedRecord);
+	
 	List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail);
 	
 	void addPractitioners(String hospitalEmail, Practitioner savedPractitioner);

@@ -14,4 +14,5 @@ public class EReachNotificationRequest {
 	private String password;
 	private String role;
 	private String templatePath;
+	private String url;
 }

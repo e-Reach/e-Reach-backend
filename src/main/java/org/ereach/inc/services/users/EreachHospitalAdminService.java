@@ -66,7 +66,6 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException {
 		return patientService.createPatient(createPatientRequest);
 	}
-	
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
@@ -96,7 +95,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		return response;
 	}
 	
-	private static EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
+	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
 		return EReachNotificationRequest.builder()
 								       .firstName(practitionerRequest.getFirstName())
 								       .lastName(practitionerRequest.getLastName())
@@ -105,7 +104,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 								       .role(practitionerRequest.getRole())
 								       .build();
 	}
-	
+
 	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {
 		if (EnumSet.allOf(Role.class)
 				   .stream()

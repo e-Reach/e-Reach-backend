@@ -22,8 +22,10 @@ public class Prescription extends Entry {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    private String medicationName;
+    @OneToMany
+    private List<Medication> medications;
     private String dosage;
+    private String medicationName;
     private String dosageFrequency;
     private LocalDate startDate;
     private LocalDate prescriptionDate;

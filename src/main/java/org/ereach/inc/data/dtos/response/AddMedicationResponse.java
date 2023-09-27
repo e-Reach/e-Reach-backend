@@ -4,6 +4,5 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class AddMedicationResponse {
-
     private String message;
 }

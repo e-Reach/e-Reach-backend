@@ -10,6 +10,7 @@ import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.stereotype.Service;
+import static org.ereach.inc.utilities.Constants.*;
 
 import java.time.LocalDate;
 
@@ -18,23 +19,18 @@ import java.time.LocalDate;
 public class EReachPharmacistService implements PharmacistService{
 	private final EReachPractitionerRepository practitionerRepository;
 	private final EreachMedicationService medicationService;
-	
+
+
 	@Override
 	public AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest) {
 		medicationService.createMedication(addMedicationRequest);
-		return new AddMedicationResponse("Added Successfully");
+		return new AddMedicationResponse(MEDICATION_ADDED_SUCCESSFULLY);
 	}
 	
 	@Override
 	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber) {
 		return null;
 	}
-	
-	@Override
-	public MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date) {
-		return null;
-	}
-	
 	@Override
 	public UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
 		return null;
