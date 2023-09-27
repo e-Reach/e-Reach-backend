@@ -2,7 +2,6 @@ package org.ereach.inc.data.models.entries;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.ereach.inc.data.models.hospital.Hospital;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +23,14 @@ public class MedicalLog {
     private String id;
     @OneToMany
     private List<Entry> entries;
+    @OneToMany
+    private List<Prescription> prescriptions;
+    @OneToOne
+    private Vitals vitals;
+    @OneToMany
+    private List<Tests> tests;
+    @OneToOne
+    private DoctorsReport doctorsReport;
     private LocalDate dateCreated;
     private LocalTime timeCreated;
     private String patientIdentificationNumber;

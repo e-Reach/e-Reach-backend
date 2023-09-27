@@ -5,14 +5,11 @@ import org.ereach.inc.data.dtos.request.AddMedicationRequest;
 import org.ereach.inc.data.dtos.request.UpdateEntryRequest;
 import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
-import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
-import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
+import org.ereach.inc.data.dtos.response.EntryResponse;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.stereotype.Service;
 import static org.ereach.inc.utilities.Constants.*;
-
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,7 @@ public class EReachPharmacistService implements PharmacistService{
 		return null;
 	}
 	@Override
-	public UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
+	public EntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
 		return null;
 	}
 	
