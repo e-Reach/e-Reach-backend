@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 
 public class CreatePractitionerRequest {
-	private String workerIdentity;
+	private String role;
 	@NonNull
 	@NotEmpty
 	private String firstName;
@@ -25,4 +25,5 @@ public class CreatePractitionerRequest {
 	@NotEmpty
 	private String email;
 	private String phoneNumber;
+	private String hospitalEmail;
 }

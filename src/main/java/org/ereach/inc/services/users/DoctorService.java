@@ -1,9 +1,12 @@
 package org.ereach.inc.services.users;
 
-import org.ereach.inc.data.dtos.request.CreateDoctorRequest;
-import org.ereach.inc.data.dtos.response.CreateDoctorResponse;
-import org.ereach.inc.exceptions.EReachBaseException;
+import org.ereach.inc.data.dtos.response.GetRecordResponse;
+import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
+
+import java.time.LocalDate;
 
 public interface DoctorService {
-    CreateDoctorResponse registerNewDoctor (CreateDoctorRequest registerDoctorRequest)throws EReachBaseException;
+	
+	GetRecordResponse viewPatientRecord(String patientIdentificationNumber);
+	MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date);
 }

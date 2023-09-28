@@ -18,5 +18,6 @@ public class Pharmacist extends Practitioner {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    private Role role;
+//    @Enumerated(STRING)
+    private Role userRole;
 }

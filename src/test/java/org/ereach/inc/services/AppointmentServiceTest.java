@@ -1,8 +1,8 @@
 package org.ereach.inc.services;
 
 
-import org.ereach.inc.data.dtos.request.CreateAppointmentRequest;
-import org.ereach.inc.data.dtos.response.CreateAppointmentResponse;
+import org.ereach.inc.data.dtos.request.AppointmentScheduleRequest;
+import org.ereach.inc.data.dtos.response.AppointmentScheduleResponse;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.services.hospital.AppointmentService;
 import org.junit.jupiter.api.Test;
@@ -27,11 +27,11 @@ public class AppointmentServiceTest {
     void testThatAppointmentCanBeCreated() throws FieldInvalidException {
         LocalDateTime fixedDateTime =
                 LocalDateTime.of(2023, Month.JANUARY, 15, 10, 0);
-        CreateAppointmentRequest appointmentRequest = CreateAppointmentRequest.builder()
+        AppointmentScheduleRequest appointmentRequest = AppointmentScheduleRequest.builder()
                 .typeOfAppointment(String.valueOf(GENERAL_CHECK_UP))
                 .sendDate(LocalDate.from(fixedDateTime))
                 .build();
-        CreateAppointmentResponse response = appointmentService.createAppointment(appointmentRequest);
+        AppointmentScheduleResponse response = appointmentService.createAppointment(appointmentRequest);
         assertThat(response.getMessage()).contains("Appointment Created Successfully");
     }
 

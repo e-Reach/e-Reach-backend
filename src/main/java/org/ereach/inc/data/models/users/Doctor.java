@@ -4,8 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.*;
-import org.ereach.inc.data.models.DoctorStatus;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Role;
 
 import static jakarta.persistence.GenerationType.UUID;
@@ -21,6 +24,7 @@ public class Doctor extends Practitioner {
     private Role role;
     @Column(unique = true)
     private String doctorIdentificationNumber;
-    private DoctorStatus doctorStatus;
+    private AccountStatus doctorStatus;
     private String password;
+
 }
