@@ -25,10 +25,10 @@ public class Record {
     @GeneratedValue(strategy = UUID)
     private String id;
     private String patientIdentificationNumber;
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<MedicalLog> medicalLogs;
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<MedicalLog> medicalLogs;
 
     public void recordCreationDate(){
         LocalDateTime currentDate = LocalDateTime.now();

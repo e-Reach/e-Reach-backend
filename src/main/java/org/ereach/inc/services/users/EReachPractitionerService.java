@@ -1,5 +1,7 @@
 package org.ereach.inc.services.users;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.Uploader;
 import lombok.AllArgsConstructor;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.AppointmentScheduleRequest;
@@ -18,15 +20,22 @@ import org.ereach.inc.data.models.users.LabTechnician;
 import org.ereach.inc.data.models.users.Pharmacist;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
+import org.ereach.inc.exceptions.EReachBaseException;
+import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -141,12 +150,36 @@ public class EReachPractitionerService implements PractitionerService{
 	public AppointmentScheduleResponse scheduleAppointment(AppointmentScheduleRequest appointmentScheduleRequest) {
 		return null;
 	}
-	
+
 	@Override
 	public CloudUploadResponse uploadTestResult(CloudUploadRequest cloudUploadRequest) {
 		return null;
 	}
-	
+
+	@Override
+	public ResponseEntity<?> uploadProfilePicture(MultipartFile multipartFile) throws EReachBaseException {
+		String mediaUrl = pushToCloud(multipartFile);
+		return new ResponseEntity<>(mediaUrl, HttpStatus.CREATED);
+	}
+
+	private String pushToCloud(MultipartFile logo) throws EReachBaseException {
+		Cloudinary cloudinary = new Cloudinary();
+		Uploader uploader = cloudinary.uploader();
+		Map<String, Object> map = new HashMap<>();
+		map.put("public_id","e-Reach/hospital/media/"+logo.getName());
+		map.put("api_key",config.getCloudApiKey());
+		map.put("api_secret",config.getCloudApiSecret());
+		map.put("cloud_name",config.getCloudApiName());
+		map.put("secure",true);
+		map.put("resource_type", "auto");
+		try{
+			Map<?,?> response = uploader.upload(logo.getBytes(), map);
+			return response.get("url").toString();
+		}catch (IOException exception){
+			throw new EReachBaseException(exception+" File upload failed");
+		}
+	}
+
 	@Override
 	public List<GetPractitionerResponse> getAllPractitionersInHospital(String hospitalEmail) {
 		return null;

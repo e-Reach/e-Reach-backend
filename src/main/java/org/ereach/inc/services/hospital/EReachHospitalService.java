@@ -60,7 +60,6 @@ public class EReachHospitalService implements HospitalService {
 	
 	
 	private EReachHospitalRepository hospitalRepository;
-	private HospitalAdminRepository hospitalAdminRepository;
 	private ModelMapper modelMapper;
 	private MailService mailService;
 	private EmailValidator emailValidator;
@@ -122,7 +121,6 @@ public class EReachHospitalService implements HospitalService {
 	@Override
 	public List<GetHospitalAdminResponse> findAllAdminByHefamaaId(String hospitalHefamaaId) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalHefamaaId);
-		List<GetHospitalAdminResponse> responses = new ArrayList<>();
 		return foundHospital.map(hospital -> hospital.getAdmins()
 				                                     .stream()
 				                                     .map(admin -> modelMapper.map(admin, GetHospitalAdminResponse.class))
@@ -134,7 +132,6 @@ public class EReachHospitalService implements HospitalService {
 	@Override
 	public List<GetHospitalAdminResponse> findAllAdminByHospitalEmail(String hospitalEmail) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
-		List<GetHospitalAdminResponse> responses = new ArrayList<>();
 		return foundHospital.map(hospital -> hospital.getAdmins()
 				                                     .stream()
 				                                     .map(admin -> modelMapper.map(admin, GetHospitalAdminResponse.class))
@@ -145,7 +142,6 @@ public class EReachHospitalService implements HospitalService {
 	@Override
 	public List<PractitionerResponse> getAllPractitioners(String hospitalEmail) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
-		List<GetHospitalAdminResponse> responses = new ArrayList<>();
 		return foundHospital.map(hospital -> hospital.getPractitioners()
 				                                     .stream()
 				                                     .map(practitioner -> modelMapper.map(practitioner, PractitionerResponse.class))
