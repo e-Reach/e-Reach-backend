@@ -14,7 +14,7 @@ public class Constants {
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
 	public static final String TOKEN_WAS_INVALID = "Request failed: %s failed to save permanently, token was invalid";
 	public static final String SPACE = " ";
-	public static final String FRONTEND_BASE_URL = "https://localhost/3000/";
+	public static final String FRONTEND_BASE_URL = "http://localhost:3000/";
 	public static final String QUERY_STRING_PREFIX = "?";
 	public static final String HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST = "Hospital with email %s does not exist";
 	public static final String HOSPITAL_WITH_ID_DOES_NOT_EXIST = "Hospital with id %s does not exist";

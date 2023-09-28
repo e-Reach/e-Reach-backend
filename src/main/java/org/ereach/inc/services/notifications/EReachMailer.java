@@ -108,7 +108,8 @@ public class EReachMailer implements MailService{
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
 		String formattedContent = String.format(templateContent, firstName+SPACE+lastName, url);
-		
+		System.out.println(formattedContent);
+		System.out.println(url);
 		Recipient recipient = Recipient.builder().email(email).build();
 		
 		Notification notification = new Notification();
