@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, Object> {
-//	private final PhoneNumberUtil phoneNumberUtil;
+//	private final PhoneNumberUtil;
 	@Override
 	public void initialize(PhoneNumber constraintAnnotation) {
 //		ConstraintValidator.super.initialize(constraintAnnotation);
