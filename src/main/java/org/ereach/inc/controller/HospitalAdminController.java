@@ -26,6 +26,7 @@ public class HospitalAdminController {
 	private HospitalAdminService adminService;
 	@PostMapping("register-hospital")
 	public ResponseEntity<?> registerHospital(@RequestBody CreateHospitalRequest createHospitalRequest){
+		System.out.println(createHospitalRequest.toString());
 		ApiResponse<HospitalResponse> apiResponse = new ApiResponse<>();
 		HospitalResponse response;
 		try {
@@ -45,8 +46,8 @@ public class HospitalAdminController {
 		}
 	}
 	
-	@PostMapping("activate-account/")
-	public ResponseEntity<?> activateAccount(@RequestParam String token){
+	@PostMapping("activate-account/{token}")
+	public ResponseEntity<?> activateAccount(@PathVariable String token){
 		ApiResponse<HospitalAdminResponse> apiResponse = new ApiResponse<>();
 		HospitalAdminResponse response;
 		try {
