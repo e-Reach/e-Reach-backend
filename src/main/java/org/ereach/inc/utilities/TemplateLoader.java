@@ -11,15 +11,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
-import static org.ereach.inc.utilities.Constants.TEMPLATE_LOAD_FAILED;
+
+import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.generateAccountActivationUrl;
 
 @Slf4j
 public class TemplateLoader {
 	
 	public static String loadTemplateContent(Resource templateResource) throws RequestInvalidException {
-		Formatter formatter = new Formatter();
+//		Formatter formatter = new Formatter();
 		ByteArrayOutputStream result = new ByteArrayOutputStream();
 		try {
 			InputStream inputStream = templateResource.getInputStream();
@@ -35,10 +35,10 @@ public class TemplateLoader {
 		return result.toString(StandardCharsets.UTF_8);
 	}
 	
-	public static String getTemplate(Model model, EReachNotificationRequest notificationRequest) {
-		model.addAttribute("Username", notificationRequest.getFullName());
+	public static String getTemplate(Model model, EReachNotificationRequest notificationRequest, String secret) {
+		model.addAttribute("Username", notificationRequest.getFirstName()+SPACE+notificationRequest.getLastName());
 		model.addAttribute("activationLink",
-				generateAccountActivationUrl(notificationRequest.getEmail(), notificationRequest.getPassword(), notificationRequest.getPhoneNumber()));
+				generateAccountActivationUrl(notificationRequest.getEmail(), notificationRequest.getRole(), notificationRequest.getFirstName(), notificationRequest.getLastName(), secret));
 		return "account_activation_mail_template";
 	}
 }

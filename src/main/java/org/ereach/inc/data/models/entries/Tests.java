@@ -1,9 +1,12 @@
 package org.ereach.inc.data.models.entries;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import lombok.*;
-import org.ereach.inc.data.models.entries.Entry;
-import org.ereach.inc.data.models.entries.TestResult;
+
+import java.time.LocalDate;
 
 import static jakarta.persistence.GenerationType.UUID;
 
@@ -12,6 +15,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Tests extends Entry {
 
     @Id
@@ -20,5 +24,7 @@ public class Tests extends Entry {
     private String testName;
     @OneToOne
     private TestResult testResult;
+    private LocalDate testDate;
+    private String practitionerEmail;
 
 }

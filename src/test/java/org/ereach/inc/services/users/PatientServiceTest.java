@@ -1,4 +1,4 @@
-package org.ereach.inc.services;
+package org.ereach.inc.services.users;
 
 import lombok.SneakyThrows;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
@@ -33,6 +33,20 @@ public class PatientServiceTest {
     @Test
     @SneakyThrows
     void testThatPatientCanBeRegistered(){
+        CreatePatientRequest createPatientRequest = CreatePatientRequest.builder()
+                .firstName("Rich")
+                .lastName("Doe")
+                .phoneNumber("08033456789")
+                .email("rich@gmail.com")
+                .nin("12345")
+                .streetName("Yaba")
+                .houseNumber("23")
+                .state("Lagos")
+                .country("Nigeria")
+                .build();
+        CreatePatientResponse createPatientResponse = patientService.createPatient(createPatientRequest);
+        assertThat(createPatientResponse.getMessage()).isEqualTo("Patient " + createPatientRequest.getFirstName()
+                + " " + createPatientRequest.getLastName() + " " + "Account Created Successfully");
         assertThat(createPatientResponse.getPatientIdentificationNumber()).isNotNull();
         assertThat(createPatientResponse.getEReachUsername()).isInstanceOf(String.class);
     }
@@ -54,6 +68,7 @@ public class PatientServiceTest {
     }
     @Test
     void testThatPatientReceivesEReachUsernameOnSuccessfulRegistration() {
+        assertThat(createPatientResponse.getEReachUsername()).isNotNull().isInstanceOf(String.class);
     }
     
     @Test
@@ -63,9 +78,6 @@ public class PatientServiceTest {
                 .isInstanceOf(EReachBaseException.class)
                 .hasMessageContaining("Invalid Domain:: valid domain includes");
     }
-    
-    
-    
     @Test void updatePatientDetailsTest(){
 
     }
@@ -118,7 +130,6 @@ public class PatientServiceTest {
                        .nin("111111259090")
                        .streetName("harvey road")
                        .build();
-        
     }
     
     public CreatePatientRequest buildPatientFieldsForEreachUsername(){

@@ -1,5 +1,6 @@
 package org.ereach.inc.data.models.hospital;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,13 +19,12 @@ import static jakarta.persistence.GenerationType.UUID;
 @Getter
 @Setter
 public class Medication {
-
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
     private BigDecimal price;
     private LocalDate dateAdded;
     private LocalTime timeAdded;
+    @Column(unique = true)
     private String drugName;
-
 }

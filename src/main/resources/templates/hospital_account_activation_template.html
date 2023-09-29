@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activate Account</title>
+
+    <style>
+        body{
+            background-color: antiquewhite;
+        }
+        .main_div{
+            /*display: flex;*/
+            /*flex-direction: column;*/
+            align-content: space-evenly;
+            align-items: center;
+        }
+        .main_div p{
+            font-family: "Footlight MT Light", serif ;
+            font-size: 15px;
+        }
+        .main_div h2{
+            font-size: 25px;
+        }
+        .inner_div_3 button{
+            width: 50px;
+            font-size: 10px;
+            height: 20px;
+            background-color: aquamarine;
+            border-radius: 20px;
+        }
+        .inner_div_3 button:hover{
+            cursor: pointer;
+            font-size: 12px;
+            width: 60px;
+            height: 25px;
+            border-style: solid;
+            border-width: medium;
+            border-color: black;
+        }
+        .activation_mail_footer{
+        }
+    </style>
+</head>
+<body>
+    <div class="main_div">
+        <div class="inner_div_1">
+            <h2>Registration Successful</h2>
+        </div>
+
+       <div class="inner_div_2">
+           <div>
+               <p>     hi %s we are thrilled and very happy to inform you that <br/> you have successfully registered</p>
+               <p>you are just one click away from activating your account,<br/> please click the activate button below to activate your account</p>
+           </div>
+       </div>
+        <div class="inner_div_3">
+            <a href="%s"><button>Activate</button></a>
+        </div>
+        <div class="help">
+            <p>for help: call 07036174617 or visit our <a href="">customer care page</a></p>
+            <p>for enquiries: you can also call 07036174617</p>
+        </div>
+        <p>Our Social Media Platforms Are Below</p>
+        <div class="activation_mail_footer">
+        </div>
+    </div>
+</body>
+</html>

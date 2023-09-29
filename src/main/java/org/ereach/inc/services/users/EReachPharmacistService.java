@@ -1,37 +1,40 @@
 package org.ereach.inc.services.users;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.ereach.inc.data.dtos.request.AddMedicationRequest;
-import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateEntryRequest;
 import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
-import org.ereach.inc.data.dtos.response.PractitionerResponse;
-import org.ereach.inc.data.dtos.response.UpdateEntryResponse;
+import org.ereach.inc.data.dtos.response.EntryResponse;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
+import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.stereotype.Service;
+import static org.ereach.inc.utilities.Constants.*;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class EReachPharmacistService implements PharmacistService{
-	private EReachPractitionerRepository practitionerRepository;
-	@Override
-	public PractitionerResponse createPharmacist(CreatePractitionerRequest practitionerRequest) {
-		return null;
-	}
-	
+	private final EReachPractitionerRepository practitionerRepository;
+	private final EreachMedicationService medicationService;
+
+
 	@Override
 	public AddMedicationResponse addMedication(AddMedicationRequest addMedicationRequest) {
-		return null;
+		medicationService.createMedication(addMedicationRequest);
+		return new AddMedicationResponse(MEDICATION_ADDED_SUCCESSFULLY);
 	}
 	
 	@Override
 	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber) {
 		return null;
 	}
+	@Override
+	public EntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
+		return null;
+	}
 	
 	@Override
-	public UpdateEntryResponse editEntry(UpdateEntryRequest updateEntryRequest) {
-		return null;
+	public void removePharmacistByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
+	
 	}
 }

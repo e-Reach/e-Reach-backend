@@ -17,15 +17,14 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class Entry  {
 
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    @OneToMany
-    private List<Practitioner> practitioner;
     private LocalTime timeCreated;
     @ElementCollection
-//    @CollectionTable
+    @CollectionTable
     private List<String> fileCloudUrl;
 }

@@ -1,7 +1,7 @@
 package org.ereach.inc.services.validators;
+
 import lombok.Getter;
 import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RequestInvalidException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.ereach.inc.utilities.Constants.CONSTRAINT_VIOLATION_MESSAGE;
+import static org.ereach.inc.utilities.Constants.SPACE;
 
 @Service
 @Getter
@@ -20,9 +21,10 @@ public class EmailValidator {
 			"semicolon.africa.com", "hotmail.co.uk", "freenet.de"
 	};
 	private final String regExp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+	
 
 	public void validateEmail(String email) throws FieldInvalidException {
-		if (!isValidDomain(email) || !emailMatchesPattern(email)) {
+		if (!isValidDomain(email) || !emailMatchesPattern(email) || email.contains(SPACE)) {
 			String format = String.format(CONSTRAINT_VIOLATION_MESSAGE, Arrays.toString(domains));
 			throw new FieldInvalidException(format);
 		}

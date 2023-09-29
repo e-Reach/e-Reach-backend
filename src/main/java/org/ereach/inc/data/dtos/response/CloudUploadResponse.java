@@ -1,4 +1,4 @@
 package org.ereach.inc.data.dtos.response;
 
-public class UpdateEntryResponse {
+public class CloudUploadResponse {
 }

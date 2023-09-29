@@ -1,9 +1,6 @@
 package org.ereach.inc.data.models.entries;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,6 +15,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class MedicalLog {
 
     @Id
@@ -25,6 +23,14 @@ public class MedicalLog {
     private String id;
     @OneToMany
     private List<Entry> entries;
+    @OneToMany
+    private List<Prescription> prescriptions;
+    @OneToOne
+    private Vitals vitals;
+    @OneToMany
+    private List<Tests> tests;
+    @OneToOne
+    private DoctorsReport doctorsReport;
     private LocalDate dateCreated;
     private LocalTime timeCreated;
     private String patientIdentificationNumber;
