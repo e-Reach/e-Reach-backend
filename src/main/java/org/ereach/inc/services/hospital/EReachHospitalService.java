@@ -60,6 +60,7 @@ public class EReachHospitalService implements HospitalService {
 	
 	private EReachHospitalRepository hospitalRepository;
 	private ModelMapper modelMapper;
+	private HospitalAdminRepository hospitalAdminRepository;
 	private MailService mailService;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
@@ -82,9 +83,13 @@ public class EReachHospitalService implements HospitalService {
 		mappedHospital.setAdmins(new HashSet<>());
 		mappedHospital.setPractitioners(new HashSet<>());
 		mappedHospital.setRecords(new HashSet<>());
-		
+
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
-		admin.setId(null);
+		admin.setAdminRole(HOSPITAL_ADMIN);
+		HospitalAdmin savedAdmin = hospitalAdminRepository.save(admin);
+		mappedHospital.getAdmins().add(savedAdmin);
+		hospitalRepository.save(mappedHospital);
+
 		admin.setAdminRole(HOSPITAL_ADMIN);
 		mappedHospital.getAdmins().add(admin);
 		

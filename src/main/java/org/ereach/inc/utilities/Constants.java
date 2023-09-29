@@ -37,7 +37,7 @@ public class Constants {
 	public static final String PATIENT_APPOINTMENT_MAIL_PATH = "C:\\Users\\PC\\IdeaProjects\\e-Reach-backend\\src\\main\\resources\\templates\\patient_appointment_mail_template.html";
 	public static final String ACTIVATION_MAIL_PATH = "classpath:/templates/account_activation_mail_template.html";
 	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
-	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
+	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/practitioner_url_template.html";
 	public static final String PATIENT_ID_MAIL_PATH = "classpath:/templates/patient_id_template.html";
 	public static final String CONSTRAINT_VIOLATION_MESSAGE =
                                 """
