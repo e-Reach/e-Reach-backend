@@ -3,17 +3,17 @@ package org.ereach.inc.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ereach.inc.data.dtos.request.AddMedicationRequest;
+import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.ApiResponse;
-import org.ereach.inc.data.dtos.response.entries.GetMedicationResponse;
 import org.ereach.inc.data.models.hospital.Medication;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.hospital.EreachMedicationService;
-import org.ereach.inc.services.hospital.MedicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/medication/")
@@ -23,6 +23,29 @@ import java.util.Optional;
 
 public class MedicationController {
     private EreachMedicationService medicationService;
+
+    @PostMapping("addMedication")
+    public ResponseEntity<?> addMedication(@RequestBody AddMedicationRequest addMedicationRequest){
+        AddMedicationResponse response;
+        ApiResponse<AddMedicationResponse> apiResponse = new ApiResponse<>();
+        try {
+        response = medicationService.createMedication(addMedicationRequest);
+        apiResponse.setData(response);
+        apiResponse.setSuccessful(HttpStatus.CREATED.is2xxSuccessful());
+        apiResponse.setStatusCode(HttpStatus.CREATED.value());
+        return new ResponseEntity<>(response, HttpStatus.valueOf(apiResponse.getStatusCode()));
+    } catch (Throwable baseException) {
+        log.error("error occurred", baseException);
+        response = new AddMedicationResponse();
+        response.setMessage(baseException.getMessage());
+        apiResponse.setData(response);
+        apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        apiResponse.setSuccessful(HttpStatus.BAD_REQUEST.is4xxClientError());
+        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+    }
+    }
+
+
     @GetMapping("getAllMedication")
     public ResponseEntity<List<Medication>> getAllMedications() {
         List<Medication> medications = medicationService.getAllMedications();
