@@ -13,8 +13,8 @@ import org.ereach.inc.data.models.annotations.ValidDomain;
 @Data
 public class CreateHospitalRequest {
 	
-//	@NotEmpty
-//	@NonNull
+	@NotEmpty
+	@NonNull
 	private String HEFAMAA_ID;
 	@NotEmpty
 	@NonNull

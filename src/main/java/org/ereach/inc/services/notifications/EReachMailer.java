@@ -141,7 +141,7 @@ public class EReachMailer implements MailService{
 	}
 	
 	private @NotNull String url(String email, String role, String firstName, String lastName) {
-		String url = FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName, eReachConfig.getAppJWTSecret());
+		String url = BACKEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName, eReachConfig.getAppJWTSecret());
 		System.out.println(url);
 		return url;
 	}
