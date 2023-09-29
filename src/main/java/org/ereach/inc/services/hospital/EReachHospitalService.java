@@ -87,7 +87,7 @@ public class EReachHospitalService implements HospitalService {
 		admin.setId(null);
 		admin.setAdminRole(HOSPITAL_ADMIN);
 		mappedHospital.getAdmins().add(admin);
-		
+		hospitalRepository.save(mappedHospital);
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
@@ -114,7 +114,7 @@ public class EReachHospitalService implements HospitalService {
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
 			return activateAccount(token);
 		}
-		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, HOSPITAL));
+		return activateAccount(token);
 	}
 	
 	@Override
