@@ -60,6 +60,7 @@ public class EReachHospitalService implements HospitalService {
 	
 	private EReachHospitalRepository hospitalRepository;
 	private ModelMapper modelMapper;
+	private HospitalAdminRepository hospitalAdminRepository;
 	private MailService mailService;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
@@ -70,11 +71,11 @@ public class EReachHospitalService implements HospitalService {
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
 		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
 		verifyHefamaaId(hospitalRequest.getHEFAMAA_ID());
-		
+
 		AddressCreationRequest mappedAddress = modelMapper.map(hospitalRequest, AddressCreationRequest.class);
 		AddressResponse saveAddressResponse = addressService.saveAddress(mappedAddress);
 		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
-		
+
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
 		mappedHospital.setUserRole(HOSPITAL);
 		mappedHospital.setAddress(savedAddress);
@@ -82,17 +83,17 @@ public class EReachHospitalService implements HospitalService {
 		mappedHospital.setAdmins(new HashSet<>());
 		mappedHospital.setPractitioners(new HashSet<>());
 		mappedHospital.setRecords(new HashSet<>());
-		
+
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
-		admin.setId(null);
 		admin.setAdminRole(HOSPITAL_ADMIN);
-		mappedHospital.getAdmins().add(admin);
+		HospitalAdmin savedAdmin = hospitalAdminRepository.save(admin);
+		mappedHospital.getAdmins().add(savedAdmin);
 		hospitalRepository.save(mappedHospital);
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
 	}
-	
+
 	private EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
 		return EReachNotificationRequest.builder()
 				       .firstName(hospital.getHospitalName())
@@ -106,7 +107,7 @@ public class EReachHospitalService implements HospitalService {
 	
 	}
 	private String urlForHospital(String email, String role, String firstName, String lastName){
-		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+		return BACKEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateActivationToken(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
 	public HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException {
 		if (Objects.equals(token, config.getTestToken()))
@@ -184,7 +185,7 @@ public class EReachHospitalService implements HospitalService {
 	}
 
 	private String urlForHospitalAdmin(String email, String role, String firstName, String lastName){
-		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+		return BACKEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateActivationToken(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
 
 	private HospitalResponse activateTestAccount() {

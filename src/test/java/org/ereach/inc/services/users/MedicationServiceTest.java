@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 @SpringBootTest
 
 public class MedicationServiceTest {
@@ -24,11 +26,14 @@ public class MedicationServiceTest {
         AddMedicationResponse addMedicationResponse = medicationService.createMedication(addMedicationRequest);
 //        assertThat(a).isNotNull();
 //        assertThat(addMedicationResponse.getMessage()).isEqualTo(MEDICATION_ADDED_SUCCESSFULY);
-        
+    
     }
+    
+    @Test
     public void testThatMedicationCanBeCreated(){
         AddMedicationRequest medicationRequest = medicationRequest();
-        
+//        assertThat(addMedicationResponse).isNotNull();
+//        assertThat(addMedicationResponse.getMessage()).isEqualTo(MEDICATION_ADDED_SUCCESSFULY);
     }
 
     @Test
@@ -54,13 +59,14 @@ public class MedicationServiceTest {
     }
     
     public AddMedicationRequest buildMedication(){
+
         return AddMedicationRequest.builder()
                 .price(BigDecimal.valueOf(50))
                 .drugName("paracetamol")
                 .timeAdded(LocalTime.now())
                 .dateAdded(LocalDate.now())
-                        .build();
-}
+                       .build();
+    }
     @Test
     public AddMedicationRequest medicationRequest(){
         return AddMedicationRequest.builder()

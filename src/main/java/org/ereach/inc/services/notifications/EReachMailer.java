@@ -107,8 +107,9 @@ public class EReachMailer implements MailService{
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, firstName+SPACE+lastName, url);
-		
+		String formattedContent = String.format(templateContent, firstName, url);
+		System.out.println(formattedContent);
+		System.out.println(url);
 		Recipient recipient = Recipient.builder().email(email).build();
 		
 		Notification notification = new Notification();
@@ -140,7 +141,7 @@ public class EReachMailer implements MailService{
 	}
 	
 	private @NotNull String url(String email, String role, String firstName, String lastName) {
-		String url = FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName, eReachConfig.getAppJWTSecret());
+		String url = BACKEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName, eReachConfig.getAppJWTSecret());
 		System.out.println(url);
 		return url;
 	}
