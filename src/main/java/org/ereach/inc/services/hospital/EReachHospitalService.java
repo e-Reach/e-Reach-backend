@@ -15,11 +15,8 @@ import org.ereach.inc.data.dtos.request.AddressCreationRequest;
 import org.ereach.inc.data.dtos.request.AddressUpdateRequest;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
-import org.ereach.inc.data.dtos.response.AddressResponse;
-import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
-import org.ereach.inc.data.dtos.response.HospitalResponse;
-import org.ereach.inc.data.dtos.response.PractitionerResponse;
-import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
+import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.data.dtos.response.entries.*;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
@@ -28,6 +25,7 @@ import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -45,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 import static org.apache.catalina.util.Introspection.getDeclaredFields;
 import static org.ereach.inc.data.models.Role.HOSPITAL;
@@ -61,6 +60,7 @@ public class EReachHospitalService implements HospitalService {
 	
 	private EReachHospitalRepository hospitalRepository;
 	private ModelMapper modelMapper;
+	private HospitalAdminRepository hospitalAdminRepository;
 	private MailService mailService;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
@@ -71,11 +71,11 @@ public class EReachHospitalService implements HospitalService {
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
 		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
 		verifyHefamaaId(hospitalRequest.getHEFAMAA_ID());
-		
+
 		AddressCreationRequest mappedAddress = modelMapper.map(hospitalRequest, AddressCreationRequest.class);
 		AddressResponse saveAddressResponse = addressService.saveAddress(mappedAddress);
 		Address savedAddress = modelMapper.map(saveAddressResponse, Address.class);
-		
+
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
 		mappedHospital.setUserRole(HOSPITAL);
 		mappedHospital.setAddress(savedAddress);
@@ -83,17 +83,17 @@ public class EReachHospitalService implements HospitalService {
 		mappedHospital.setAdmins(new HashSet<>());
 		mappedHospital.setPractitioners(new HashSet<>());
 		mappedHospital.setRecords(new HashSet<>());
-		
+
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
-		admin.setId(null);
 		admin.setAdminRole(HOSPITAL_ADMIN);
+		admin.setId(null);
 		mappedHospital.getAdmins().add(admin);
 		
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
 	}
-	
+
 	private EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
 		return EReachNotificationRequest.builder()
 				       .firstName(hospital.getHospitalName())
@@ -107,15 +107,15 @@ public class EReachHospitalService implements HospitalService {
 	
 	}
 	private String urlForHospital(String email, String role, String firstName, String lastName){
-		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+		return ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
-	public HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException {
+	public HospitalResponse saveHospitalPermanently(String token) {
 		if (Objects.equals(token, config.getTestToken()))
 			return activateTestAccount();
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret())) {
 			return activateAccount(token);
 		}
-		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, HOSPITAL));
+		return activateAccount(token);
 	}
 	
 	@Override
@@ -140,16 +140,57 @@ public class EReachHospitalService implements HospitalService {
 	}
 	
 	@Override
-	public List<PractitionerResponse> getAllPractitioners(String hospitalEmail) {
+	public List<GetPractitionerResponse> getAllPractitioners(String hospitalEmail) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
 		return foundHospital.map(hospital -> hospital.getPractitioners()
 				                                     .stream()
-				                                     .map(practitioner -> modelMapper.map(practitioner, PractitionerResponse.class))
+				                                     .map(practitioner -> modelMapper.map(practitioner, GetPractitionerResponse.class))
 				                                     .toList())
 				            .orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 	}
 	
-	private HospitalResponse activateAccount(String token){
+	@Override
+	public List<GetRecordResponse> getAllRecordsCreated(String hospitalEmail) throws EReachBaseException {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		if (foundHospital.isPresent()){
+			Set<Record> hospitalRecords = foundHospital.get().getRecords();
+			return hospitalRecords.stream()
+					              .map(record -> {
+						              Set<MedicalLog> logsCreated = foundHospital.get().getLogsCreated();
+						              List<MedicalLogResponse> logsResponses = logsCreated.stream().map(log -> {
+							              MedicalLogResponse response = new MedicalLogResponse();
+							              response.setDateCreated(log.getDateCreated());
+							              response.setHospitalEmail(hospitalEmail);
+							              response.setHospitalName(foundHospital.get().getHospitalName());
+							              response.setTimeCreated(log.getTimeCreated());
+							              response.setPrescriptionsResponseDTO(mapList(log.getPrescriptions(), PrescriptionsResponseDTO.class));
+							              response.setTestResponseDTO(mapList(log.getTests(), TestResponseDTO.class));
+							              response.setVitalsResponseDTO(modelMapper.map(log.getVitals(), VitalsResponseDTO.class));
+							              response.setDoctorReportResponseDTO(modelMapper.map(log.getDoctorsReport(), DoctorReportResponseDTO.class));
+							              return response;
+						              }).toList();
+						              GetRecordResponse records = modelMapper.map(record, GetRecordResponse.class);
+									  records.setMedicalLogResponses(logsResponses);
+									  records.setMessage("Record found");
+									  return records;
+					              })
+					              .toList();
+		}
+		throw new EReachBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail));
+	}
+	
+	<S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
+		return source.stream()
+				       .map(element -> modelMapper.map(element, targetClass))
+				       .collect(Collectors.toList());
+	}
+	
+	<S, T> List<T> mapSetToList(Set<S> source, Class<T> targetClass) {
+		return source.stream()
+				       .map(element -> modelMapper.map(element, targetClass))
+				       .collect(Collectors.toList());
+	}
+		private HospitalResponse activateAccount(String token){
 		String email = extractEmailFrom(token);
 		Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
 		Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
@@ -167,6 +208,7 @@ public class EReachHospitalService implements HospitalService {
 				throw new EReachUncheckedBaseException(e);
 			}
 		});
+			System.out.println("saved hospital is: "+savedHospital.get());
 		return modelMapper.map(savedHospital.get(), HospitalResponse.class);
 	}
 	
@@ -185,7 +227,7 @@ public class EReachHospitalService implements HospitalService {
 	}
 
 	private String urlForHospitalAdmin(String email, String role, String firstName, String lastName){
-		return FRONTEND_BASE_URL + ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
+		return ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateActivationToken(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
 
 	private HospitalResponse activateTestAccount() {

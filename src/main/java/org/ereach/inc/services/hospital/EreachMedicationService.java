@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.ereach.inc.utilities.Constants.MEDICATION_ADDED_SUCCESSFULLY;
 
@@ -36,4 +38,17 @@ public class EreachMedicationService implements MedicationService {
                 .timeAdded(LocalTime.now())
                 .build();
     }
+
+
+    public List<Medication> getMedicationByName(String drugName){
+        Optional<Medication> foundMedication = medicationRepository.findByDrugName(drugName);
+        return foundMedication.stream().toList();
+    }
+
+    public List<Medication> getAllMedications(){
+        return medicationRepository.findAll().stream().toList();
+    }
+
+
+
 }

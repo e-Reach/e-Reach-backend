@@ -10,4 +10,9 @@ import lombok.*;
 @Builder
 public class GetPractitionerResponse {
 	private String message;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String phoneNumber;
+	private String practitionerIdentificationNumber;
 }

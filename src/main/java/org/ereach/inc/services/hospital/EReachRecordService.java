@@ -25,7 +25,7 @@ public class EReachRecordService implements RecordService {
     private ModelMapper modelMapper;
     private HospitalService hospitalService;
     
-    // TODO: 9/25/2023 TO DELETE CAUSE IT's NO MORE NECESSARY
+    //TODO: 9/25/2023 TO DELETE CAUSE IT's NO MORE NECESSARY
     @Override
     public CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest) {
         HospitalResponse foundHospital = hospitalService.findHospitalByEmail(createRecordRequest.getHospitalEmail());

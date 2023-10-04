@@ -9,10 +9,6 @@ import org.ereach.inc.data.dtos.request.CloudUploadRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
 import org.ereach.inc.data.dtos.request.TestRecommendationRequest;
 import org.ereach.inc.data.dtos.response.*;
-
-import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
-import static org.ereach.inc.data.models.Role.*;
-
 import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.users.Doctor;
@@ -21,16 +17,17 @@ import org.ereach.inc.data.models.users.Pharmacist;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.users.EReachPractitionerRepository;
 import org.ereach.inc.exceptions.EReachBaseException;
-import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -39,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
+import static org.ereach.inc.data.models.Role.*;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.JWTUtil.*;
 import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator.generateUniquePIN;
@@ -53,6 +52,7 @@ public class EReachPractitionerService implements PractitionerService{
 	private MailService mailService;
 	private EReachPractitionerRepository practitionerRepository;
 	private HospitalService hospitalService;
+	private RestTemplate restTemplate;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
 																		  "labTechnician", new LabTechnician(),
 																		  "pharmacist", new Pharmacist());
@@ -75,6 +75,7 @@ public class EReachPractitionerService implements PractitionerService{
 				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
 			}
 			mailService.sendMail(buildNotificationRequest(practitioner));
+			makePostCall();
 			hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPractitioner);
 			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
 			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
@@ -83,11 +84,19 @@ public class EReachPractitionerService implements PractitionerService{
 			throw new RegistrationFailedException(throwable);
 		}
 	}
-	
+
+	private ResponseEntity<?> makePostCall() {
+//		HttpHeaders headers = new HttpHeaders()
+		HttpEntity<String> requestEntity = new HttpEntity<>("Account Activation Successful");
+        return restTemplate.postForEntity(
+				FRONT_END_ACTIVATE_ACCOUNT, requestEntity, String.class
+		);
+	}
+
 	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
 		return EReachNotificationRequest.builder()
 								       .firstName(practitioner.getFirstName())
-								       .lastName(practitioner.getLastName())
+								       .lastName("successfully")
 								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
 								       .email(practitioner.getEmail())
 								       .username(practitioner.getPractitionerIdentificationNumber())

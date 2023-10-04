@@ -14,16 +14,18 @@ public class Constants {
 	public static final String SHA_256_ALGORITHM_NOT_AVAILABLE = "SHA-256 algorithm not available.";
 	public static final String TOKEN_WAS_INVALID = "Request failed: %s failed to save permanently, token was invalid";
 	public static final String SPACE = " ";
-	public static final String FRONTEND_BASE_URL = "https://localhost/3000/";
-	public static final String QUERY_STRING_PREFIX = "?";
+	public static final String BACKEND_BASE_URL = "http://localhost:8080/api/v1/";
+	public static final String QUERY_STRING_PREFIX = "/";
 	public static final String HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST = "Hospital with email %s does not exist";
 	public static final String HOSPITAL_WITH_ID_DOES_NOT_EXIST = "Hospital with id %s does not exist";
 	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with id %s does not exist in the hospital with email %s";
 	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST = "Admin with id %s does not exist";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with email %s does not exist in the hospital with email %s";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST = "Admin with email %s does not exist";
-	public static final String ACTIVATE_HOSPITAL_ACCOUNT = "activate-hospital-account";
-	public static final String ACTIVATE_HOSPITAL_ADMIN_ACCOUNT = "activate-hospital-admin-account";
+	public static final String ACTIVATE_HOSPITAL_ACCOUNT = "http://localhost:3000/activate-hospital-account";
+	public static final String ACTIVATE_HOSPITAL_ADMIN_ACCOUNT = "http://localhost:3000/activate-hospital-account/activate-hospital-account/";
+	public static final String FRONT_END_ACTIVATE_ACCOUNT = "http://localhost:3000/activate-account";
+	public static final String ACTIVATE_ACCOUNT = "practitioner/activate-account/";
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
 	public static final String USER_PHONE_NUMBER = "user phone number";
@@ -37,7 +39,7 @@ public class Constants {
 	public static final String PATIENT_APPOINTMENT_MAIL_PATH = "C:\\Users\\PC\\IdeaProjects\\e-Reach-backend\\src\\main\\resources\\templates\\patient_appointment_mail_template.html";
 	public static final String ACTIVATION_MAIL_PATH = "classpath:/templates/account_activation_mail_template.html";
 	public static final String HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
-	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/hospital_account_activation_template.html";
+	public static final String PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH = "classpath:/templates/practitioner_url_template.html";
 	public static final String PATIENT_ID_MAIL_PATH = "classpath:/templates/patient_id_template.html";
 	public static final String CONSTRAINT_VIOLATION_MESSAGE =
                                 """
