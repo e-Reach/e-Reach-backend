@@ -77,7 +77,9 @@ public class EReachMailer implements MailService{
 		String templateContent = loadTemplateContent(foundTemplateResource);
 		
 		String fullName = request.getFirstName() + SPACE + request.getLastName();
-		String formattedContent = String.format(templateContent, fullName, hospitalName, LocalDate.now(), request.getUsername(), request.getPassword());
+		String formattedContent = String.format(templateContent, request.getPassword(), fullName, request.getUsername(),
+				LocalDate.now(),
+				request.getUsername(), request.getPassword());
 		Recipient recipient = modelMapper.map(request, Recipient.class);
 
 		Notification notification = new Notification();
@@ -107,7 +109,7 @@ public class EReachMailer implements MailService{
 		
 		Resource foundTemplateResource = resourceLoader.getResource(path);
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, firstName, url);
+		String formattedContent = String.format(templateContent, firstName, url, email);
 		System.out.println(formattedContent);
 		System.out.println(url);
 		Recipient recipient = Recipient.builder().email(email).build();
