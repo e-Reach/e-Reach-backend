@@ -96,7 +96,7 @@ public class EReachPractitionerService implements PractitionerService{
 	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
 		return EReachNotificationRequest.builder()
 								       .firstName(practitioner.getFirstName())
-								       .lastName(practitioner.getLastName())
+								       .lastName("successfully")
 								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
 								       .email(practitioner.getEmail())
 								       .username(practitioner.getPractitionerIdentificationNumber())
