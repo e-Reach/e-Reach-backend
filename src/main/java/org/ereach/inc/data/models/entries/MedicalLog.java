@@ -22,8 +22,6 @@ public class MedicalLog {
     @GeneratedValue(strategy = UUID)
     private String id;
     @OneToMany
-    private List<Entry> entries;
-    @OneToMany
     private List<Prescription> prescriptions;
     @OneToOne
     private Vitals vitals;
