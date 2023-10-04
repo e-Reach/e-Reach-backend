@@ -1,13 +1,11 @@
 package org.ereach.inc.controller;
 
-import org.ereach.inc.data.dtos.response.GetHospitalAdminResponse;
-import org.ereach.inc.data.dtos.response.PractitionerResponse;
+import org.ereach.inc.data.dtos.response.*;
+import org.ereach.inc.exceptions.EReachBaseException;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ereach.inc.data.dtos.response.ApiResponse;
-import org.ereach.inc.data.dtos.response.HospitalResponse;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.springframework.http.HttpStatus;
@@ -47,20 +45,25 @@ public class HospitalController {
     
     @PostMapping("practitioners/")
     public ResponseEntity<?> getAllHospitalPractitioners(String hospitalEmail){
-        List<PractitionerResponse> response = hospitalService.getAllPractitioners(hospitalEmail);
+        List<GetPractitionerResponse> response = hospitalService.getAllPractitioners(hospitalEmail);
         try {
-            ApiResponse<List<PractitionerResponse>> apiResponse = new ApiResponse<>();
+            ApiResponse<List<GetPractitionerResponse>> apiResponse = new ApiResponse<>();
             apiResponse.setStatusCode(HttpStatus.FOUND.value());
             apiResponse.setSuccessful(HttpStatus.FOUND.is2xxSuccessful());
             apiResponse.setData(response);
             return new ResponseEntity<>(apiResponse, HttpStatus.FOUND);
         } catch(Throwable throwable){
-            return null;
+            ApiResponse<GetPractitionerResponse> apiResponse = new ApiResponse<>();
+            apiResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+            apiResponse.setSuccessful(HttpStatus.NOT_FOUND.is4xxClientError());
+            apiResponse.setData(GetPractitionerResponse.builder().message("Not Found").build());
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
         }
         
     }
     
-    public ResponseEntity<?> getAllHospitalAdmins(String hospitalEmail){
+    @GetMapping("admins/{hospitalEmail}")
+    public ResponseEntity<?> getAllHospitalAdmins(@PathVariable String hospitalEmail){
         List<GetHospitalAdminResponse> response = hospitalService.findAllAdminByHospitalEmail(hospitalEmail);
         try {
             ApiResponse<List<GetHospitalAdminResponse>> apiResponse = new ApiResponse<>();
@@ -69,12 +72,34 @@ public class HospitalController {
             apiResponse.setData(response);
             return new ResponseEntity<>(apiResponse, HttpStatus.FOUND);
         } catch(Throwable throwable){
-            return null;
+            ApiResponse<HospitalResponse> apiResponse = new ApiResponse<>();
+            apiResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+            apiResponse.setSuccessful(HttpStatus.NOT_FOUND.is4xxClientError());
+            apiResponse.setData(HospitalResponse.builder().message("No Admin Found").build());
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
         }
     }
     
     public ResponseEntity<?> getAllWorkers(){
         return null;
+    }
+    
+    @GetMapping("records/{hospitalEmail}")
+    public ResponseEntity<?> getAllRecordsCreated(@PathVariable String hospitalEmail){
+        try {
+            List<GetRecordResponse> responses = hospitalService.getAllRecordsCreated(hospitalEmail);
+            ApiResponse<List<GetRecordResponse>> apiResponse = new ApiResponse<>();
+            apiResponse.setData(responses);
+            apiResponse.setSuccessful(HttpStatus.FOUND.is2xxSuccessful());
+            apiResponse.setStatusCode(HttpStatus.FOUND.value());
+            return new ResponseEntity<>(apiResponse, HttpStatus.FOUND);
+        } catch (EReachBaseException e) {
+            ApiResponse<GetRecordResponse> apiResponse = new ApiResponse<>();
+            apiResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
+            apiResponse.setSuccessful(HttpStatus.NOT_FOUND.is4xxClientError());
+            apiResponse.setData(GetRecordResponse.builder().message("No Record Found").build());
+            return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        }
     }
     
     
