@@ -26,6 +26,7 @@ import org.ereach.inc.data.models.hospital.Record;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
+import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
@@ -33,6 +34,7 @@ import org.ereach.inc.services.AddressService;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
+import org.ereach.inc.services.users.EreachHospitalAdminService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
@@ -60,6 +62,7 @@ public class EReachHospitalService implements HospitalService {
 	private EReachHospitalRepository hospitalRepository;
 	private ModelMapper modelMapper;
 	private MailService mailService;
+	private HospitalAdminRepository hospitalAdminRepository;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
 	private InMemoryDatabase inMemoryDatabase;
@@ -83,9 +86,10 @@ public class EReachHospitalService implements HospitalService {
 		mappedHospital.setRecords(new HashSet<>());
 
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
-		admin.setId(null);
 		admin.setAdminRole(HOSPITAL_ADMIN);
-		mappedHospital.getAdmins().add(admin);
+		HospitalAdmin savedAdmin = hospitalAdminRepository.save(admin);
+		mappedHospital.getAdmins().add(savedAdmin);
+		hospitalRepository.save(mappedHospital);
 
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));

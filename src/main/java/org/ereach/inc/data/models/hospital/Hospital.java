@@ -27,7 +27,7 @@ public class Hospital {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Address address;
     @Column(unique = true)
     private String HEFAMAA_ID;
@@ -37,12 +37,12 @@ public class Hospital {
     @Column(unique = true)
     private String hospitalEmail;
     private Role userRole;
-    @OneToMany(cascade = REMOVE, fetch = EAGER)
+    @OneToMany(fetch = EAGER)
     private Set<MedicalLog> logsCreated;
-    @OneToMany(cascade = REMOVE, fetch = EAGER)
+    @OneToMany(fetch = EAGER)
     private Set<Practitioner> practitioners;
-    @OneToMany(cascade = REMOVE, fetch = EAGER)
+    @OneToMany(fetch = EAGER)
     private Set<HospitalAdmin> admins;
-    @OneToMany(cascade = DETACH, fetch = EAGER)
+    @OneToMany(fetch = EAGER)
     private Set<Record> records;
 }
