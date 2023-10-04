@@ -226,7 +226,7 @@ public class EReachHospitalService implements HospitalService {
 	}
 
 	private String urlForHospitalAdmin(String email, String role, String firstName, String lastName){
-		return BACKEND_BASE_URL + ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateActivationToken(email, role, firstName, lastName,config.getAppJWTSecret());
+		return ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateActivationToken(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
 
 	private HospitalResponse activateTestAccount() {
