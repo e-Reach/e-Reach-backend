@@ -24,7 +24,7 @@ import static org.ereach.inc.utilities.Constants.ADMIN_WITH_ID_DOES_NOT_EXIST_IN
 @Slf4j
 public class HospitalAdminController {
 	private HospitalAdminService adminService;
-	@PostMapping("register-hospital")
+	@PostMapping("register-hospital/")
 	public ResponseEntity<?> registerHospital(@RequestBody CreateHospitalRequest createHospitalRequest){
 		System.out.println(createHospitalRequest.toString());
 		ApiResponse<HospitalResponse> apiResponse = new ApiResponse<>();
