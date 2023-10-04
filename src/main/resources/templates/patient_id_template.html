@@ -9,19 +9,24 @@
         }
         .father_box{
             background-color: antiquewhite;
-        }
+        }    
     </style>
+    <script>
+        function handleClick(){
+            localStorage.setItem("patientIdentificationNumber", "%s")
+        }
+    </script>
 </head>
 <body>
     <section class="father_box">
         <div class="message_div">
-            <p>Hi %s, you account has been set up successfully at %s on %s</p>
+            <p>Hi %s, you account has been set up successfully</p>
             <p>your e-Reach USERNAME is %s</p>
             <p>your <em><b>PATIENT IDENTIFICATION NUMBER</b></em>  is %s</p>
         </div>
         <div class="login_button_div">
             <a href="http://localhost:3000/patient-dashboard">
-                <button>click this link to navigate to your dashboard</button>
+                <button onclick="handleClick()">click this link to navigate to your dashboard</button>
             </a>
         </div>
     </section>
