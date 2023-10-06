@@ -4,8 +4,8 @@ import org.ereach.inc.data.dtos.request.*;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
+import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface HospitalAdminService {
 	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
 	HospitalAdminResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException;
 	CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException;
-	ResponseEntity<?> invitePractitioner(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException;
+	PractitionerResponse invitePractitioner(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException, RegistrationFailedException;
 	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
 	GetHospitalAdminResponse findAdminById(String id, String hospitalEmail);
 	GetHospitalAdminResponse findAdminByEmail(String adminEmail, String hospitalEmail);

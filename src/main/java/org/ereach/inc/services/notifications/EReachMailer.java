@@ -68,6 +68,38 @@ public class EReachMailer implements MailService{
 	}
 
 	@Override
+	public ResponseEntity<EReachNotificationResponse> sendPractitionerMail(EReachNotificationRequest request) throws RequestInvalidException {
+		
+		HttpHeaders headers = new HttpHeaders();
+		headers.set(API_KEY, eReachConfig.getMailApiKey());
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		Resource foundTemplateResource = resourceLoader.getResource(request.getTemplatePath());
+		String templateContent = loadTemplateContent(foundTemplateResource);
+		String formattedContent = String.format(templateContent, request.getFirstName(), request.getUsername(), request.getUrl());
+		System.out.println(formattedContent);
+		System.out.println(request.getUrl());
+		System.out.println("Request email is: "+request.getEmail());
+		Recipient recipient = Recipient.builder().email(request.getEmail()).build();
+		Notification notification = new Notification();
+		notification.setRecipients(Collections.singletonList(recipient));
+		notification.setSender(Sender.builder()
+				                       .name(SENDER_FULL_NAME)
+				                       .email(SENDER_EMAIL)
+				                       .build());
+		notification.setSubject(MESSAGE_SUBJECT);
+		notification.setHtmlContent(formattedContent);
+		HttpEntity<Notification> requestEntity = new HttpEntity<>(notification, headers);
+		ResponseEntity<EReachNotificationResponse> response = restTemplate.postForEntity(
+				BREVO_SEND_EMAIL_API_URL,
+				requestEntity, EReachNotificationResponse.class
+		);
+		if (response.getStatusCode().is2xxSuccessful())
+			log.info("{} response body:: {}", MESSAGE_SUCCESSFULLY_SENT, Objects.requireNonNull(response.getBody()));
+		else log.error("{} response body:: {}", MESSAGE_FAILED_TO_SEND, Objects.requireNonNull(response.getBody()));
+		return response;
+	}
+	@Override
 	public ResponseEntity<EReachNotificationResponse> sendPatientInfo(@NotNull EReachNotificationRequest request, String hospitalName) throws RequestInvalidException {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set(API_KEY, eReachConfig.getMailApiKey());
@@ -111,7 +143,7 @@ public class EReachMailer implements MailService{
 		String templateContent = loadTemplateContent(foundTemplateResource);
 		String formattedContent = String.format(templateContent, firstName, url, email);
 		System.out.println(formattedContent);
-		System.out.println(url);
+		System.out.println("url is => "+url);
 		Recipient recipient = Recipient.builder().email(email).build();
 		
 		Notification notification = new Notification();

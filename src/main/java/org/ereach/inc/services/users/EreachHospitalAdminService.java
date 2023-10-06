@@ -1,6 +1,7 @@
 package org.ereach.inc.services.users;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.config.EReachConfig;
 import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
@@ -12,20 +13,15 @@ import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
-import org.ereach.inc.exceptions.EReachBaseException;
-import org.ereach.inc.exceptions.EReachUncheckedBaseException;
-import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RequestInvalidException;
+import org.ereach.inc.exceptions.*;
 import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
-import org.ereach.inc.services.notifications.EReachNotificationResponse;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -36,6 +32,7 @@ import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	private final EReachHospitalRepository hospitalRepository;
@@ -47,6 +44,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	private final HospitalAdminRepository hospitalAdminRepository;
 	private final MailService mailService;
 	private final EmailValidator validator;
+	private final PractitionerService practitionerService;
 	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
@@ -55,9 +53,10 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public HospitalAdminResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException {
-		if (Objects.equals(token, config.getTestToken()))
-			return activateTestAccount();
-		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
+		//if (Objects.equals(token, config.getTestToken()))
+		//			return activateTestAccount();
+		//else
+		if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
 			return activateAccount(token);
 		else throw new RequestInvalidException("Request failed");
 	}
@@ -69,13 +68,16 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
+		log.info("hospital admin in activate account before saving: {}", hospitalAdmin.toString());
 		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
+		log.info("hospital admin in activate account after saving: {}", hospitalAdmin);
 		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
-		foundHospital.setAdmins(new HashSet<>());
+		log.info("found saved and activated hospital in activate account: {}", foundHospital.toString());
 		foundHospital.getAdmins().add(savedHospitalAdmin);
+		log.info("found (under) saved and activated hospital in activate account: {}", foundHospital.toString());
 		hospitalRepository.save(foundHospital);
 		return modelMapper.map(savedHospitalAdmin, HospitalAdminResponse.class);
-	}
+	}                                      
 	
 	private HospitalAdminResponse activateTestAccount() {
 		return HospitalAdminResponse.builder()
@@ -86,13 +88,9 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 	
 	@Override
-	public ResponseEntity<?> invitePractitioner(@NotNull InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RequestInvalidException {
-		validator.validateEmail(practitionerRequest.getEmail());
+	public PractitionerResponse invitePractitioner(@NotNull InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RegistrationFailedException {
 		verifyRole(practitionerRequest);
-		EReachNotificationRequest notificationRequest = buildNotificationRequest(practitionerRequest);
-		ResponseEntity<EReachNotificationResponse> response = mailService.sendMail(notificationRequest);
-		Objects.requireNonNull(response.getBody()).setMessage(PRACTITIONER_REGISTRATION_AWAITING_CONFIRMATION);
-		return response;
+		return practitionerService.invitePractitioner(practitionerRequest);
 	}
 	
 	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {

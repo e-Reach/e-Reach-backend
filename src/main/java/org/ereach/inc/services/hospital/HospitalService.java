@@ -16,7 +16,7 @@ import java.util.List;
 public interface HospitalService {
 	HospitalResponse registerHospital(CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException;
 	HospitalResponse editHospitalProfile(UpdateHospitalRequest hospitalRequest);
-	HospitalResponse saveHospitalPermanently(String token) throws RequestInvalidException;
+	HospitalResponse saveHospitalPermanently(String token) throws EReachBaseException;
 	HospitalResponse findHospitalByEmail(String email);
 	
 	HospitalResponse findHospitalByHefamaaId(String hefamaa_Id);
