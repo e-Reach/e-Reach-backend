@@ -33,7 +33,7 @@ public class HospitalController {
             apiResponse.setSuccessful(HttpStatus.CREATED.is2xxSuccessful());
             apiResponse.setStatusCode(HttpStatus.CREATED.value());
             return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
-        } catch (RequestInvalidException e) {
+        } catch (EReachBaseException e) {
             response = new HospitalResponse();
             response.setMessage(e.getMessage());
             apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
@@ -84,7 +84,7 @@ public class HospitalController {
         return null;
     }
     
-    @GetMapping("records/{hospitalEmail}")
+    @GetMapping("view-records/{hospitalEmail}")
     public ResponseEntity<?> getAllRecordsCreated(@PathVariable String hospitalEmail){
         try {
             List<GetRecordResponse> responses = hospitalService.getAllRecordsCreated(hospitalEmail);

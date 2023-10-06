@@ -2,6 +2,8 @@ package org.ereach.inc.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ereach.inc.data.dtos.request.PractitionerLoginRequest;
+import org.ereach.inc.data.dtos.response.PractitionerLoginResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.users.PractitionerService;
 import org.springframework.http.HttpStatus;
@@ -30,5 +32,10 @@ public class PractitionerController {
         }
     }
 
+    @PostMapping("login/")
+    public ResponseEntity<?> login(PractitionerLoginRequest loginRequest){
+        PractitionerLoginResponse response = practitionerService.login(loginRequest);
+        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+    }
 
 }

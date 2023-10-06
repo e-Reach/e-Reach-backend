@@ -1,6 +1,7 @@
 package org.ereach.inc.services;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.models.hospital.Hospital;
 import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.exceptions.EReachUncheckedBaseException;
@@ -11,6 +12,7 @@ import java.util.*;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class InMemoryDatabase {
 	public static final String USER_ALREADY_EXISTS = "Invalid Email: user already exists";
 	private static Set<Hospital> hospitals = new HashSet<>();
@@ -18,17 +20,13 @@ public class InMemoryDatabase {
 	private static final Map<String, Hospital> savedHospitals = new HashMap<>();
 	
 	public Hospital temporarySave(Hospital hospital){
-		hospital.setId(generateTemporaryId());
 		if(hospitals.stream().anyMatch(hospital1 -> Objects.equals(hospital1.getHospitalEmail(), hospital.getHospitalEmail())))
 			throw new EReachUncheckedBaseException(USER_ALREADY_EXISTS);
-		hospitals.add(hospital);
+		else hospitals.add(hospital);
 		return hospital;
 	}
 	
 	public void temporarySave(HospitalAdmin hospitalAdmin){
-		hospitalAdmin.setId(generateTemporaryId());
-		if(admins.stream().anyMatch(admin -> Objects.equals(admin.getAdminEmail(), hospitalAdmin.getAdminEmail())))
-			throw new EReachUncheckedBaseException(USER_ALREADY_EXISTS);
 		admins.add(hospitalAdmin);
 		System.out.println(hospitalAdmin);
 	}
@@ -51,17 +49,10 @@ public class InMemoryDatabase {
 				        .orElse(null);
 	}
 	
-	private String generateTemporaryId() {
-		String id =  UUID.randomUUID().toString();
-		if (hospitals.stream().noneMatch(hospital -> Objects.equals(hospital.getId(), id)))
-			return id;
-		else return generateTemporaryId();
-	}
 	
 	public Hospital findSavedAndActivatedHospitalByAdminEmail(String adminEmail) throws RequestInvalidException {
 		Hospital savedHospital = savedHospitals.get(adminEmail);
-		if (savedHospital == null)
-			throw new RequestInvalidException("");
+		if (savedHospital == null) throw new RequestInvalidException("");
 		return savedHospital;
 	}
 	

@@ -3,11 +3,9 @@ package org.ereach.inc.services.users;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.config.EReachConfig;
-import org.ereach.inc.data.dtos.request.AppointmentScheduleRequest;
-import org.ereach.inc.data.dtos.request.CloudUploadRequest;
-import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
-import org.ereach.inc.data.dtos.request.TestRecommendationRequest;
+import org.ereach.inc.data.dtos.request.*;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.data.models.Role;
@@ -23,7 +21,6 @@ import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,6 +41,7 @@ import static org.ereach.inc.utilities.PractitionerIdentificationNumberGenerator
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class EReachPractitionerService implements PractitionerService{
 	private EReachConfig config;
 	private ModelMapper mapper;
@@ -54,54 +52,73 @@ public class EReachPractitionerService implements PractitionerService{
 	private HospitalService hospitalService;
 	private RestTemplate restTemplate;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
-																		  "labTechnician", new LabTechnician(),
+																		  "labtechnician", new LabTechnician(),
 																		  "pharmacist", new Pharmacist());
 	@Override
-	public PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) throws RegistrationFailedException {
-		Practitioner practitioner = practitioners.get(registerDoctorRequest.getRole());
+	public PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException {
+		Practitioner practitioner = practitioners.get(registerDoctorRequest.getRole().toLowerCase());
 		try {
-			Practitioner savedPractitioner;
+			Doctor savedDoctor;
 			if (practitioner instanceof Doctor) {
 				Doctor mappedDoctor = mapper.map(registerDoctorRequest, Doctor.class);
 				buildPractitioner(mappedDoctor, DOCTOR);
-				savedPractitioner = practitionerRepository.save(mappedDoctor);
+				savedDoctor = practitionerRepository.save(mappedDoctor);
+				savedDoctor.setUserRole(DOCTOR);
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
+						savedDoctor);
+				PractitionerResponse response = mapper.map(savedDoctor, PractitionerResponse.class);
+				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+				return response;
 			} else if (practitioner instanceof Pharmacist) {
+				Pharmacist savedPharmacist;
 				Pharmacist mappedPharmacist = mapper.map(registerDoctorRequest, Pharmacist.class);
 				buildPractitioner(mappedPharmacist, PHARMACIST);
-				savedPractitioner = practitionerRepository.save(mappedPharmacist);
+				savedPharmacist = practitionerRepository.save(mappedPharmacist);
+				savedPharmacist.setUserRole(PHARMACIST);
+				mailService.sendPractitionerMail(buildNotificationRequest(savedPharmacist));
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
+						savedPharmacist);
+				PractitionerResponse response = mapper.map(savedPharmacist, PractitionerResponse.class);
+				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+				return response;
+				
 			} else {
 				LabTechnician mappedLabTechnician = mapper.map(registerDoctorRequest, LabTechnician.class);
 				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
-				savedPractitioner = practitionerRepository.save(mappedLabTechnician);
+				LabTechnician savedLabTechnician = practitionerRepository.save(mappedLabTechnician);
+				savedLabTechnician.setUserRole(LAB_TECHNICIAN);
+				mailService.sendPractitionerMail(buildNotificationRequest(savedLabTechnician));
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
+						savedLabTechnician);
+				PractitionerResponse response = mapper.map(savedLabTechnician, PractitionerResponse.class);
+				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+				return response;
 			}
-			mailService.sendMail(buildNotificationRequest(practitioner));
-			makePostCall();
-			hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPractitioner);
-			PractitionerResponse response = mapper.map(savedPractitioner, PractitionerResponse.class);
-			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
-			return response;
 		}catch (Throwable throwable){
 			throw new RegistrationFailedException(throwable);
 		}
 	}
-
-	private ResponseEntity<?> makePostCall() {
-//		HttpHeaders headers = new HttpHeaders()
-		HttpEntity<String> requestEntity = new HttpEntity<>("Account Activation Successful");
-        return restTemplate.postForEntity(
-				FRONT_END_ACTIVATE_ACCOUNT, requestEntity, String.class
-		);
+	
+	@Override
+	public PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) {
+		return PractitionerLoginResponse.builder()
+				       .practitionerIdentificationNumber(loginRequest.getPractitionerIdentificationNumber())
+				       .message("Login Successful")
+				       .username(loginRequest.getUsername())
+				       .email(loginRequest.getEmail())
+				       .build();
 	}
-
+	
 	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
+		String url = "http://localhost:3000/practitioner-login";
 		return EReachNotificationRequest.builder()
-								       .firstName(practitioner.getFirstName())
-								       .lastName("successfully")
-								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
-								       .email(practitioner.getEmail())
-								       .username(practitioner.getPractitionerIdentificationNumber())
-								       .role(practitioner.getUserRole().toString())
-								       .build();
+								        .firstName(practitioner.getFirstName())
+								        .lastName("successfully")
+								        .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+				                        .url(url)
+								        .email(practitioner.getEmail())
+								        .username(practitioner.getPractitionerIdentificationNumber())
+								        .build();
 	}
 	
 	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
@@ -113,16 +130,16 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	@Override
-	public PractitionerResponse activatePractitionerAccount(String token) throws RequestInvalidException, RegistrationFailedException {
+	public PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException {
 		if (isValidToken(token, config.getAppJWTSecret())){
-			CreatePractitionerRequest createPractitionerRequest = buildPractitionerCreationRequest(token);
-			return activatePractitionerAccount(createPractitionerRequest);
+			InvitePractitionerRequest createPractitionerRequest = buildPractitionerCreationRequest(token);
+			return invitePractitioner(createPractitionerRequest);
 		}
 		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, PRACTITIONER));
 	}
 	
-	private CreatePractitionerRequest buildPractitionerCreationRequest(String token) {
-		return CreatePractitionerRequest.builder()
+	private InvitePractitionerRequest buildPractitionerCreationRequest(String token) {
+		return InvitePractitionerRequest.builder()
 				       .lastName(extractLastNameFrom(token))
 				       .firstName(extractFirstNameFrom(token))
 				       .email(extractEmailFrom(token))

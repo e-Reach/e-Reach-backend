@@ -1,13 +1,11 @@
 package org.ereach.inc.controller;
 
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.AddMedicationRequest;
 import org.ereach.inc.data.dtos.response.AddMedicationResponse;
 import org.ereach.inc.data.dtos.response.ApiResponse;
 import org.ereach.inc.data.models.hospital.Medication;
-import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.hospital.EreachMedicationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
