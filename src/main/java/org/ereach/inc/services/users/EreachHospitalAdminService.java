@@ -68,7 +68,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
 		String email = extractEmailFrom(token);
 		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
-		log.info("hospital admin in activate account before saving: {}", hospitalAdmin.toString());
+	
 		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
 		log.info("hospital admin in activate account after saving: {}", hospitalAdmin);
 		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
