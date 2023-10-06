@@ -9,6 +9,7 @@ import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
+import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.users.HospitalAdminService;
 import org.springframework.http.HttpStatus;
@@ -69,11 +70,16 @@ public class HospitalAdminController {
 	
 	@PostMapping("invite-practitioner/")
 	public ResponseEntity<?> invitePractitioner(@RequestBody InvitePractitionerRequest invitePractitionerRequest){
-		ResponseEntity<?> response;
+		log.info("invitation request is: {}", invitePractitionerRequest);
+		PractitionerResponse response;
 		try {
+			ApiResponse<PractitionerResponse> apiResponse = new ApiResponse<>();
 			response = adminService.invitePractitioner(invitePractitionerRequest);
-			return response;
-		} catch (FieldInvalidException | RequestInvalidException e) {
+			apiResponse.setData(response);
+			apiResponse.setStatusCode(HttpStatus.CREATED.value());
+			apiResponse.setSuccessful(HttpStatus.CREATED.is2xxSuccessful());
+			return new ResponseEntity<>(apiResponse, HttpStatus.CREATED);
+		} catch (FieldInvalidException | RequestInvalidException | RegistrationFailedException e) {
 			ApiResponse<String> apiResponse = new ApiResponse<>();
 			apiResponse.setSuccessful(HttpStatus.BAD_REQUEST.is4xxClientError());
 			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());

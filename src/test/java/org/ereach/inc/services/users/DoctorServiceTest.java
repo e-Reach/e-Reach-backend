@@ -16,7 +16,7 @@ public class DoctorServiceTest {
 	
 	@BeforeEach
 	void startEachTestWith(){
-//		practitionerService.activatePractitionerAccount();
+//		practitionerService.invitePractitioner();
 	}
 	
 	@Test

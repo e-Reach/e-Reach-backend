@@ -8,9 +8,10 @@ import lombok.*;
 @Data
 @ToString
 public class AddressCreationRequest {
-	private String houseNumber;
-	private String streetName;
-	private String streetNumber;
+	private String postalCode;
+	private String streetAddress;
+	private String nameOfStreet;
+	private String numberOfStreet;
 	private String state;
 	private String country;
 }

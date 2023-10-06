@@ -14,8 +14,9 @@ import java.util.List;
 
 public interface PractitionerService {
 	
-	PractitionerResponse activatePractitionerAccount(CreatePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
-	PractitionerResponse activatePractitionerAccount(String token) throws RequestInvalidException, RegistrationFailedException;
+	PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
+	PractitionerLoginResponse login(PractitionerLoginRequest loginRequest);
+	PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
 	void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber);
 	CloudUploadResponse uploadTestResult(CloudUploadRequest cloudUploadRequest);
 	ResponseEntity<?> uploadProfilePicture(MultipartFile multipartFile) throws EReachBaseException;
@@ -23,9 +24,11 @@ public interface PractitionerService {
 	MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date);
 	TestRecommendationResponse recommendTest(TestRecommendationRequest testRecommendationRequest);
 	AppointmentScheduleResponse scheduleAppointment(AppointmentScheduleRequest appointmentScheduleRequest);
+	
 	List<GetPractitionerResponse> getAllPractitionersInHospital(String hospitalEmail);
-
+	
 	List<GetPractitionerResponse> getAllPractitioners() throws RequestInvalidException;
-
+	
 	void removeAll() throws RequestInvalidException;
+	
 }
