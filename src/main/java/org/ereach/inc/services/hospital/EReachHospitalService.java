@@ -31,8 +31,6 @@ import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.AddressService;
 import org.ereach.inc.services.InMemoryDatabase;
-import org.ereach.inc.services.entries.EreachMedicalLogService;
-import org.ereach.inc.services.entries.MedicalLogService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
@@ -92,6 +90,8 @@ public class EReachHospitalService implements HospitalService {
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
 		admin.setAdminRole(HOSPITAL_ADMIN);
 		mappedHospital.getAdmins().add(admin);
+		hospitalRepository.save(mappedHospital);
+
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
 		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
@@ -187,11 +187,6 @@ public class EReachHospitalService implements HospitalService {
 				       .collect(Collectors.toList());
 	}
 	
-	<S, T> List<T> mapSetToList(Set<S> source, Class<T> targetClass) {
-		return source.stream()
-				       .map(element -> modelMapper.map(element, targetClass))
-				       .collect(Collectors.toList());
-	}
 	private HospitalResponse activateAccount(String token){
 		String email = extractEmailFrom(token);
 		Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
