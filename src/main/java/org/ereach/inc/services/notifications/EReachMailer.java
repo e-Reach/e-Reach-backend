@@ -76,10 +76,9 @@ public class EReachMailer implements MailService{
 		
 		Resource foundTemplateResource = resourceLoader.getResource(request.getTemplatePath());
 		String templateContent = loadTemplateContent(foundTemplateResource);
-		String formattedContent = String.format(templateContent, request.getFirstName(), request.getUsername(), request.getUrl());
+		String formattedContent = String.format(templateContent, request.getFirstName(), request.getPassword(), request.getUrl());
 		System.out.println(formattedContent);
 		System.out.println(request.getUrl());
-		System.out.println("Request email is: "+request.getEmail());
 		Recipient recipient = Recipient.builder().email(request.getEmail()).build();
 		Notification notification = new Notification();
 		notification.setRecipients(Collections.singletonList(recipient));

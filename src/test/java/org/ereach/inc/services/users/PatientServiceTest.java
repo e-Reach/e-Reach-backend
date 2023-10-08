@@ -37,7 +37,7 @@ public class PatientServiceTest {
                 .firstName("Rich")
                 .lastName("Doe")
                 .phoneNumber("08033456789")
-                .email("rich@gmail.com")
+                .email(".com")
                 .nin("12345")
                 .streetName("Yaba")
                 .houseNumber("23")

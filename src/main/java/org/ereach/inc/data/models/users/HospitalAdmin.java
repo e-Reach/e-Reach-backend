@@ -1,9 +1,6 @@
 package org.ereach.inc.data.models.users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -31,8 +28,10 @@ public class HospitalAdmin {
     private String adminLastName;
     @Email
     @NotEmpty
+    @Column(unique = true)
     private String adminEmail;
     @Email(regexp = "")
     @PhoneNumber(region = "ZZ")
     private String adminPhoneNumber;
+    
 }

@@ -6,6 +6,7 @@ import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.ereach.inc.exceptions.RequestInvalidException;
+import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +17,7 @@ public interface PractitionerService {
 	
 	PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
 	PractitionerLoginResponse login(PractitionerLoginRequest loginRequest);
-	PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
+	PractitionerResponse activatePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
 	void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber);
 	CloudUploadResponse uploadTestResult(CloudUploadRequest cloudUploadRequest);
 	ResponseEntity<?> uploadProfilePicture(MultipartFile multipartFile) throws EReachBaseException;

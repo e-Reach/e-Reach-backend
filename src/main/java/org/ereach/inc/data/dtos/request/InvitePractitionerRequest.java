@@ -1,6 +1,7 @@
 package org.ereach.inc.data.dtos.request;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @AllArgsConstructor
@@ -9,6 +10,8 @@ import lombok.*;
 @Data
 public class InvitePractitionerRequest {
 	
+	@NotNull
+	@NotEmpty
 	private String firstName;
 	@NonNull
 	@NotEmpty

@@ -3,8 +3,6 @@ package org.ereach.inc.config;
 
 import lombok.Getter;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
-import org.ereach.inc.data.dtos.response.CreatePatientResponse;
-import org.ereach.inc.data.models.users.Patient;
 import org.ereach.inc.data.models.users.Practitioner;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,11 +35,11 @@ public class EReachConfig {
 	@Bean
 	public ModelMapper getModelMapper(){
 		ModelMapper mapper = new ModelMapper();
-//		mapper.getConfiguration()
-//			  .setFieldMatchingEnabled(true)
-//			  .setFieldAccessLevel(PRIVATE);
+		mapper.getConfiguration()
+			  .setFieldMatchingEnabled(true)
+			  .setFieldAccessLevel(PRIVATE);
 		mapper.createTypeMap(CreatePractitionerRequest.class, Practitioner.class)
-			  .addMappings(mapping -> mapping.map(CreatePractitionerRequest::getRole, Practitioner::setUserRole));
+			.addMappings(mapping -> mapping.map(CreatePractitionerRequest::getRole, Practitioner::setUserRole));
 		return mapper;
 	}
 	
