@@ -29,7 +29,9 @@ public class JWTUtil {
 	public static String generateActivationToken(String email, String role,  String firstName, String lastName, String jwtSecret){
 		JWTCreator.Builder tokenCreator;
 		tokenCreator = buildTokenForEmails(email, role, firstName, lastName);
-		return tokenCreator.sign(Algorithm.HMAC512(jwtSecret));
+		String signedToken = tokenCreator.sign(Algorithm.HMAC512(jwtSecret));
+		testToken = signedToken;
+		return signedToken;
 	}
 	
 	private static JWTCreator.Builder buildTokenForEmails(String email, String role, String firstName, String lastName) {

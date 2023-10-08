@@ -15,9 +15,6 @@ public class CreateHospitalRequest {
 	
 	@NotEmpty
 	@NonNull
-	private String HEFAMAA_ID;
-	@NotEmpty
-	@NonNull
 	private String hospitalName;
 	@NotEmpty
 	@NonNull
@@ -43,11 +40,14 @@ public class CreateHospitalRequest {
 	private String adminPhoneNumber;
 	@NotEmpty
 	@NonNull
-	private String streetName;
+	private String streetAddress;
 	@NotEmpty
 	@NonNull
-	private String streetNumber;
+	private String postalCode;
 	@NotEmpty
 	@NonNull
 	private String state;
+	@NotEmpty
+	@NonNull
+	private String HEFAMAA_ID;
 }

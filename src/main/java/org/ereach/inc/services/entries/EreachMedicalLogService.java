@@ -135,13 +135,25 @@ public class EreachMedicalLogService implements MedicalLogService {
     @Override
     public MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date) {
         Optional<MedicalLog> foundLog = medicalLogRepository.findByPatientIdentificationNumberAndDateCreated(patientIdentificationNumber, date);
-        return foundLog.map(medicalLog -> modelMapper.map(medicalLog, MedicalLogResponse.class))
-                       .orElseThrow(()-> new EReachUncheckedBaseException(String.format(NO_MEDICAL_LOGS_FOUND_FOR_PATIENT_WITH_DATE, patientIdentificationNumber, date)));
+        return foundLog.map(medicalLog -> {
+            MedicalLogResponse logResponse = modelMapper.map(medicalLog, MedicalLogResponse.class);
+            logResponse.setPrescriptionsResponseDTO(mapList(medicalLog.getPrescriptions(), PrescriptionsResponseDTO.class));
+            logResponse.setTestResponseDTO(mapList(medicalLog.getTests(), TestResponseDTO.class));
+            logResponse.setDoctorReportResponseDTO(modelMapper.map(medicalLog.getDoctorsReport(), DoctorReportResponseDTO.class));
+            logResponse.setVitalsResponseDTO(modelMapper.map(medicalLog.getVitals(), VitalsResponseDTO.class));
+            return logResponse;
+        }).orElseThrow(()-> new EReachUncheckedBaseException(String.format(NO_MEDICAL_LOGS_FOUND_FOR_PATIENT_WITH_DATE, patientIdentificationNumber, date)));
     }
     
     @Override
     public void deActivateMedicalLogWhosePatientsAreNotDeactivate() {
 
+    }
+    
+    @Override
+    public List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalId) {
+//        medicalLogRepository.findAllByHospitalId(hospitalId);
+        return null;
     }
     //        System.out.println("=".repeat(100)+"\n"+"Medical log::==> "+medicalLog+"\n"+"=".repeat(100));
 }

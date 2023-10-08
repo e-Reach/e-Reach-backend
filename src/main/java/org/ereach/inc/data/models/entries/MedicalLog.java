@@ -35,6 +35,5 @@ public class MedicalLog {
     private LocalTime timeCreated;
     private String patientIdentificationNumber;
     private boolean isActive;
-
-
+    private String hospitalEmail;
 }

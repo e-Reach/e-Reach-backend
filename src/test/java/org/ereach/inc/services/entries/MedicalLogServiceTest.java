@@ -153,8 +153,8 @@ class MedicalLogServiceTest {
                        .hospitalPhoneNumber("07036174617")
                        .adminPhoneNumber("08023677114")
                        .state("Lagos")
-                       .streetNumber("342B")
-                       .streetName("herbert Macaulay way")
+                       .postalCode("342B")
+                       .streetAddress("herbert Macaulay way")
                        .build();
     }
     

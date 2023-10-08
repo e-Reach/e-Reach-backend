@@ -24,7 +24,10 @@ import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.ereach.inc.utilities.Constants.*;
@@ -53,31 +56,35 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	@Override
 	public HospitalAdminResponse saveHospitalAdminPermanently(String token) throws RequestInvalidException {
-		//if (Objects.equals(token, config.getTestToken()))
-		//			return activateTestAccount();
-		//else
-		if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
+		if (Objects.equals(token, config.getTestToken()))
+			return activateTestAccount();
+		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
 			return activateAccount(token);
-		else throw new RequestInvalidException("Request failed");
+		else throw new RequestInvalidException("Request failed::Token "+token+" to activate hospital admin account was Invalid or has expired");
+	}
+	
+	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
+		String email = extractEmailFrom(token);
+		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
+		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
+		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
+		foundHospital.getAdmins().add(savedHospitalAdmin);
+		hospitalRepository.save(foundHospital);
+		return modelMapper.map(savedHospitalAdmin, HospitalAdminResponse.class);
+	}
+	
+	@Override
+	public PractitionerResponse invitePractitioner(@NotNull InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RegistrationFailedException {
+		validator.validateEmail(practitionerRequest.getEmail());
+		validator.validateEmail(practitionerRequest.getHospitalEmail());
+		verifyRole(practitionerRequest);
+		return practitionerService.invitePractitioner(practitionerRequest);
 	}
 	
 	@Override
 	public CreatePatientResponse registerPatient(CreatePatientRequest createPatientRequest) throws EReachBaseException {
 		return patientService.createPatient(createPatientRequest);
 	}
-	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
-		String email = extractEmailFrom(token);
-		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
-		log.info("hospital admin in activate account before saving: {}", hospitalAdmin.toString());
-		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
-		log.info("hospital admin in activate account after saving: {}", hospitalAdmin);
-		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
-		log.info("found saved and activated hospital in activate account: {}", foundHospital.toString());
-		foundHospital.getAdmins().add(savedHospitalAdmin);
-		log.info("found (under) saved and activated hospital in activate account: {}", foundHospital.toString());
-		hospitalRepository.save(foundHospital);
-		return modelMapper.map(savedHospitalAdmin, HospitalAdminResponse.class);
-	}                                      
 	
 	private HospitalAdminResponse activateTestAccount() {
 		return HospitalAdminResponse.builder()
@@ -86,27 +93,11 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 				       .adminEmail(TEST_HOSPITAL_MAIL)
 				       .build();
 	}
-	
-	@Override
-	public PractitionerResponse invitePractitioner(@NotNull InvitePractitionerRequest practitionerRequest) throws FieldInvalidException, RegistrationFailedException {
-		verifyRole(practitionerRequest);
-		return practitionerService.invitePractitioner(practitionerRequest);
-	}
-	
-	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
-		return EReachNotificationRequest.builder()
-								       .firstName(practitionerRequest.getFirstName())
-								       .lastName(practitionerRequest.getLastName())
-								       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
-								       .email(practitionerRequest.getEmail())
-								       .role(practitionerRequest.getRole())
-								       .build();
-	}
 
 	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {
 		if (EnumSet.allOf(Role.class)
 				   .stream()
-				   .noneMatch(role ->role ==Role.valueOf(practitionerRequest.getRole().toUpperCase())))
+				   .noneMatch(role -> role == Role.valueOf(practitionerRequest.getRole().toUpperCase())))
 			throw new FieldInvalidException("Invalid Role");
 	}
 	
@@ -127,8 +118,7 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 					GetHospitalAdminResponse mappedResponse = modelMapper.map(foundAdmin, GetHospitalAdminResponse.class);
 					atomicReference.set(mappedResponse);
 					return atomicReference.get();
-				} else
-					throw new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL, id, hospitalEmail));
+				} else throw new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL, id, hospitalEmail));
 			}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST, id))));
 		});
 		return response.get();
@@ -137,21 +127,18 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	@Override
 	public GetHospitalAdminResponse findAdminByEmail(String email, String hospitalEmail) {
 		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
-		AtomicReference<GetHospitalAdminResponse> atomicReference = new AtomicReference<>();
-		AtomicReference<GetHospitalAdminResponse> response = new AtomicReference<>();
-		foundHospital.ifPresent(hospital -> {
-			Optional<HospitalAdmin> foundAdmin = hospitalAdminRepository.findById(email);
-			response.set(foundAdmin.map(hospitalAdmin -> {
-				if (hospital.getAdmins().stream().anyMatch(admin -> admin == hospitalAdmin)) {
-					GetHospitalAdminResponse mappedResponse = modelMapper.map(foundAdmin, GetHospitalAdminResponse.class);
-					atomicReference.set(mappedResponse);
-					return atomicReference.get();
-				} else
-					throw new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST_IN_HOSPITAL, email, hospitalEmail));
-			}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST, email))));
-		});
-		return response.get();
+		return foundHospital.map(hospital -> {
+			HospitalAdmin foundAdmin = hospital.getAdmins().stream()
+					                           .filter(admin -> Objects.equals(admin.getAdminEmail(), email))
+					                           .findFirst()
+					                           .orElseThrow(() -> new EReachUncheckedBaseException(
+							                           String.format(ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL, email, hospitalEmail)
+					                           ));
+			
+			return modelMapper.map(foundAdmin, GetHospitalAdminResponse.class);
+		}).orElse(null);
 	}
+	
 	
 	@Override
 	public PractitionerResponse removePractitioner(String email) {
@@ -184,4 +171,14 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		return null;
 	}
 	
+	@Override
+	public void deleteByEmail(String adminEmail) {
+		hospitalAdminRepository.deleteByAdminEmail(adminEmail);
+	}
+	
 }
+/*
+Optional<HospitalAdmin> foundAdmin = hospitalAdminRepository.findByAdminEmail(email);
+* foundAdmin.map(hospitalAdmin -> {
+							}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(ADMIN_WITH_ID_DOES_NOT_EXIST, email))));
+		}*/

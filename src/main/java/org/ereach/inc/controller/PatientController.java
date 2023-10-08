@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ereach.inc.data.dtos.request.CreatePatientRequest;
 import org.ereach.inc.data.dtos.response.ApiResponse;
 import org.ereach.inc.data.dtos.response.CreatePatientResponse;
+import org.ereach.inc.data.dtos.response.GetPatientResponse;
 import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.exceptions.EReachBaseException;
 import org.ereach.inc.services.users.PatientService;
@@ -60,6 +61,19 @@ public class PatientController {
             apiResponse.setStatusCode(HttpStatus.NOT_FOUND.value());
             return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
         }
+    }
+    
+    @GetMapping ("get/{patientIdentificationNumber}")
+    public ResponseEntity<?> getPatientByPIN(@PathVariable String patientIdentificationNumber){
+        GetPatientResponse foundPatient;
+        try{
+            foundPatient = patientService.findByPatientIdentificationNumber(patientIdentificationNumber);
+            return new ResponseEntity<>(foundPatient, HttpStatus.FOUND);
+        }
+        catch (Throwable throwable){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+        
     }
 
     @PostMapping("upload-profile-picture")

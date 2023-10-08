@@ -42,7 +42,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -70,6 +69,7 @@ public class EReachHospitalService implements HospitalService {
 	private final EReachConfig config;
 	private ObjectMapper objectMapper;
 	
+	
 	@Override
 	public HospitalResponse registerHospital(@NotNull CreateHospitalRequest hospitalRequest) throws FieldInvalidException, RequestInvalidException {
 		emailValidator.validateEmail(hospitalRequest.getHospitalEmail());
@@ -89,14 +89,8 @@ public class EReachHospitalService implements HospitalService {
 
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
 		admin.setAdminRole(HOSPITAL_ADMIN);
-
-		HospitalAdmin savedAdmin = hospitalAdminRepository.save(admin);
-		mappedHospital.getAdmins().add(savedAdmin);
-		hospitalRepository.save(mappedHospital);
-
-
-		admin.setId(null);
 		mappedHospital.getAdmins().add(admin);
+		hospitalRepository.save(mappedHospital);
 
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
@@ -109,22 +103,21 @@ public class EReachHospitalService implements HospitalService {
 				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
 				       .email(hospital.getHospitalEmail())
 				       .role(hospital.getUserRole().toString())
-				       .url(urlForHospital(hospital.getHospitalEmail(), hospital.getUserRole().toString(), hospital.getHospitalName(), hospital.getHospitalName()))
+				       .url(hospitalAccountActivationUrl(hospital.getHospitalEmail(), hospital.getUserRole().toString(), hospital.getHospitalName(), hospital.getHospitalName()))
 				       .build();
 	}
 	private void verifyHefamaaId(String hefamaaId) {
 	
 	}
-	private String urlForHospital(String email, String role, String firstName, String lastName){
+	private String hospitalAccountActivationUrl(String email, String role, String firstName, String lastName){
 		return ACTIVATE_HOSPITAL_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
 	public HospitalResponse saveHospitalPermanently(String token) throws EReachBaseException {
-//		if (Objects.equals(token, config.getTestToken()))
-//			return activateTestAccount();
-//		else
-	if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
-		return activateAccount(token);
-	else throw new EReachBaseException("Token "+token+" to activate hospital admin account was Invalid");
+		if (Objects.equals(token, config.getTestToken()))
+			return activateTestAccount();
+		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
+			return activateAccount(token);
+		else throw new EReachBaseException("Token "+token+" to activate hospital admin account was Invalid or has expired");
 	}
 	
 	@Override
@@ -194,32 +187,25 @@ public class EReachHospitalService implements HospitalService {
 				       .collect(Collectors.toList());
 	}
 	
-	<S, T> List<T> mapSetToList(Set<S> source, Class<T> targetClass) {
-		return source.stream()
-				       .map(element -> modelMapper.map(element, targetClass))
-				       .collect(Collectors.toList());
-	}
 	private HospitalResponse activateAccount(String token){
 		String email = extractEmailFrom(token);
 		Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
 		Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
-		AtomicReference<Hospital> savedHospital = new AtomicReference<>();
+		AtomicReference<Hospital> savedHospitalReference = new AtomicReference<>();
 		foundAdmin.ifPresent(admin -> {
 			try {
-				log.info("Hospital Service:: admin at activate account{}", admin);
-				mailService.sendMail(buildNotificationRequest(admin));
 				admin.setAdminRole(HOSPITAL_ADMIN);
 				inMemoryDatabase.temporarySave(admin);
 				hospital.setAdmins(new HashSet<>());
-				Hospital saved = hospitalRepository.save(hospital);
-				savedHospital.set(saved);
+				Hospital savedHospital = hospitalRepository.save(hospital);
+				savedHospitalReference.set(savedHospital);
 				inMemoryDatabase.addHospitalToSavedHospitals(admin.getAdminEmail(), hospital);
+				mailService.sendMail(buildNotificationRequest(admin));
 			} catch (RequestInvalidException e) {
 				throw new EReachUncheckedBaseException(e);
 			}
 		});
-		log.info("hospital service:: saved hospital is: {} at method activate hospital account", savedHospital.get());
-		return modelMapper.map(savedHospital.get(), HospitalResponse.class);
+		return modelMapper.map(savedHospitalReference.get(), HospitalResponse.class);
 	}
 	
 	private EReachNotificationRequest buildNotificationRequest(HospitalAdmin admin) {
@@ -229,13 +215,14 @@ public class EReachHospitalService implements HospitalService {
 				       .templatePath(HOSPITAL_ACCOUNT_ACTIVATION_MAIL_PATH)
 				       .email(admin.getAdminEmail())
 				       .role(admin.getAdminRole().toString())
-					   .url(urlForHospitalAdmin(admin.getAdminEmail(),
+					   .url(urlForHospitalAdmin(
+							   admin.getAdminEmail(),
 							   admin.getAdminRole().toString(),
 							   admin.getAdminFirstName(),
 							   admin.getAdminLastName()))
 					  .build();
 	}
-
+	
 	private String urlForHospitalAdmin(String email, String role, String firstName, String lastName){
 		return ACTIVATE_HOSPITAL_ADMIN_ACCOUNT + JWTUtil.generateAccountActivationUrl(email, role, firstName, lastName,config.getAppJWTSecret());
 	}
@@ -390,6 +377,8 @@ public class EReachHospitalService implements HospitalService {
 	
 	@Override
 	public List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail) {
+		hospitalRepository.getReferenceById(hospitalEmail);
+		
 		return null;
 	}
 }

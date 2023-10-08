@@ -62,6 +62,8 @@ public class Constants {
 	public static  final String FIELD_INVALID_EXCEPTIONS = "Phone number must not contain alphabet";
 	public  static final String INCOMPLETE_DETAILS_PROVIDED = "Incomplete details provided";
 	public static  final  String MEDICATION_ADDED_SUCCESSFULLY = "Added Successfully";
+	public static final String RECORD_WITH_P_I_N_NOT_FOUND = "Record with p.i.n %s not found";
+	
 	public static  final  String PHARMACIST_SUCCESSFULLY_CREATED = "\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13\uD83E\uDD13 successfully created";
 	public static  final  String EMAIL_ALREADY_EXIST = "Email already exists";
 	public static final String PATIENT_ACCOUNT_CREATED_SUCCESSFULLY = "Patient %s Account Created Successfully, you will receive a mail with your P.I.N and Username very soon which";
