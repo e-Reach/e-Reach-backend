@@ -153,14 +153,14 @@ public class EReachPractitionerService implements PractitionerService{
 								        .build();
 	}
 	
-	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
-		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
-		mappedPractitioner.setActive(true);
-		mappedPractitioner.setStatus(ACTIVE);
-		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
-		mappedPractitioner.setUserRole(role);
-	}
-	
+//	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
+//		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
+//		mappedPractitioner.setActive(true);
+//		mappedPractitioner.setStatus(ACTIVE);
+//		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
+//		mappedPractitioner.setUserRole(role);
+//	}
+//
 	@Override
 	public PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException {
 		if (isValidToken(token, config.getAppJWTSecret())){
