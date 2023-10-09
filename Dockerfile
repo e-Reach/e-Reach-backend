@@ -1,6 +1,6 @@
 FROM maven:latest AS build
 COPY . .
-RUN mvn clean package -DSkipTests
+RUN mvn clean package -DskipTests
 
 FROM openjdk:20-jdk-slim
 COPY --from=build /target/e-Reach-0.0.1-SNAPSHOT.jar e-Reach.jar
