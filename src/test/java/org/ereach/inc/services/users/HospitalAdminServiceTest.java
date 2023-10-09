@@ -109,7 +109,8 @@ class HospitalAdminServiceTest {
 	void testThatHospitalAdminAccountIsCreated_AfterHospitalAccountIsCreated(){
 		HospitalResponse savedHospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
 		assertThat(savedHospitalResponse).isNotNull();
-		HospitalResponse foundHospital = hospitalService.findHospitalByEmail(savedHospitalResponse.getHospitalEmail());
+		HospitalResponse foundHospital = hospitalService..
+		findHospitalByEmail(savedHospitalResponse.getHospitalEmail());
 		assertThat(foundHospital).isNotNull();
 		
 		HospitalAdminResponse savedAdminResponse = hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
@@ -171,7 +172,7 @@ class HospitalAdminServiceTest {
 				       .hospitalEmail("alaabdulmalik03@gmail.com")
 				       .adminFirstName("Glory")
 				       .adminLastName("Oyedotun")
-				       .HEFAMAA_ID("Brenda")
+				       .HEFAMAA_ID("I12345679008")
 				       .hospitalPhoneNumber("07036174617")
 				       .adminPhoneNumber("08023677114")
 				       .state("Lagos")

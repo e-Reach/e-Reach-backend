@@ -89,8 +89,8 @@ public class EReachHospitalService implements HospitalService {
 
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
 		admin.setAdminRole(HOSPITAL_ADMIN);
+		admin.setId(null);
 		mappedHospital.getAdmins().add(admin);
-		hospitalRepository.save(mappedHospital);
 
 		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
 		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
