@@ -109,8 +109,7 @@ class HospitalAdminServiceTest {
 	void testThatHospitalAdminAccountIsCreated_AfterHospitalAccountIsCreated(){
 		HospitalResponse savedHospitalResponse = hospitalService.saveHospitalPermanently(JWTUtil.getTestToken());
 		assertThat(savedHospitalResponse).isNotNull();
-		HospitalResponse foundHospital = hospitalService..
-		findHospitalByEmail(savedHospitalResponse.getHospitalEmail());
+		HospitalResponse foundHospital = hospitalService.findHospitalByEmail(savedHospitalResponse.getHospitalEmail());
 		assertThat(foundHospital).isNotNull();
 		
 		HospitalAdminResponse savedAdminResponse = hospitalAdminService.saveHospitalAdminPermanently(JWTUtil.getTestToken());
