@@ -140,6 +140,45 @@ public class EReachPractitionerService implements PractitionerService{
 				       .build();
 	}
 	
+
+	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
+		String url = "http://localhost:3000/practitioner-login/"+practitioner.getUserRole().toString().toLowerCase();
+		return EReachNotificationRequest.builder()
+								        .firstName(practitioner.getFirstName())
+								        .lastName("successfully")
+								        .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+				                        .url(url)
+								        .email(practitioner.getEmail())
+								        .username(practitioner.getPractitionerIdentificationNumber())
+								        .build();
+	}
+	
+//	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
+//		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
+//		mappedPractitioner.setActive(true);
+//		mappedPractitioner.setStatus(ACTIVE);
+//		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
+//		mappedPractitioner.setUserRole(role);
+//	}
+//
+	@Override
+	public PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException {
+		if (isValidToken(token, config.getAppJWTSecret())){
+			InvitePractitionerRequest createPractitionerRequest = buildPractitionerCreationRequest(token);
+			return invitePractitioner(createPractitionerRequest);
+		}
+		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, PRACTITIONER));
+	}
+	
+	private InvitePractitionerRequest buildPractitionerCreationRequest(String token) {
+		return InvitePractitionerRequest.builder()
+				       .lastName(extractLastNameFrom(token))
+				       .firstName(extractFirstNameFrom(token))
+				       .email(extractEmailFrom(token))
+				       .role(extractRoleFrom(token))
+				       .build();
+	}
+
 	@Override
 	public void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
 	
