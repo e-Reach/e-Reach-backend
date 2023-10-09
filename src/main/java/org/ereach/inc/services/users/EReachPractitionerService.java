@@ -110,7 +110,7 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
-		String url = "http://localhost:3000/practitioner-login";
+		String url = "http://localhost:3000/practitioner-login/"+practitioner.getUserRole().toString().toLowerCase();
 		return EReachNotificationRequest.builder()
 								        .firstName(practitioner.getFirstName())
 								        .lastName("successfully")
