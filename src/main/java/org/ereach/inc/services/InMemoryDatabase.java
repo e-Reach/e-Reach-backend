@@ -26,8 +26,10 @@ public class InMemoryDatabase {
 		return hospital;
 	}
 	
-	public void temporarySave(HospitalAdmin hospitalAdmin){
-		admins.add(hospitalAdmin);
+	public void temporarySave(HospitalAdmin hospitalAdmin) throws RequestInvalidException {
+		if (admins.contains(hospitalAdmin))
+			throw new RequestInvalidException("Admin Already Exist in In-Memory");
+		else admins.add(hospitalAdmin);
 		System.out.println(hospitalAdmin);
 	}
 	

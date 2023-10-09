@@ -10,8 +10,8 @@ import lombok.*;
 @Builder
 public class AddressResponse {
 	private String id;
-	private String streetName;
-	private String streetNumber;
+	private String streetAddress;
+	private String postalCode;
 	private String houseNumber;
 	private String state;
 	private String country;

@@ -12,4 +12,6 @@ public interface EReachMedicalLogRepository extends JpaRepository<MedicalLog, St
 	List<MedicalLog> findAllByPatientIdentificationNumber(String patientIdentificationNumber);
 	
 	Optional<MedicalLog> findByPatientIdentificationNumberAndDateCreated(String patientIdentificationNumber, LocalDate date);
+	
+//	List<MedicalLog> findAllByW(String hospitalId);
 }

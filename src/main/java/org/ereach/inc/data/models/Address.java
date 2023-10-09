@@ -23,4 +23,6 @@ public class Address {
     private String state;
     private String country;
     private String houseNumber;
+    private String postalCode;
+    private String streetAddress;
 }

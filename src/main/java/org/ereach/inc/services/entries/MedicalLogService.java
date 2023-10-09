@@ -16,4 +16,6 @@ public interface MedicalLogService {
     MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date);
 
     void deActivateMedicalLogWhosePatientsAreNotDeactivate();
+	
+	List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalId);
 }

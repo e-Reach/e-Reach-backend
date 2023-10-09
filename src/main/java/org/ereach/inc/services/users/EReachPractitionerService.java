@@ -20,11 +20,11 @@ import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.hospital.HospitalService;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
 import static org.ereach.inc.data.models.Role.*;
@@ -50,53 +51,83 @@ public class EReachPractitionerService implements PractitionerService{
 	private MailService mailService;
 	private EReachPractitionerRepository practitionerRepository;
 	private HospitalService hospitalService;
-	private RestTemplate restTemplate;
 	private static final Map<String, Practitioner> practitioners = Map.of("doctor", new Doctor(),
 																		  "labtechnician", new LabTechnician(),
 																		  "pharmacist", new Pharmacist());
 	@Override
 	public PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException {
-		Practitioner practitioner = practitioners.get(registerDoctorRequest.getRole().toLowerCase());
 		try {
-			Doctor savedDoctor;
-			if (practitioner instanceof Doctor) {
+			PractitionerResponse response;
+			if (registerDoctorRequest.getRole().equalsIgnoreCase("doctor")) {
 				Doctor mappedDoctor = mapper.map(registerDoctorRequest, Doctor.class);
 				buildPractitioner(mappedDoctor, DOCTOR);
-				savedDoctor = practitionerRepository.save(mappedDoctor);
-				savedDoctor.setUserRole(DOCTOR);
-				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
-						savedDoctor);
-				PractitionerResponse response = mapper.map(savedDoctor, PractitionerResponse.class);
-				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
-				return response;
-			} else if (practitioner instanceof Pharmacist) {
-				Pharmacist savedPharmacist;
+				Doctor savedDoctor = practitionerRepository.save(mappedDoctor);
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedDoctor);
+				response = mapper.map(savedDoctor, PractitionerResponse.class);
+			}
+			else if ((registerDoctorRequest.getRole().equalsIgnoreCase("pharmacist"))){
 				Pharmacist mappedPharmacist = mapper.map(registerDoctorRequest, Pharmacist.class);
 				buildPractitioner(mappedPharmacist, PHARMACIST);
-				savedPharmacist = practitionerRepository.save(mappedPharmacist);
-				savedPharmacist.setUserRole(PHARMACIST);
-				mailService.sendPractitionerMail(buildNotificationRequest(savedPharmacist));
-				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
-						savedPharmacist);
-				PractitionerResponse response = mapper.map(savedPharmacist, PractitionerResponse.class);
-				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
-				return response;
+				Pharmacist savedPharmacist = practitionerRepository.save(mappedPharmacist);
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedPharmacist);
+				response = mapper.map(savedPharmacist, PractitionerResponse.class);
 				
 			} else {
 				LabTechnician mappedLabTechnician = mapper.map(registerDoctorRequest, LabTechnician.class);
 				buildPractitioner(mappedLabTechnician, LAB_TECHNICIAN);
 				LabTechnician savedLabTechnician = practitionerRepository.save(mappedLabTechnician);
-				savedLabTechnician.setUserRole(LAB_TECHNICIAN);
-				mailService.sendPractitionerMail(buildNotificationRequest(savedLabTechnician));
-				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(),
-						savedLabTechnician);
-				PractitionerResponse response = mapper.map(savedLabTechnician, PractitionerResponse.class);
-				response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
-				return response;
+				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedLabTechnician);
+				response = mapper.map(savedLabTechnician, PractitionerResponse.class);
 			}
+			EReachNotificationRequest notificationRequest = buildNotificationRequest(registerDoctorRequest);
+			notificationRequest.setPassword(response.getPractitionerIdentificationNumber());
+			System.out.println("notification request password:: "+notificationRequest.getPassword());
+			mailService.sendPractitionerMail(notificationRequest);
+			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+			return response;
 		}catch (Throwable throwable){
 			throw new RegistrationFailedException(throwable);
 		}
+	}
+	
+	
+	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
+		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
+		mappedPractitioner.setActive(true);
+		mappedPractitioner.setStatus(ACTIVE);
+		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
+		mappedPractitioner.setUserRole(role);
+	}
+	
+	public PractitionerResponse activatePractitioner(String token) throws RequestInvalidException {
+		if (isValidToken(token, config.getAppJWTSecret())){
+			String practitionerEmail = extractEmailFrom(token);
+			Optional<Practitioner> foundPractitioner = practitionerRepository.findByEmail(practitionerEmail);
+			if (foundPractitioner.isPresent()){
+				foundPractitioner.get().setActive(true);
+				Practitioner activePractitioner = practitionerRepository.save(foundPractitioner.get());
+				PractitionerResponse practitionerResponse = mapper.map(activePractitioner, PractitionerResponse.class);
+				practitionerResponse.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
+				return practitionerResponse;
+			}
+			throw new RequestInvalidException("Practitioner with email "+practitionerEmail+" does not exist");
+		}
+		throw new RequestInvalidException(String.format(TOKEN_WAS_INVALID, PRACTITIONER));
+	}
+	
+	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
+		String token = generateActivationToken(practitionerRequest.getEmail(),
+				practitionerRequest.getRole(), practitionerRequest.getFirstName(),
+				practitionerRequest.getLastName(), config.getAppJWTSecret());
+		String url = "http://localhost:3000/practitioner-login/"+token;
+		return EReachNotificationRequest.builder()
+				       .firstName(practitionerRequest.getFirstName())
+				       .lastName(practitionerRequest.getLastName())
+				       .templatePath(PRACTITIONER_ACCOUNT_ACTIVATION_MAIL_PATH)
+				       .url(url)
+				       .email(practitionerRequest.getEmail())
+				       .role(practitionerRequest.getRole())
+				       .build();
 	}
 	
 	@Override
@@ -109,6 +140,7 @@ public class EReachPractitionerService implements PractitionerService{
 				       .build();
 	}
 	
+
 	private EReachNotificationRequest buildNotificationRequest(Practitioner practitioner) {
 		String url = "http://localhost:3000/practitioner-login/"+practitioner.getUserRole().toString().toLowerCase();
 		return EReachNotificationRequest.builder()
@@ -146,7 +178,7 @@ public class EReachPractitionerService implements PractitionerService{
 				       .role(extractRoleFrom(token))
 				       .build();
 	}
-	
+
 	@Override
 	public void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber) {
 	
@@ -155,10 +187,12 @@ public class EReachPractitionerService implements PractitionerService{
 	@Override
 	public GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role) {
 		Practitioner practitioner = practitioners.get(role);
-		if (practitioner instanceof Doctor)
+		if (role.equalsIgnoreCase("doctor"))
 			return doctorService.viewPatientRecord(patientIdentificationNumber);
-		if (practitioner instanceof Pharmacist)
+		else if (role.equalsIgnoreCase("pharmacist"))
 			return pharmacistService.viewPatientRecord(patientIdentificationNumber);
+		else if (role.equalsIgnoreCase("labtechnician"))
+			return null;
 		return GetRecordResponse.builder().build();
 	}
 	

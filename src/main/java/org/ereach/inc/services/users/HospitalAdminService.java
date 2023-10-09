@@ -26,4 +26,6 @@ public interface HospitalAdminService {
 	void importPatientDetails();
 	
 	HospitalResponse getHospitalRegisteredWith(String officerIdentificationNumber);
+	
+	void deleteByEmail(String adminEmail);
 }
