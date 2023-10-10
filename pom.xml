@@ -121,8 +121,8 @@
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
+            <artifactId>pgjdbc-benchmark</artifactId>
+            <version>42.2.2</version>
         </dependency>
     </dependencies>
 
