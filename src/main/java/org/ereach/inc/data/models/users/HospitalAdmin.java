@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.annotations.PhoneNumber;
 
@@ -24,6 +25,8 @@ public class HospitalAdmin {
     private String id;
     @Enumerated(value = STRING)
     private Role adminRole;
+    private boolean active;
+    private AccountStatus accountStatus;
     private String adminFirstName;
     private String adminLastName;
     @Email

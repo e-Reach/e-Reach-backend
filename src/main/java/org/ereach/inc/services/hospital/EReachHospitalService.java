@@ -17,6 +17,7 @@ import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.data.dtos.response.entries.*;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
@@ -46,6 +47,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static org.apache.catalina.util.Introspection.getDeclaredFields;
+import static org.ereach.inc.data.models.AccountStatus.ACTIVE;
+import static org.ereach.inc.data.models.AccountStatus.PENDING;
 import static org.ereach.inc.data.models.Role.HOSPITAL;
 import static org.ereach.inc.data.models.Role.HOSPITAL_ADMIN;
 import static org.ereach.inc.utilities.AppUtil.doReplace;
@@ -81,6 +84,7 @@ public class EReachHospitalService implements HospitalService {
 
 		Hospital mappedHospital = modelMapper.map(hospitalRequest, Hospital.class);
 		mappedHospital.setUserRole(HOSPITAL);
+		mappedHospital.setAccountStatus(PENDING);
 		mappedHospital.setAddress(savedAddress);
 		mappedHospital.setLogsCreated(new HashSet<>());
 		mappedHospital.setAdmins(new HashSet<>());
@@ -89,12 +93,17 @@ public class EReachHospitalService implements HospitalService {
 
 		HospitalAdmin admin = modelMapper.map(hospitalRequest, HospitalAdmin.class);
 		admin.setAdminRole(HOSPITAL_ADMIN);
-		mappedHospital.getAdmins().add(admin);
-		hospitalRepository.save(mappedHospital);
+		admin.setActive(true);
+		admin.setAccountStatus(PENDING);
+		HospitalAdmin savedAdmin = hospitalAdminRepository.save(admin);
 
-		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
-		mailService.sendMail(buildNotificationRequest(temporarilySavedHospital));
-		return modelMapper.map(temporarilySavedHospital, HospitalResponse.class);
+		mappedHospital.getAdmins().add(savedAdmin);
+		log.info("mapped hospital is => {}", mappedHospital);
+		Hospital savedHospital = hospitalRepository.save(mappedHospital);
+
+//		Hospital temporarilySavedHospital = inMemoryDatabase.temporarySave(mappedHospital);
+		mailService.sendMail(buildNotificationRequest(savedHospital));
+		return modelMapper.map(savedHospital, HospitalResponse.class);
 	}
 
 	private EReachNotificationRequest buildNotificationRequest(Hospital hospital) {
@@ -189,23 +198,23 @@ public class EReachHospitalService implements HospitalService {
 
 	private HospitalResponse activateAccount(String token){
 		String email = extractEmailFrom(token);
-		Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
-		Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
-		AtomicReference<Hospital> savedHospitalReference = new AtomicReference<>();
-		foundAdmin.ifPresent(admin -> {
-			try {
-				admin.setAdminRole(HOSPITAL_ADMIN);
-				inMemoryDatabase.temporarySave(admin);
-				hospital.setAdmins(new HashSet<>());
-				Hospital savedHospital = hospitalRepository.save(hospital);
-				savedHospitalReference.set(savedHospital);
-				inMemoryDatabase.addHospitalToSavedHospitals(admin.getAdminEmail(), hospital);
-				mailService.sendMail(buildNotificationRequest(admin));
-			} catch (RequestInvalidException e) {
-				throw new EReachUncheckedBaseException(e);
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(email);
+		Hospital activeHospital = foundHospital.map(hospital -> {
+			if (!hospital.isActive() || hospital.getAccountStatus() == PENDING) {
+				hospital.setActive(true);
+				hospital.setAccountStatus(ACTIVE);
+				Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
+				foundAdmin.ifPresent(admin -> {
+					admin.setAccountStatus(ACTIVE);
+					admin.setActive(true);
+					hospital.setAdmins(new HashSet<>());
+					hospitalAdminRepository.save(admin);
+
+				});
 			}
-		});
-		return modelMapper.map(savedHospitalReference.get(), HospitalResponse.class);
+			return hospital;
+		}).orElseThrow(() -> new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, email)));
+		return modelMapper.map(activeHospital, HospitalResponse.class);
 	}
 
 	private EReachNotificationRequest buildNotificationRequest(HospitalAdmin admin) {
@@ -382,3 +391,20 @@ public class EReachHospitalService implements HospitalService {
 		return null;
 	}
 }
+//Hospital hospital = inMemoryDatabase.retrieveHospitalFromInMemory(email);
+//		Optional<HospitalAdmin> foundAdmin = hospital.getAdmins().stream().findFirst();
+//		AtomicReference<Hospital> savedHospitalReference = new AtomicReference<>();
+//		foundAdmin.ifPresent(admin -> {
+//			try {
+//				admin.setAdminRole(HOSPITAL_ADMIN);
+//				inMemoryDatabase.temporarySave(admin);
+//				hospital.setAdmins(new HashSet<>());
+//				Hospital savedHospital = hospitalRepository.save(hospital);
+//				savedHospitalReference.set(savedHospital);
+//				inMemoryDatabase.addHospitalToSavedHospitals(admin.getAdminEmail(), hospital);
+//				mailService.sendMail(buildNotificationRequest(admin));
+//			} catch (RequestInvalidException e) {
+//				throw new EReachUncheckedBaseException(e);
+//			}
+//		});
+//		return modelMapper.map(savedHospitalReference.get(), HospitalResponse.class);

@@ -47,27 +47,6 @@ public class HospitalAdminController {
 		}
 	}
 	
-	@PostMapping("activate-account/{token}")
-	public ResponseEntity<?> activateAccount(@PathVariable String token){
-		ApiResponse<HospitalAdminResponse> apiResponse = new ApiResponse<>();
-		HospitalAdminResponse response;
-		try {
-			response = adminService.saveHospitalAdminPermanently(token);
-			apiResponse.setData(response);
-			apiResponse.setSuccessful(HttpStatus.OK.is2xxSuccessful());
-			apiResponse.setStatusCode(HttpStatus.OK.value());
-			return new ResponseEntity<>(response, HttpStatus.valueOf(apiResponse.getStatusCode()));
-		} catch (RequestInvalidException baseException) {
-			response = new HospitalAdminResponse();
-			log.error("error occurred", baseException);
-			response.setMessage(baseException.getMessage());
-			apiResponse.setData(response	);
-			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
-			apiResponse.setSuccessful(HttpStatus.BAD_REQUEST.is4xxClientError());
-			return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
-		}
-	}
-	
 	@PostMapping("invite-practitioner/")
 	public ResponseEntity<?> invitePractitioner(@RequestBody InvitePractitionerRequest invitePractitionerRequest){
 		log.info("invitation request is: {}", invitePractitionerRequest);
@@ -145,3 +124,23 @@ public class HospitalAdminController {
 		}
 	}
 }
+//@PostMapping("activate-account/{token}")
+//	public ResponseEntity<?> activateAccount(@PathVariable String token){
+//		ApiResponse<HospitalAdminResponse> apiResponse = new ApiResponse<>();
+//		HospitalAdminResponse response;
+//		try {
+//			response = adminService.saveHospitalAdminPermanently(token);
+//			apiResponse.setData(response);
+//			apiResponse.setSuccessful(HttpStatus.OK.is2xxSuccessful());
+//			apiResponse.setStatusCode(HttpStatus.OK.value());
+//			return new ResponseEntity<>(response, HttpStatus.valueOf(apiResponse.getStatusCode()));
+//		} catch (RequestInvalidException baseException) {
+//			response = new HospitalAdminResponse();
+//			log.error("error occurred", baseException);
+//			response.setMessage(baseException.getMessage());
+//			apiResponse.setData(response	);
+//			apiResponse.setStatusCode(HttpStatus.BAD_REQUEST.value());
+//			apiResponse.setSuccessful(HttpStatus.BAD_REQUEST.is4xxClientError());
+//			return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+//		}
+//	}
