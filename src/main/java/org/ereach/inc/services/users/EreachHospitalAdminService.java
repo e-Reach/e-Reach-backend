@@ -14,10 +14,7 @@ import org.ereach.inc.data.models.users.HospitalAdmin;
 import org.ereach.inc.data.repositories.hospital.EReachHospitalRepository;
 import org.ereach.inc.data.repositories.users.HospitalAdminRepository;
 import org.ereach.inc.exceptions.*;
-import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.hospital.HospitalService;
-import org.ereach.inc.services.notifications.EReachNotificationRequest;
-import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
 import org.ereach.inc.utilities.JWTUtil;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +28,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.ereach.inc.utilities.Constants.*;
-import static org.ereach.inc.utilities.JWTUtil.extractEmailFrom;
 
 @Service
 @AllArgsConstructor
@@ -40,12 +36,10 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	
 	private final EReachHospitalRepository hospitalRepository;
 	private final ModelMapper modelMapper;
-	private final InMemoryDatabase inMemoryDatabase;
 	private final HospitalService hospitalService;
 	private PatientService patientService;
 	private final EReachConfig config;
 	private final HospitalAdminRepository hospitalAdminRepository;
-	private final MailService mailService;
 	private final EmailValidator validator;
 	private final PractitionerService practitionerService;
 	
@@ -59,18 +53,8 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 		if (Objects.equals(token, config.getTestToken()))
 			return activateTestAccount();
 		else if (JWTUtil.isValidToken(token, config.getAppJWTSecret()))
-			return activateAccount(token);
+			return activateTestAccount();
 		else throw new RequestInvalidException("Request failed::Token "+token+" to activate hospital admin account was Invalid or has expired");
-	}
-	
-	private HospitalAdminResponse activateAccount(String token) throws RequestInvalidException {
-		String email = extractEmailFrom(token);
-		HospitalAdmin hospitalAdmin = inMemoryDatabase.retrieveAdminFromInMemory(email);
-		HospitalAdmin savedHospitalAdmin = hospitalAdminRepository.save(hospitalAdmin);
-		Hospital foundHospital = inMemoryDatabase.findSavedAndActivatedHospitalByAdminEmail(savedHospitalAdmin.getAdminEmail());
-		foundHospital.getAdmins().add(savedHospitalAdmin);
-		hospitalRepository.save(foundHospital);
-		return modelMapper.map(savedHospitalAdmin, HospitalAdminResponse.class);
 	}
 	
 	@Override

@@ -2,6 +2,7 @@ package org.ereach.inc.data.models.hospital;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.Role;
 import org.ereach.inc.data.models.entries.MedicalLog;
@@ -29,10 +30,10 @@ public class Hospital {
     private String id;
     @OneToOne
     private Address address;
-    @Column(unique = true)
+    private boolean isActive;
+    private AccountStatus accountStatus;
     private String HEFAMAA_ID;
     private String hospitalName;
-    @Column(unique = true)
     private String hospitalPhoneNumber;
     @Column(unique = true)
     private String hospitalEmail;
