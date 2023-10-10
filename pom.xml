@@ -119,11 +119,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>pgjdbc-benchmark</artifactId>
-            <version>42.2.2</version>
-        </dependency>
     </dependencies>
 
     <build>
