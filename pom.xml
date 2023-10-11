@@ -14,7 +14,7 @@
     <name>e-Reach</name>
     <description>e-Reach</description>
     <properties>
-        <java.version>20</java.version>
+        <java.version>19</java.version>
     </properties>
     <dependencies>
         <dependency>
