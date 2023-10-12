@@ -23,7 +23,6 @@ public class HospitalAdmin {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    @Enumerated(value = STRING)
     private Role adminRole;
     private boolean active;
     private AccountStatus accountStatus;
