@@ -26,7 +26,6 @@ public class HospitalAdmin {
     @Enumerated(value = STRING)
     private Role adminRole;
     private boolean active;
-    @Enumerated(STRING)
     private AccountStatus accountStatus;
     private String adminFirstName;
     private String adminLastName;
