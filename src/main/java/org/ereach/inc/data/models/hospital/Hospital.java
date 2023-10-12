@@ -13,6 +13,7 @@ import org.ereach.inc.data.models.users.Practitioner;
 import java.util.Set;
 
 import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.GenerationType.UUID;
 
@@ -31,12 +32,14 @@ public class Hospital {
     @OneToOne
     private Address address;
     private boolean isActive;
+    @Enumerated(STRING)
     private AccountStatus accountStatus;
     private String HEFAMAA_ID;
     private String hospitalName;
     private String hospitalPhoneNumber;
     @Column(unique = true)
     private String hospitalEmail;
+    @Enumerated(STRING)
     private Role userRole;
     @OneToMany(fetch = EAGER)
     private Set<MedicalLog> logsCreated;

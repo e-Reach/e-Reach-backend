@@ -33,7 +33,6 @@ public class Patient {
     @NonNull
     @Column(unique = true)
     private String patientIdentificationNumber;
-    @Column(unique = true)
     private String nin;
     @NotEmpty
     @NonNull

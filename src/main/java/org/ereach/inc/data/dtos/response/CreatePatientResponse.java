@@ -1,12 +1,14 @@
 package org.ereach.inc.data.dtos.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
 
-
+@Builder
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreatePatientResponse {
     private String firstName;
     private String lastName;
