@@ -96,7 +96,7 @@ public class EReachRecordService implements RecordService {
         }).orElseThrow(()->new EntityNotFoundException(String.format(RECORD_WITH_P_I_N_NOT_FOUND, patientIdentificationNumber)));
 
     }
-    
+
     <S, T> List<T> mapList(List<S> source, Class<T> targetClass) {
         return source.stream()
                        .map(element -> modelMapper.map(element, targetClass))

@@ -4,6 +4,7 @@ import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.dtos.response.entries.MedicalLogResponse;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface DoctorService {
 	

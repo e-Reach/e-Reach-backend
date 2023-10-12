@@ -6,6 +6,8 @@ import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Record;
 
+import java.util.List;
+
 public interface RecordService {
     CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest);
     
@@ -13,5 +15,4 @@ public interface RecordService {
     
     void addLogToRecord(String patientIdentificationNumber, MedicalLog medicalLog);
     GetRecordResponse findRecordByPatientIdentificationNumber(String patientIdentificationNumber);
-
 }

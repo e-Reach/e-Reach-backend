@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.PatientIdentificationNumberGenerator.generateUniquePIN;
 import static org.ereach.inc.utilities.UsernameGenerator.generateUniqueUsername;
+import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
 
 @Service
@@ -72,7 +73,7 @@ public class EReachPatientService implements PatientService{
             PersonalInfo savedPersonalInfo = createPersonalInfo(request);
             Patient patient = modelMapper.map(request, Patient.class);
             Patient savedPatient = savedPatient(request, patient, savedPersonalInfo);
-            response = modelMapper.map(savedPatient, CreatePatientResponse.class);
+            response = map(savedPatient);
             response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             testPIN = patient.getPatientIdentificationNumber();
             testUsername = patient.getPatientIdentificationNumber();
@@ -84,7 +85,18 @@ public class EReachPatientService implements PatientService{
         }
         return response;
     }
-    
+
+    private CreatePatientResponse map(Patient savedPatient) {
+        return CreatePatientResponse.builder()
+                .eReachUsername(savedPatient.getEReachUsername())
+                .lastName(savedPatient.getLastName())
+                .firstName(savedPatient.getFirstName())
+                .patientIdentificationNumber(savedPatient.getPatientIdentificationNumber())
+                .email(savedPatient.getEmail())
+
+                .build();
+    }
+
     @NotNull
     private Patient savedPatient(CreatePatientRequest request, Patient patient, PersonalInfo savedPersonalInfo) {
         patient.setPatientIdentificationNumber(generateUniquePIN(fullName(request), request.getPhoneNumber()));
