@@ -56,6 +56,7 @@ public class EReachPractitionerService implements PractitionerService{
 																		  "pharmacist", new Pharmacist());
 	@Override
 	public PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException {
+		log.info("logs {}", registerDoctorRequest);
 		try {
 			PractitionerResponse response;
 			if (registerDoctorRequest.getRole().equalsIgnoreCase("doctor")) {
@@ -64,6 +65,7 @@ public class EReachPractitionerService implements PractitionerService{
 				Doctor savedDoctor = practitionerRepository.save(mappedDoctor);
 				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedDoctor);
 				response = mapper.map(savedDoctor, PractitionerResponse.class);
+				log.info("{}", response);
 			}
 			else if ((registerDoctorRequest.getRole().equalsIgnoreCase("pharmacist"))){
 				Pharmacist mappedPharmacist = mapper.map(registerDoctorRequest, Pharmacist.class);
@@ -86,6 +88,7 @@ public class EReachPractitionerService implements PractitionerService{
 			response.setMessage(ACCOUNT_ACTIVATION_SUCCESSFUL);
 			return response;
 		}catch (Throwable throwable){
+			log.info("error at practitioner ==> ", throwable);
 			throw new RegistrationFailedException(throwable);
 		}
 	}
