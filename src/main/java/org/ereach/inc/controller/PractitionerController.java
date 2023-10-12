@@ -38,4 +38,5 @@ public class PractitionerController {
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
+    
 }
