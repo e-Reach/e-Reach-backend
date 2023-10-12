@@ -44,7 +44,6 @@ public class Patient {
     private String phoneNumber;
     @OneToOne
     private Record record;
-    @Enumerated(STRING)
     private Role userRole;
     @OneToOne
     private PersonalInfo personalInfo;
