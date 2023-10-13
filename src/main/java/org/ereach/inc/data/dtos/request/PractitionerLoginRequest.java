@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PractitionerLoginRequest {
 	
-	private String role;
 	private String email;
 	private String practitionerIdentificationNumber;
 }

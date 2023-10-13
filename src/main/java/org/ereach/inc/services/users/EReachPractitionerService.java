@@ -62,6 +62,7 @@ public class EReachPractitionerService implements PractitionerService{
 			if (registerDoctorRequest.getRole().equalsIgnoreCase("doctor")) {
 				Doctor mappedDoctor = mapper.map(registerDoctorRequest, Doctor.class);
 				buildPractitioner(mappedDoctor, DOCTOR);
+				log.info("{}", registerDoctorRequest);
 				Doctor savedDoctor = practitionerRepository.save(mappedDoctor);
 				hospitalService.addPractitioners(registerDoctorRequest.getHospitalEmail(), savedDoctor);
 				response = mapper.map(savedDoctor, PractitionerResponse.class);
@@ -119,7 +120,7 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
-		String url = FRONTEND_LOCALHOST_BASE_URL+"practitioner-login/";
+		String url = FRONTEND_VERCEL_BASE_URL+"practitioner-login/";
 		return EReachNotificationRequest.builder()
 				       .firstName(practitionerRequest.getFirstName())
 				       .lastName(practitionerRequest.getLastName())
@@ -132,6 +133,7 @@ public class EReachPractitionerService implements PractitionerService{
 	
 	@Override
 	public PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) throws EReachBaseException {
+		log.info("login request {}", loginRequest);
 		Optional<Practitioner> foundPractitioner = practitionerRepository.findByEmail(loginRequest.getEmail());
 		if (foundPractitioner.isPresent()){
 			Practitioner practitioner = foundPractitioner.get();

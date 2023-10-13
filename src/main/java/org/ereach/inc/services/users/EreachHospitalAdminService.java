@@ -79,6 +79,8 @@ public class EreachHospitalAdminService implements HospitalAdminService {
 	}
 
 	private static void verifyRole(InvitePractitionerRequest practitionerRequest) throws FieldInvalidException {
+		System.out.println("i am here ");
+		System.out.println(practitionerRequest.getRole().toUpperCase());
 		if (EnumSet.allOf(Role.class)
 				   .stream()
 				   .noneMatch(role -> role == Role.valueOf(practitionerRequest.getRole().toUpperCase())))
