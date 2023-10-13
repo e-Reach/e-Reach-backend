@@ -77,8 +77,8 @@ public class EReachPatientService implements PatientService{
             response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             testPIN = patient.getPatientIdentificationNumber();
             testUsername = patient.getPatientIdentificationNumber();
-            sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
-                    patient.getEmail(), fullName(request), foundHospital.getHospitalName());
+            sendPatientIdAndUsername(patient.getFirstName(), patient.getEReachUsername(),
+                    patient.getPatientIdentificationNumber(), fullName(request), patient.getEmail());
         } catch (Throwable baseException) {
            log.error(baseException.getMessage(), baseException);
            throw new EReachBaseException(baseException);
@@ -187,14 +187,14 @@ public class EReachPatientService implements PatientService{
         return null;
     }
 
-    public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
+    public void sendPatientIdAndUsername(String firstName, String username, String pin, String fullName, String email) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
                 .firstName(fullName)
-                .password(patientIdentificationNumber)
+                .password(pin)
                 .email(email)
-                .username(eReachUsername)
+                .username(username)
                 .build();
-        mailService.sendPatientInfo(request, hospitalName);
+        mailService.sendPatientInfo(request, email);
     }
 
     @NotNull

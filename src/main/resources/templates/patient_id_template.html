@@ -11,11 +11,6 @@
             background-color: antiquewhite;
         }    
     </style>
-    <script>
-        function handleClick(){
-            localStorage.setItem("patientIdentificationNumber", "%s")
-        }
-    </script>
 </head>
 <body>
     <section class="father_box">
@@ -25,8 +20,8 @@
             <p>your <em><b>PATIENT IDENTIFICATION NUMBER</b></em>  is %s</p>
         </div>
         <div class="login_button_div">
-            <a href="http://localhost:3000/patient-dashboard">
-                <button onclick="handleClick()">click this link to navigate to your dashboard</button>
+            <a href="https://e-reach.vercel.app/patient-dashboard/pin=%s">
+                <button>click this link to navigate to your dashboard</button>
             </a>
         </div>
     </section>

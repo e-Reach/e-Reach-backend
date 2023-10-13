@@ -16,4 +16,5 @@ public class HospitalResponse {
 	private String hospitalPhoneNumber;
 	private String hospitalEmail;
 	private String logoCloudUrl;
+
 }
