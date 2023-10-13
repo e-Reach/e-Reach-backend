@@ -17,6 +17,7 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class MedicalLog {
 
     @Id
@@ -24,10 +25,19 @@ public class MedicalLog {
     private String id;
     @OneToMany
     private List<Entry> entries ;
+    @OneToMany
+    private List<Prescription> prescriptions;
+    @OneToOne
+    private Vitals vitals;
+    @OneToMany
+    private List<Tests> tests;
+    @OneToOne
+    private DoctorsReport doctorsReport;
     private LocalDate dateCreated;
     private LocalTime timeCreated;
     private String patientIdentificationNumber;
     private boolean isActive;
     @ManyToOne
     private Record medicalRecord;
+    private String hospitalEmail;
 }

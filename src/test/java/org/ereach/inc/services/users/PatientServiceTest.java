@@ -37,7 +37,7 @@ public class PatientServiceTest {
                 .firstName("Rich")
                 .lastName("Doe")
                 .phoneNumber("08033456789")
-                .email("rich@gmail.com")
+                .email(".com")
                 .nin("12345")
                 .streetName("Yaba")
                 .houseNumber("23")
@@ -68,6 +68,7 @@ public class PatientServiceTest {
     }
     @Test
     void testThatPatientReceivesEReachUsernameOnSuccessfulRegistration() {
+        assertThat(createPatientResponse.getEReachUsername()).isNotNull().isInstanceOf(String.class);
     }
     
     @Test
@@ -129,7 +130,6 @@ public class PatientServiceTest {
                        .nin("111111259090")
                        .streetName("harvey road")
                        .build();
-        
     }
     
     public CreatePatientRequest buildPatientFieldsForEreachUsername(){

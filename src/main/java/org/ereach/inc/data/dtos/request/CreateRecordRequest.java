@@ -20,7 +20,6 @@ import static jakarta.persistence.GenerationType.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateRecordRequest {
-    
-    private String officerIdentificationNumber;
+    private String hospitalEmail;
     private String patientIdentificationNumber;
 }

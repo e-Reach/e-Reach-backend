@@ -38,4 +38,7 @@ public class CreatePatientRequest {
     @NonNull
     @NotEmpty
     private String country;
+    @NotEmpty
+    @NonNull
+    private String hospitalEmail;
 }

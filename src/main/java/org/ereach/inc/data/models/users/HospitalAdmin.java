@@ -1,11 +1,14 @@
 package org.ereach.inc.data.models.users;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Role;
+import org.ereach.inc.data.models.annotations.PhoneNumber;
 
+import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
 
 @Entity
@@ -14,15 +17,23 @@ import static jakarta.persistence.GenerationType.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@ToString
 public class HospitalAdmin {
 
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
-    private Role role;
+    private Role adminRole;
+    private boolean active;
+    private AccountStatus accountStatus;
+    private String adminFirstName;
+    private String adminLastName;
+    @Email
+    @NotEmpty
+    @Column(unique = true)
     private String adminEmail;
+    @Email(regexp = "")
+    @PhoneNumber(region = "ZZ")
     private String adminPhoneNumber;
-    private Role userRole;
-    private String email;
-    private String phoneNumber;
+    
 }

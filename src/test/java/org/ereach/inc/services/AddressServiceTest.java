@@ -49,10 +49,10 @@ class AddressServiceTest {
 	private static AddressCreationRequest buildCreationRequest() {
 		return AddressCreationRequest.builder()
 				       .country("Nigeria")
-				       .houseNumber("34B")
+				       .streetAddress("34B")
 				       .state("Lagos")
-				       .streetName("Semicolon Street")
-				       .streetNumber("314B")
+				       .nameOfStreet("Semicolon Street")
+				       .numberOfStreet("314B")
 				       .build();
 	}
 	

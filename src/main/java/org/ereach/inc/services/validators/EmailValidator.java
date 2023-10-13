@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static org.ereach.inc.utilities.Constants.CONSTRAINT_VIOLATION_MESSAGE;
+import static org.ereach.inc.utilities.Constants.SPACE;
 
 @Service
 @Getter
@@ -23,7 +24,7 @@ public class EmailValidator {
 	
 
 	public void validateEmail(String email) throws FieldInvalidException {
-		if (!isValidDomain(email) || !emailMatchesPattern(email)) {
+		if (!isValidDomain(email) || !emailMatchesPattern(email) || email.contains(SPACE)) {
 			String format = String.format(CONSTRAINT_VIOLATION_MESSAGE, Arrays.toString(domains));
 			throw new FieldInvalidException(format);
 		}

@@ -6,10 +6,12 @@ import org.ereach.inc.data.dtos.response.GetRecordResponse;
 import org.ereach.inc.data.models.entries.MedicalLog;
 
 public interface RecordService {
+
+
     CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest);
-
-    GetRecordResponse findRecordByPatientIdentificationNumber(String patientIdentificationNumber);
-
+    
+    Record createRecord(String hospitalEmail, String patientIdentificationNumber);
+    
     void addLogToRecord(String patientIdentificationNumber, MedicalLog medicalLog);
-
+    GetRecordResponse findRecordByPatientIdentificationNumber(String patientIdentificationNumber);
 }

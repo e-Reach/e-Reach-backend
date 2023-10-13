@@ -6,6 +6,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -16,28 +17,29 @@ import static org.ereach.inc.utilities.Constants.*;
 @AllArgsConstructor
 public class JWTUtil {
 	
-	public static String generateActivationToken(String email, String role, String secret){
-		System.out.println("secret: "+secret);
+	@Getter
+	private static String testToken;
+	
+	public static StringBuilder generateAccountActivationUrl(String email, String role, String firstName, String lastName, String jwtSecret){
+		String GENERATED_TOKEN = generateActivationToken(email, role, firstName, lastName,jwtSecret);
+		testToken = GENERATED_TOKEN;
+		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
+	}
+	
+	public static String generateActivationToken(String email, String role,  String firstName, String lastName, String jwtSecret){
 		JWTCreator.Builder tokenCreator;
-		tokenCreator = buildTokenForEmails(email, role);
-		return tokenCreator.sign(Algorithm.HMAC512(secret));
+		tokenCreator = buildTokenForEmails(email, role, firstName, lastName);
+		String signedToken = tokenCreator.sign(Algorithm.HMAC512(jwtSecret));
+		testToken = signedToken;
+		return signedToken;
 	}
 	
-	private static JWTCreator.Builder buildTokenForTextMessages(String phoneNumber, String role) {
-		Map<String, String> claims = new HashMap<>();
-		claims.put(USER_ROLE, role);
-		claims.put(USER_PHONE_NUMBER, phoneNumber);
-		return JWT.create()
-				  .withClaim(CLAIMS, claims)
-				  .withIssuer(LIBRARY_ISSUER_NAME)
-				  .withExpiresAt(Instant.now().plusSeconds(7200))
-				  .withIssuedAt(Instant.now());
-	}
-	
-	private static JWTCreator.Builder buildTokenForEmails(String email, String role) {
+	private static JWTCreator.Builder buildTokenForEmails(String email, String role, String firstName, String lastName) {
 		Map<String, String> claims = new HashMap<>();
 		claims.put(USER_ROLE, role);
 		claims.put(USER_MAIL, email);
+		claims.put(FIRST_NAME, firstName);
+		claims.put(LAST_NAME, lastName);
 		return JWT.create()
 				  .withClaim(CLAIMS,claims)
 				  .withExpiresAt(Instant.now().plusSeconds(3600))
@@ -45,24 +47,12 @@ public class JWTUtil {
 				  .withIssuedAt(Instant.now());
 	}
 	
-	public static boolean isValidToken(String token, String secret) {
-		JWTVerifier verifier = JWT.require(Algorithm.HMAC512(secret))
+	public static boolean isValidToken(String token, String jwtSecret) {
+		JWTVerifier verifier = JWT.require(Algorithm.HMAC512(jwtSecret))
 				                  .withIssuer(LIBRARY_ISSUER_NAME)
 				                  .withClaimPresence(CLAIMS)
 				                  .build();
 		return verifier.verify(token)!=null;
-//		if (Objects.equals(notificationMedium, TEXT_MESSAGE)) {
-//			JWTVerifier verifier = JWT.require(Algorithm.HMAC512(config.getAppJWTSecret()))
-//					                       .withIssuer(LIBRARY_ISSUER_NAME)
-//					                       .withClaimPresence(CLAIMS)
-//					                       .build();
-//			return verifier.verify(token)!=null;
-//		}
-	}
-	
-	public static StringBuilder generateAccountActivationUrl(String email, String password, String phoneNumber){
-		String GENERATED_TOKEN =  generateActivationToken(email, password, phoneNumber);
-		return new StringBuilder().append(QUERY_STRING_PREFIX).append(QUERY_STRING_TOKEN).append(GENERATED_TOKEN);
 	}
 	
 	public static String extractEmailFrom(String token) {
@@ -70,12 +60,22 @@ public class JWTUtil {
 		return claim.asMap().get(USER_MAIL).toString();
 	}
 	
+	public static String extractFirstNameFrom(String token) {
+		Claim claim = JWT.decode(token).getClaim(CLAIMS);
+		return claim.asMap().get(FIRST_NAME).toString();
+	}
+	
+	public static String extractLastNameFrom(String token) {
+		Claim claim = JWT.decode(token).getClaim(CLAIMS);
+		return claim.asMap().get(LAST_NAME).toString();
+	}
+	
 	public static String extractPhoneNumberFrom(String token) {
 		Claim claim = JWT.decode(token).getClaim(CLAIMS);
 		return claim.asMap().get(USER_PHONE_NUMBER).toString();
 	}
 	
-	public static String extractPasswordFromToken(String token){
+	public static String extractRoleFrom(String token){
 		Claim claim = JWT.decode(token).getClaim(CLAIMS);
 		return claim.asMap().get(USER_ROLE).toString();
 	}
