@@ -72,19 +72,30 @@ public class EReachPatientService implements PatientService{
             PersonalInfo savedPersonalInfo = createPersonalInfo(request);
             Patient patient = modelMapper.map(request, Patient.class);
             Patient savedPatient = savedPatient(request, patient, savedPersonalInfo);
-            response = modelMapper.map(savedPatient, CreatePatientResponse.class);
+            response = map(savedPatient);
             response.setMessage(String.format(PATIENT_ACCOUNT_CREATED_SUCCESSFULLY, fullName(request)));
             testPIN = patient.getPatientIdentificationNumber();
             testUsername = patient.getPatientIdentificationNumber();
-            sendPatientIdAndUsername(patient.getEReachUsername(), patient.getPatientIdentificationNumber(),
-                    patient.getEmail(), fullName(request), foundHospital.getHospitalName());
+            sendPatientIdAndUsername(patient.getFirstName(), patient.getEReachUsername(),
+                    patient.getPatientIdentificationNumber(), fullName(request), patient.getEmail());
         } catch (Throwable baseException) {
            log.error(baseException.getMessage(), baseException);
            throw new EReachBaseException(baseException);
         }
         return response;
     }
-    
+
+    private CreatePatientResponse map(Patient savedPatient) {
+        return CreatePatientResponse.builder()
+                .eReachUsername(savedPatient.getEReachUsername())
+                .lastName(savedPatient.getLastName())
+                .firstName(savedPatient.getFirstName())
+                .patientIdentificationNumber(savedPatient.getPatientIdentificationNumber())
+                .email(savedPatient.getEmail())
+
+                .build();
+    }
+
     @NotNull
     private Patient savedPatient(CreatePatientRequest request, Patient patient, PersonalInfo savedPersonalInfo) {
         patient.setPatientIdentificationNumber(generateUniquePIN(fullName(request), request.getPhoneNumber()));
@@ -99,7 +110,17 @@ public class EReachPatientService implements PatientService{
     @Override
     public GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber) {
         Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
-        return foundPatient.map(patient -> modelMapper.map(patient, GetPatientResponse.class))
+        return foundPatient.map(patient -> {
+                    GetPatientResponse response = new GetPatientResponse();
+                    response.setEmail(patient.getEmail());
+                    response.setPatientIdentificationNumber(patient.getPatientIdentificationNumber());
+                    response.setPhoneNumber(patient.getPhoneNumber());
+                    response.setFirstName(patient.getFirstName());
+                    response.setLastName(patient.getLastName());
+                    response.setEReachUsername(patient.getEReachUsername());
+                    response.setNin(patient.getNin());
+                    return response;
+                })
                            .orElseThrow(()-> new EReachUncheckedBaseException(String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber)));
     }
 
@@ -175,14 +196,14 @@ public class EReachPatientService implements PatientService{
         return null;
     }
 
-    public void sendPatientIdAndUsername(String eReachUsername, String patientIdentificationNumber, String email, String fullName, String hospitalName) throws RequestInvalidException {
+    public void sendPatientIdAndUsername(String firstName, String username, String pin, String fullName, String email) throws RequestInvalidException {
         EReachNotificationRequest request = EReachNotificationRequest.builder()
                 .firstName(fullName)
-                .password(patientIdentificationNumber)
+                .password(pin)
                 .email(email)
-                .username(eReachUsername)
+                .username(username)
                 .build();
-        mailService.sendPatientInfo(request, hospitalName);
+        mailService.sendPatientInfo(request, email);
     }
 
     @NotNull

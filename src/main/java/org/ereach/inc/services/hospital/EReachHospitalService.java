@@ -17,7 +17,6 @@ import org.ereach.inc.data.dtos.request.CreateHospitalRequest;
 import org.ereach.inc.data.dtos.request.UpdateHospitalRequest;
 import org.ereach.inc.data.dtos.response.*;
 import org.ereach.inc.data.dtos.response.entries.*;
-import org.ereach.inc.data.models.AccountStatus;
 import org.ereach.inc.data.models.Address;
 import org.ereach.inc.data.models.entries.MedicalLog;
 import org.ereach.inc.data.models.hospital.Hospital;
@@ -31,7 +30,6 @@ import org.ereach.inc.exceptions.EReachUncheckedBaseException;
 import org.ereach.inc.exceptions.FieldInvalidException;
 import org.ereach.inc.exceptions.RequestInvalidException;
 import org.ereach.inc.services.AddressService;
-import org.ereach.inc.services.InMemoryDatabase;
 import org.ereach.inc.services.notifications.EReachNotificationRequest;
 import org.ereach.inc.services.notifications.MailService;
 import org.ereach.inc.services.validators.EmailValidator;
@@ -68,7 +66,6 @@ public class EReachHospitalService implements HospitalService {
 	private MailService mailService;
 	private EmailValidator emailValidator;
 	private AddressService addressService;
-	private InMemoryDatabase inMemoryDatabase;
 	private final EReachConfig config;
 	private ObjectMapper objectMapper;
 
@@ -207,7 +204,6 @@ public class EReachHospitalService implements HospitalService {
 				foundAdmin.ifPresent(admin -> {
 					admin.setAccountStatus(ACTIVE);
 					admin.setActive(true);
-					hospital.setAdmins(new HashSet<>());
 					hospitalAdminRepository.save(admin);
 
 				});
@@ -382,6 +378,42 @@ public class EReachHospitalService implements HospitalService {
 			return hospital;
 		}).orElseThrow(()->new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 
+	}
+
+	@Override
+	public List<GetRecordResponse> viewPatientsRecords(String hospitalEmail) {
+		Optional<Hospital> foundHospital = hospitalRepository.findByHospitalEmail(hospitalEmail);
+		return foundHospital.map(hospital -> {
+			Set<Record> foundRecords = hospital.getRecords();
+            return foundRecords.stream().map(record -> {
+				GetRecordResponse recordResponse = new GetRecordResponse();
+				recordResponse.setPatientIdentificationNumber(record.getPatientIdentificationNumber());
+				recordResponse.setDateCreated(record.getDateCreated());
+				recordResponse.setLastTimeUpdated(record.getLastTimeUpdated());
+				recordResponse.setMessage("Record found");
+
+
+				List<MedicalLogResponse> allLogs = record.getMedicalLogs().stream().map(medicalLog -> {
+					List<TestResponseDTO> tests = mapList(medicalLog.getTests(), TestResponseDTO.class);
+					List<PrescriptionsResponseDTO> prescriptions = mapList(medicalLog.getPrescriptions(), PrescriptionsResponseDTO.class);
+					DoctorReportResponseDTO doctorReport = modelMapper.map(medicalLog.getDoctorsReport(), DoctorReportResponseDTO.class);
+					VitalsResponseDTO vitals = modelMapper.map(medicalLog.getVitals(), VitalsResponseDTO.class);
+
+					MedicalLogResponse medicalLogResponse = new MedicalLogResponse();
+					medicalLogResponse.setTestResponseDTO(tests);
+					medicalLogResponse.setVitalsResponseDTO(vitals);
+					medicalLogResponse.setPrescriptionsResponseDTO(prescriptions);
+					medicalLogResponse.setDoctorReportResponseDTO(doctorReport);
+					medicalLogResponse.setHospitalEmail(medicalLog.getHospitalEmail());
+					medicalLogResponse.setDateCreated(medicalLog.getDateCreated());
+					medicalLogResponse.setPatientIdentificationNumber(medicalLog.getPatientIdentificationNumber());
+					medicalLogResponse.setTimeCreated(medicalLog.getTimeCreated());
+					return medicalLogResponse;
+				}).toList();
+				recordResponse.setMedicalLogResponses(allLogs);
+				return recordResponse;
+			}).toList();
+		}).orElseThrow(()-> new EReachUncheckedBaseException(String.format(HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST, hospitalEmail)));
 	}
 
 	@Override

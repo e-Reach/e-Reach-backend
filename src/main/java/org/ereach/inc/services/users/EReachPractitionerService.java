@@ -206,7 +206,14 @@ public class EReachPractitionerService implements PractitionerService{
 			return null;
 		return GetRecordResponse.builder().build();
 	}
-	
+
+	@Override
+	public List<GetRecordResponse> viewPatientsRecords(String hospitalEmail, String role) {
+		if (role.equalsIgnoreCase("doctor"))
+			return hospitalService.viewPatientsRecords(hospitalEmail);
+		return null;
+	}
+
 	@Override
 	public MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date) {
 		return null;

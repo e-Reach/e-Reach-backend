@@ -22,7 +22,6 @@ public class Record {
     @GeneratedValue(strategy = UUID)
     private String id;
     private String patientIdentificationNumber;
-    
     private LocalDate dateCreated;
     private LocalTime lastTimeUpdated;
     @OneToMany(fetch = FetchType.EAGER)

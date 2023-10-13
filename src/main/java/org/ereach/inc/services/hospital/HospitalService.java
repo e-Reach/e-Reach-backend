@@ -37,4 +37,6 @@ public interface HospitalService {
 	List<MedicalLogResponse> viewPatientsMedicalLogs(String hospitalEmail);
 	
 	void addPractitioners(String hospitalEmail, Practitioner savedPractitioner);
+
+    List<GetRecordResponse> viewPatientsRecords(String hospitalEmail);
 }

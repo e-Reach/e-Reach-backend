@@ -17,29 +17,21 @@ public interface PractitionerService {
 	PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
 	PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) throws EReachBaseException;
 	PractitionerResponse activatePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
-
-	//	private static void buildPractitioner(Practitioner mappedPractitioner, Role role) {
-	//		String fullName = mappedPractitioner.getFirstName() + SPACE + mappedPractitioner.getLastName();
-	//		mappedPractitioner.setActive(true);
-	//		mappedPractitioner.setStatus(ACTIVE);
-	//		mappedPractitioner.setPractitionerIdentificationNumber(generateUniquePIN(fullName, mappedPractitioner.getEmail()));
-	//		mappedPractitioner.setUserRole(role);
-	//	}
-	//
 	PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
 
 	void removePractitionerByEmailOrPractitionerIdentificationNumber(String email, String practitionerIdentificationNumber);
 	CloudUploadResponse uploadTestResult(CloudUploadRequest cloudUploadRequest);
 	ResponseEntity<?> uploadProfilePicture(MultipartFile multipartFile) throws EReachBaseException;
 	GetRecordResponse viewPatientRecord(String patientIdentificationNumber, String role);
+	List<GetRecordResponse> viewPatientsRecords(String hospitalEMail, String role);
 	MedicalLogResponse viewPatientMedicalLog(String patientIdentificationNumber, LocalDate date);
 	TestRecommendationResponse recommendTest(TestRecommendationRequest testRecommendationRequest);
+
 	AppointmentScheduleResponse scheduleAppointment(AppointmentScheduleRequest appointmentScheduleRequest);
-	
+
 	List<GetPractitionerResponse> getAllPractitionersInHospital(String hospitalEmail);
-	
+
 	List<GetPractitionerResponse> getAllPractitioners() throws RequestInvalidException;
-	
+
 	void removeAll() throws RequestInvalidException;
-	
 }
