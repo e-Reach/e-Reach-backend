@@ -18,9 +18,13 @@ import static jakarta.persistence.EnumType.STRING;
 public class GetPatientResponse {
     
     private String email;
+    private String nin;
     private String phoneNumber;
     private String eReachUsername;
     private String firstName;
     private String lastName;
     private String patientIdentificationNumber;
+    private String streetAddress;
+    private String state;
+    private String country;
 }
