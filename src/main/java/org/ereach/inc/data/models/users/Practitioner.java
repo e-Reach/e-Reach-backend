@@ -31,4 +31,5 @@ public class Practitioner {
     private String email;
     @Column(unique = true)
     private String phoneNumber;
+    private String practitionerIdentificationNumber;
 }

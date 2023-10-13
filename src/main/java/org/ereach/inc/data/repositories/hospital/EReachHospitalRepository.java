@@ -11,4 +11,5 @@ public interface EReachHospitalRepository extends JpaRepository<Hospital, String
     Optional<Hospital> findByHospitalEmail(String email);
 
 
+    Optional<Hospital> findByEmailOrHEFAMAA_ID(String hospitalEmail, String hospitalHefamaaId);
 }

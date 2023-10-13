@@ -2,10 +2,10 @@ package org.ereach.inc.services.users;
 
 import org.ereach.inc.data.dtos.request.AddMedicationRequest;
 import org.ereach.inc.data.dtos.request.CreatePractitionerRequest;
+import org.ereach.inc.data.dtos.request.RemovePractitionerRequest;
 import org.ereach.inc.data.dtos.request.UpdateEntryRequest;
-import org.ereach.inc.data.models.users.Practitioner;
+import org.ereach.inc.data.dtos.response.PractitionerResponse;
 import org.ereach.inc.exceptions.FieldInvalidException;
-import org.ereach.inc.exceptions.RegistrationFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -32,42 +30,30 @@ class PharmacistServiceTest {
 	private AddMedicationRequest medicationRequest2;
 	private AddMedicationRequest medicationRequest3;
 
+
 	private UpdateEntryRequest entryRequest;
 	@BeforeEach
 	void startEachTestWith() {
-		practitionerRequest1 = new CreatePractitionerRequest();
-		practitionerRequest1.setEmail("desyFavour54@gmail.com");
-		practitionerRequest1.setFirstName("Favour");
-		practitionerRequest1.setLastName("Chiemela");
-		practitionerRequest1.setPhoneNumber("09034687770");
-		practitionerRequest1.setWorkerIdentity("pharmacist");
+		practitionerRequest1 = buildPractitionerRequest("deegFav63@gmail.com", "Goodness", "Obinali", "07034687770", "pharmacist");
+		practitionerRequest2 = buildPractitionerRequest("dessyFav644@gmail.com", "Favwhite", "nwadike", "07037887770", "pharmacist");
+		practitionerRequest3 = buildPractitionerRequest("desyFavour54@gmail.com", "Favour", "Chiemela", "09034687770", "pharmacist");
 
-		practitionerRequest2 = new CreatePractitionerRequest();
-		practitionerRequest2.setEmail("deegFav63@gmail.com");
-		practitionerRequest2.setFirstName("Goodness");
-		practitionerRequest2.setLastName("Obinali");
-		practitionerRequest2.setPhoneNumber("07034687770");
-		practitionerRequest2.setWorkerIdentity("pharmacist");
+		medicationRequest1=	buildMedicationRequest(medicationRequest1, 1500, "Paracetamol");
+		medicationRequest2=	buildMedicationRequest(medicationRequest2, 2500, "Procold");
+		medicationRequest3=	buildMedicationRequest(medicationRequest3, 3500, "Ashewo drug");
 
-		practitionerRequest3 = new CreatePractitionerRequest();
-		practitionerRequest3.setEmail("dessyFav644@gmail.com");
-		practitionerRequest3.setFirstName("Favwhite");
-		practitionerRequest3.setLastName("nwadike");
-		practitionerRequest3.setPhoneNumber("07037887770");
-		practitionerRequest3.setWorkerIdentity("pharmacist");
-
-		medicationRequest1 = new AddMedicationRequest();
-		medicationRequest1.setPrice(BigDecimal.valueOf(1500));
-		medicationRequest1.setDrugName("Paracetamol");
-
-		medicationRequest2 = new AddMedicationRequest();
-		medicationRequest2.setPrice(BigDecimal.valueOf(2500));
-		medicationRequest2.setDrugName("Procold");
-
-		medicationRequest3 = new AddMedicationRequest();
-		medicationRequest3.setPrice(BigDecimal.valueOf(3500));
-		medicationRequest3.setDrugName("Ashewo drug");
+		pharmacistService.createPharmacist(practitionerRequest2);
+		pharmacistService.createPharmacist(practitionerRequest3);
 	}
+
+	private AddMedicationRequest buildMedicationRequest(AddMedicationRequest medicationRequest1, int val, String drugName) {
+		medicationRequest1 = new AddMedicationRequest();
+		medicationRequest1.setPrice(BigDecimal.valueOf(val));
+		medicationRequest1.setDrugName(drugName);
+		return medicationRequest1;
+	}
+
+
 	@Test
 	void testThatPharmacistCanBeCreated(){
 
@@ -80,7 +66,6 @@ class PharmacistServiceTest {
 			pharmacistService.createPharmacist(practitionerRequest3);
 		});
 	}
-	
 	@Test void createPharmacistsWithIncompleteDetails_ExceptionIsThrown(){
 		Exception exception = assertThrows(FieldInvalidException.class, () -> {
 			CreatePractitionerRequest incompleteDetails = new CreatePractitionerRequest();
@@ -92,34 +77,49 @@ class PharmacistServiceTest {
 		});
 		assertEquals("Incomplete details provided", exception.getMessage());
 	}
+
 	@Test void createPharmacistWithInvalidDetails_RegistrationFailedExceptionIsThrown(){
 
 	}
-	
 	@DisplayName("test that pharmacist with already existing email will not be able to register")
 	@Test void testThatEveryPharmacistCreateHasAUniqueEmail(){
 
 	}
-	
+
 	@Test void testThatPharmacistCanEditEntry(){
 
 	}
-	
+
 	@Test void testThatWhenPharmacistTriesToViewMedicalLog_PrescriptionEntryIsTheLogShown(){
-	
+
 	}
+
 	@Test
 	void testThatPharmacistCanAddMedicine(){
 		pharmacistService.addMedication(medicationRequest1);
 		pharmacistService.addMedication(medicationRequest2);
 		pharmacistService.addMedication(medicationRequest3);
 	}
-	
 	@Test void removePharmacistsByEmailAndPractitionerIdentificationNumber(){
-	
+		//The pharmacist be saved
+		//When i delete the pharmacist,
+		// the pharmacist is deleted from their hospitals list of pharmacist
+		PractitionerResponse response = pharmacistService.createPharmacist(practitionerRequest1);
+		pharmacistService.removePharmacistByEmailOrPractitionerIdentificationNumber(RemovePractitionerRequest.builder().build());
+
 	}
-	
+
 	@Test void testThatPharmacistsAreRemovedAccordingToTheHospitalTheyBelong(){
-	
+
+	}
+
+	private CreatePractitionerRequest buildPractitionerRequest(String email, String firstName, String lastName, String phoneNumber, String workerIdentity) {
+		practitionerRequest2 = new CreatePractitionerRequest();
+		practitionerRequest2.setEmail(email);
+		practitionerRequest2.setFirstName(firstName);
+		practitionerRequest2.setLastName(lastName);
+		practitionerRequest2.setPhoneNumber(phoneNumber);
+		practitionerRequest2.setWorkerIdentity(workerIdentity);
+		return practitionerRequest1;
 	}
 }
