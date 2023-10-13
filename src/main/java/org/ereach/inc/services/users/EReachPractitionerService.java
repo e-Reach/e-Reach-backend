@@ -119,10 +119,7 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	private EReachNotificationRequest buildNotificationRequest(@NotNull InvitePractitionerRequest practitionerRequest) {
-		String token = generateActivationToken(practitionerRequest.getEmail(),
-				practitionerRequest.getRole(), practitionerRequest.getFirstName(),
-				practitionerRequest.getLastName(), config.getAppJWTSecret());
-		String url = "http://localhost:3000/practitioner-login/"+token;
+		String url = FRONTEND_LOCALHOST_BASE_URL+"practitioner-login/";
 		return EReachNotificationRequest.builder()
 				       .firstName(practitionerRequest.getFirstName())
 				       .lastName(practitionerRequest.getLastName())
@@ -134,13 +131,22 @@ public class EReachPractitionerService implements PractitionerService{
 	}
 	
 	@Override
-	public PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) {
-		return PractitionerLoginResponse.builder()
-				       .practitionerIdentificationNumber(loginRequest.getPractitionerIdentificationNumber())
-				       .message("Login Successful")
-				       .username(loginRequest.getUsername())
-				       .email(loginRequest.getEmail())
-				       .build();
+	public PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) throws EReachBaseException {
+		Optional<Practitioner> foundPractitioner = practitionerRepository.findByEmail(loginRequest.getEmail());
+		if (foundPractitioner.isPresent()){
+			Practitioner practitioner = foundPractitioner.get();
+			return PractitionerLoginResponse.builder()
+					       .practitionerIdentificationNumber(loginRequest.getPractitionerIdentificationNumber())
+					       .message("Login Successful")
+					       .email(practitioner.getEmail())
+					       .firstName(practitioner.getFirstName())
+					       .lastName(practitioner.getLastName())
+					       .phoneNumber(practitioner.getPhoneNumber())
+					       .role(practitioner.getUserRole().toString())
+					       .practitionerIdentificationNumber(practitioner.getPractitionerIdentificationNumber())
+					       .build();
+		}
+		throw new EReachBaseException("Login Failed");
 	}
 	
 

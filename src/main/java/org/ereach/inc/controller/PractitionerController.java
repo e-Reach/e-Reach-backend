@@ -34,8 +34,13 @@ public class PractitionerController {
 
     @PostMapping("login/")
     public ResponseEntity<?> login(PractitionerLoginRequest loginRequest){
-        PractitionerLoginResponse response = practitionerService.login(loginRequest);
-        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        PractitionerLoginResponse response;
+        try {
+            response = practitionerService.login(loginRequest);
+            return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+        } catch (EReachBaseException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 
     

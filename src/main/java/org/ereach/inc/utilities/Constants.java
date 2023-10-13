@@ -15,6 +15,12 @@ public class Constants {
 	public static final String TOKEN_WAS_INVALID = "Request failed: %s failed to save permanently, token was invalid";
 	public static final String SPACE = " ";
 	public static final String BACKEND_BASE_URL = "http://localhost:8080/api/v1/";
+	public static final String FRONTEND_LOCALHOST_BASE_URL = "http://localhost:3000/";
+	public static final String FRONTEND_VERCEL_BASE_URL = "https://e-reach.vercel.app/";
+	public static final String ACTIVATE_HOSPITAL_ACCOUNT = "https://e-reach.vercel.app/activate-hospital-account";
+	public static final String ACTIVATE_HOSPITAL_ADMIN_ACCOUNT = "https://e-reach.vercel.app/activate-hospital-admin-account";
+	public static final String FRONT_END_ACTIVATE_ACCOUNT = "https://e-reach.vercel.app/activate-account";
+	
 	public static final String QUERY_STRING_PREFIX = "/";
 	
 	public static final String HOSPITAL_WITH_EMAIL_DOES_NOT_EXIST = "Hospital with email %s does not exist";
@@ -23,9 +29,6 @@ public class Constants {
 	public static final String ADMIN_WITH_ID_DOES_NOT_EXIST = "Admin with id %s does not exist";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST_IN_HOSPITAL = "Admin with email %s does not exist in the hospital with email %s";
 	public static final String ADMIN_WITH_EMAIL_DOES_NOT_EXIST = "Admin with email %s does not exist";
-	public static final String ACTIVATE_HOSPITAL_ACCOUNT = "https://e-reach.vercel.app/activate-hospital-account";
-	public static final String ACTIVATE_HOSPITAL_ADMIN_ACCOUNT = "https://e-reach.vercel.app/activate-hospital-admin-account";
-	public static final String FRONT_END_ACTIVATE_ACCOUNT = "https://e-reach.vercel.app/activate-account";
 	public static final String ACTIVATE_ACCOUNT = "practitioner/activate-account/";
 	public static final String QUERY_STRING_TOKEN = "token=";
 	public static final String USER_ROLE = "user password";
