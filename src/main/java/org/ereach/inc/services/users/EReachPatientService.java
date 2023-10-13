@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 import static org.ereach.inc.utilities.Constants.*;
 import static org.ereach.inc.utilities.PatientIdentificationNumberGenerator.generateUniquePIN;
 import static org.ereach.inc.utilities.UsernameGenerator.generateUniqueUsername;
-import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
 
 @Service
@@ -111,7 +110,17 @@ public class EReachPatientService implements PatientService{
     @Override
     public GetPatientResponse findByPatientIdentificationNumber(String patientIdentificationNumber) {
         Optional<Patient> foundPatient = patientsRepository.findByPatientIdentificationNumber(patientIdentificationNumber);
-        return foundPatient.map(patient -> modelMapper.map(patient, GetPatientResponse.class))
+        return foundPatient.map(patient -> {
+                    GetPatientResponse response = new GetPatientResponse();
+                    response.setEmail(patient.getEmail());
+                    response.setPatientIdentificationNumber(patient.getPatientIdentificationNumber());
+                    response.setPhoneNumber(patient.getPhoneNumber());
+                    response.setFirstName(patient.getFirstName());
+                    response.setLastName(patient.getLastName());
+                    response.setEReachUsername(patient.getEReachUsername());
+                    response.setNin(patient.getNin());
+                    return response;
+                })
                            .orElseThrow(()-> new EReachUncheckedBaseException(String.format(PATIENT_WITH_PIN_DOES_NOT_EXIST, patientIdentificationNumber)));
     }
 
