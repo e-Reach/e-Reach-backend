@@ -15,7 +15,7 @@ import java.util.List;
 public interface PractitionerService {
 	
 	PractitionerResponse invitePractitioner(InvitePractitionerRequest registerDoctorRequest) throws RegistrationFailedException;
-	PractitionerLoginResponse login(PractitionerLoginRequest loginRequest);
+	PractitionerLoginResponse login(PractitionerLoginRequest loginRequest) throws EReachBaseException;
 	PractitionerResponse activatePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
 	PractitionerResponse invitePractitioner(String token) throws RequestInvalidException, RegistrationFailedException;
 

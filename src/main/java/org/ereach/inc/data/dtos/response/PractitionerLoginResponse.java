@@ -12,6 +12,10 @@ import lombok.NoArgsConstructor;
 public class PractitionerLoginResponse {
 	
 	private String message;
+	private String lastName;
+	private String firstName;
+	private String phoneNumber;
+	private String role;
 	private String username;
 	private String email;
 	private String practitionerIdentificationNumber;

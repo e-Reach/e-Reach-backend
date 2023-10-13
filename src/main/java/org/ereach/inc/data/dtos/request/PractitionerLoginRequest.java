@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PractitionerLoginRequest {
 	
-	private String username;
+	private String role;
 	private String email;
 	private String practitionerIdentificationNumber;
 }
